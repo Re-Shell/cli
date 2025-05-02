@@ -1,0 +1,38 @@
+{
+  "name": "@reshell/cli",
+  "version": "0.1.0",
+  "description": "CLI tool for ReShell microfrontend framework",
+  "main": "dist/index.js",
+  "bin": {
+    "reshell": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest",
+    "lint": "eslint src --ext ts",
+    "clean": "rimraf dist"
+  },
+  "keywords": [
+    "microfrontend",
+    "react",
+    "shell",
+    "cli",
+    "framework"
+  ],
+  "author": "Re-Shell Organization",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^11.0.0",
+    "fs-extra": "^11.0.0",
+    "prompts": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.0",
+    "@types/node": "^20.0.0",
+    "@types/prompts": "^2.0.0",
+    "rimraf": "^5.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^0.34.3"
+  }
+}
