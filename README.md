@@ -1,25 +1,25 @@
-# ReShell CLI
+# Re-Shell CLI
 
-A comprehensive command-line interface for creating and managing microfrontend applications with ReShell.
+A comprehensive command-line interface for creating and managing microfrontend applications with Re-Shell.
 
 ## Installation
 
 ### Global Installation
 
 ```bash
-npm install -g reshell-cli
+npm install -g @re-shell/cli
 ```
 
 Or using yarn:
 
 ```bash
-yarn global add reshell-cli
+yarn global add @re-shell/cli
 ```
 
 ### Local Installation
 
 ```bash
-npm install reshell-cli --save-dev
+npm install @re-shell/cli --save-dev
 ```
 
 Then add a script to your package.json:
@@ -27,7 +27,7 @@ Then add a script to your package.json:
 ```json
 {
   "scripts": {
-    "reshell": "reshell"
+    "re-shell": "re-shell"
   }
 }
 ```
@@ -37,17 +37,17 @@ Then add a script to your package.json:
 ### Create a New Project
 
 ```bash
-reshell create my-project
+re-shell create my-project
 ```
 
-This creates a new ReShell project with a shell application and the necessary structure for microfrontends.
+This creates a new Re-Shell project with a shell application and the necessary structure for microfrontends.
 
 #### Options
 
 | Option | Description |
 |--------|-------------|
 | `--team <team>` | Team name |
-| `--org <organization>` | Organization name (default: "reshell") |
+| `--org <organization>` | Organization name (default: "re-shell") |
 | `--description <description>` | Project description |
 | `--template <template>` | Template to use (react, react-ts) |
 | `--package-manager <pm>` | Package manager to use (npm, yarn, pnpm) |
@@ -55,17 +55,17 @@ This creates a new ReShell project with a shell application and the necessary st
 ### Add a Microfrontend
 
 ```bash
-reshell add user-dashboard
+re-shell add user-dashboard
 ```
 
-Adds a new microfrontend to an existing ReShell project.
+Adds a new microfrontend to an existing Re-Shell project.
 
 #### Options
 
 | Option | Description |
 |--------|-------------|
 | `--team <team>` | Team name |
-| `--org <organization>` | Organization name (default: "reshell") |
+| `--org <organization>` | Organization name (default: "re-shell") |
 | `--description <description>` | Microfrontend description |
 | `--template <template>` | Template to use (react, react-ts) |
 | `--route <route>` | Route path for the microfrontend |
@@ -74,10 +74,10 @@ Adds a new microfrontend to an existing ReShell project.
 ### Remove a Microfrontend
 
 ```bash
-reshell remove user-dashboard
+re-shell remove user-dashboard
 ```
 
-Removes a microfrontend from an existing ReShell project.
+Removes a microfrontend from an existing Re-Shell project.
 
 #### Options
 
@@ -88,7 +88,7 @@ Removes a microfrontend from an existing ReShell project.
 ### List Microfrontends
 
 ```bash
-reshell list
+re-shell list
 ```
 
 Lists all microfrontends in the current project.
@@ -102,9 +102,9 @@ Lists all microfrontends in the current project.
 ### Build Microfrontends
 
 ```bash
-reshell build
+re-shell build
 # Or build a specific microfrontend
-reshell build user-dashboard
+re-shell build user-dashboard
 ```
 
 Builds all or a specific microfrontend.
@@ -119,9 +119,9 @@ Builds all or a specific microfrontend.
 ### Start Development Server
 
 ```bash
-reshell serve
+re-shell serve
 # Or serve a specific microfrontend
-reshell serve user-dashboard
+re-shell serve user-dashboard
 ```
 
 Starts the development server for all or a specific microfrontend.
@@ -136,7 +136,7 @@ Starts the development server for all or a specific microfrontend.
 
 ## Project Structure
 
-ReShell creates the following project structure:
+Re-Shell creates the following project structure:
 
 ```
 my-project/
@@ -152,7 +152,7 @@ After creating a microfrontend, you can integrate it with your shell application
 
 ```javascript
 // In your shell application
-import { ShellProvider, MicrofrontendContainer } from '@reshell/core';
+import { ShellProvider, MicrofrontendContainer } from '@re-shell/core';
 
 const microfrontends = [
   {
