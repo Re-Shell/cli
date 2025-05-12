@@ -1,7 +1,7 @@
 {
   "name": "@re-shell/cli",
-  "version": "0.1.0",
-  "description": "CLI tool for ReShell microfrontend framework",
+  "version": "0.2.0",
+  "description": "CLI tool for Re-Shell microfrontend framework",
   "main": "dist/index.js",
   "bin": {
     "re-shell": "dist/index.js"
@@ -19,15 +19,16 @@
   "keywords": [
     "microfrontend",
     "react",
-    "shell",
+    "re-shell",
     "cli",
-    "framework"
+    "framework",
+    "micro-frontend"
   ],
   "author": "Re-Shell Organization",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-org/reshell-monorepo.git",
+    "url": "https://github.com/Re-Shell/reshell-monorepo.git",
     "directory": "packages/cli"
   },
   "publishConfig": {
