@@ -14,43 +14,43 @@ const version = packageJson.version;
 
 // ASCII art banner for CLI
 const banner = `
-██████╗ ███████╗███████╗██╗  ██╗███████╗██╗     ██╗
-██╔══██╗██╔════╝██╔════╝██║  ██║██╔════╝██║     ██║
-██████╔╝█████╗  ███████╗███████║█████╗  ██║     ██║
-██╔══██╗██╔══╝  ╚════██║██╔══██║██╔══╝  ██║     ██║
-██║  ██║███████╗███████║██║  ██║███████╗███████╗███████╗
-╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝
+██████╗ ███████╗           ███████╗██╗  ██╗███████╗██╗     ██╗
+██╔══██╗██╔════╝           ██╔════╝██║  ██║██╔════╝██║     ██║
+██████╔╝█████╗   ████████  ███████╗███████║█████╗  ██║     ██║
+██╔══██╗██╔══╝             ╚════██║██╔══██║██╔══╝  ██║     ██║
+██║  ██║███████╗           ███████║██║  ██║███████╗███████╗███████╗
+╚═╝  ╚═╝╚══════╝           ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝
                                 v${version}
 `;
 
 const program = new Command();
 
 // Display banner for main command
-if (process.argv.length <= 2 || 
+if (process.argv.length <= 2 ||
     (process.argv.length === 3 && ['-h', '--help', '-V', '--version'].includes(process.argv[2]))) {
   console.log(chalk.cyan(banner));
 }
 
 program
-  .name('reshell')
-  .description('ReShell CLI - Tools for managing microfrontend architecture')
+  .name('re-shell')
+  .description('Re-Shell CLI - Tools for managing microfrontend architecture')
   .version(version);
 
 // Create project command
 program
   .command('create')
-  .description('Create a new ReShell project with shell application')
+  .description('Create a new Re-Shell project with shell application')
   .argument('<name>', 'Name of the project')
   .option('-t, --team <team>', 'Team name')
-  .option('-o, --org <organization>', 'Organization name', 'reshell')
+  .option('-o, --org <organization>', 'Organization name', 're-shell')
   .option('-d, --description <description>', 'Project description')
   .option('--template <template>', 'Template to use (react, react-ts)', 'react-ts')
   .option('--package-manager <pm>', 'Package manager to use (npm, yarn, pnpm)', 'pnpm')
   .action(async (name, options) => {
-    const spinner = ora('Creating ReShell project...').start();
+    const spinner = ora('Creating Re-Shell project...').start();
     try {
       await createMicrofrontend(name, { ...options, isProject: true });
-      spinner.succeed(chalk.green(`ReShell project "${name}" created successfully!`));
+      spinner.succeed(chalk.green(`Re-Shell project "${name}" created successfully!`));
     } catch (error) {
       spinner.fail(chalk.red('Error creating project'));
       console.error(error);
@@ -61,10 +61,10 @@ program
 // Add microfrontend command
 program
   .command('add')
-  .description('Add a new microfrontend to existing ReShell project')
+  .description('Add a new microfrontend to existing Re-Shell project')
   .argument('<name>', 'Name of the microfrontend')
   .option('-t, --team <team>', 'Team name')
-  .option('-o, --org <organization>', 'Organization name', 'reshell')
+  .option('-o, --org <organization>', 'Organization name', 're-shell')
   .option('-d, --description <description>', 'Microfrontend description')
   .option('--template <template>', 'Template to use (react, react-ts)', 'react-ts')
   .option('--route <route>', 'Route path for the microfrontend')
@@ -84,7 +84,7 @@ program
 // Remove microfrontend command (placeholder for now)
 program
   .command('remove')
-  .description('Remove a microfrontend from existing ReShell project')
+  .description('Remove a microfrontend from existing Re-Shell project')
   .argument('<name>', 'Name of the microfrontend to remove')
   .option('--force', 'Force removal without confirmation')
   .action(async (name, options) => {
@@ -157,7 +157,7 @@ program
   .description('Create a new microfrontend application (deprecated, use "add" instead)')
   .argument('<name>', 'Name of the microfrontend')
   .option('-t, --team <team>', 'Team name')
-  .option('-o, --org <organization>', 'Organization name', 'reshell')
+  .option('-o, --org <organization>', 'Organization name', 're-shell')
   .option('-d, --description <description>', 'Project description')
   .option('--template <template>', 'Template to use (react, react-ts)')
   .option('--route <route>', 'Route path for the microfrontend')

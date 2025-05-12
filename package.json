@@ -4,12 +4,14 @@
   "description": "CLI tool for ReShell microfrontend framework",
   "main": "dist/index.js",
   "bin": {
-    "reshell": "dist/index.js"
+    "re-shell": "dist/index.js"
   },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "test": "vitest",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "lint": "eslint src --ext ts",
     "clean": "rimraf dist",
     "prepublishOnly": "npm run build"
