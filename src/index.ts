@@ -5,7 +5,6 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import chalk from 'chalk';
 import ora from 'ora';
-import { createMicrofrontend } from './commands/create-mf';
 import { createProject } from './commands/create';
 import { addMicrofrontend } from './commands/add';
 import { removeMicrofrontend } from './commands/remove';
