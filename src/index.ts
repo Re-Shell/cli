@@ -20,12 +20,12 @@ const version = packageJson.version;
 
 // ASCII art banner for CLI
 const banner = `
-██████╗ ███████╗            ███████╗██╗  ██╗███████╗██╗     ██╗
-██╔══██╗██╔════╝            ██╔════╝██║  ██║██╔════╝██║     ██║
-██████╔╝█████╗   ████████╗  ███████╗███████║█████╗  ██║     ██║
-██╔══██╗██╔══╝   ╚═══════╝  ╚════██║██╔══██║██╔══╝  ██║     ██║
-██║  ██║███████╗            ███████║██║  ██║███████╗███████╗███████╗
-╚═╝  ╚═╝╚══════╝            ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝
+██████╗ ███████╗           ███████╗██╗  ██╗███████╗██╗     ██╗
+██╔══██╗██╔════╝           ██╔════╝██║  ██║██╔════╝██║     ██║
+██████╔╝█████╗  ████████╗  ███████╗███████║█████╗  ██║     ██║
+██╔══██╗██╔══╝  ╚═══════╝  ╚════██║██╔══██║██╔══╝  ██║     ██║
+██║  ██║███████╗           ███████║██║  ██║███████╗███████╗███████╗
+╚═╝  ╚═╝╚══════╝           ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝
                                 v${version}
 `;
 
@@ -155,26 +155,7 @@ program
     }
   });
 
-// Keep the compatibility with the old command name for now
-program
-  .command('create-mf')
-  .description('Create a new microfrontend application (deprecated, use "add" instead)')
-  .argument('<name>', 'Name of the microfrontend')
-  .option('-t, --team <team>', 'Team name')
-  .option('-o, --org <organization>', 'Organization name', 're-shell')
-  .option('-d, --description <description>', 'Project description')
-  .option('--template <template>', 'Template to use (react, react-ts)')
-  .option('--route <route>', 'Route path for the microfrontend')
-  .option('--standalone', 'Create as standalone project (not in a monorepo)')
-  .action(async (name, options) => {
-    console.log(chalk.yellow('Warning: "create-mf" command is deprecated. Please use "add" instead.'));
-    try {
-      await addMicrofrontend(name, options);
-    } catch (error) {
-      console.error(chalk.red('\nError creating microfrontend:'), error);
-      process.exit(1);
-    }
-  });
+// Deprecated create-mf command removed in v0.2.0
 
 // Display help by default if no command is provided
 if (process.argv.length <= 2) {
