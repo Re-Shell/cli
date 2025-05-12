@@ -6,6 +6,12 @@ import * as path from 'path';
 import chalk from 'chalk';
 import ora from 'ora';
 import { createMicrofrontend } from './commands/create-mf';
+import { createProject } from './commands/create';
+import { addMicrofrontend } from './commands/add';
+import { removeMicrofrontend } from './commands/remove';
+import { listMicrofrontends } from './commands/list';
+import { buildMicrofrontend } from './commands/build';
+import { serveMicrofrontend } from './commands/serve';
 
 // Get version from package.json
 const packageJsonPath = path.resolve(__dirname, '../package.json');
@@ -14,12 +20,12 @@ const version = packageJson.version;
 
 // ASCII art banner for CLI
 const banner = `
-██████╗ ███████╗           ███████╗██╗  ██╗███████╗██╗     ██╗
-██╔══██╗██╔════╝           ██╔════╝██║  ██║██╔════╝██║     ██║
-██████╔╝█████╗   ████████  ███████╗███████║█████╗  ██║     ██║
-██╔══██╗██╔══╝             ╚════██║██╔══██║██╔══╝  ██║     ██║
-██║  ██║███████╗           ███████║██║  ██║███████╗███████╗███████╗
-╚═╝  ╚═╝╚══════╝           ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝
+██████╗ ███████╗            ███████╗██╗  ██╗███████╗██╗     ██╗
+██╔══██╗██╔════╝            ██╔════╝██║  ██║██╔════╝██║     ██║
+██████╔╝█████╗   ████████╗  ███████╗███████║█████╗  ██║     ██║
+██╔══██╗██╔══╝   ╚═══════╝  ╚════██║██╔══██║██╔══╝  ██║     ██║
+██║  ██║███████╗            ███████║██║  ██║███████╗███████╗███████╗
+╚═╝  ╚═╝╚══════╝            ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝
                                 v${version}
 `;
 
@@ -49,7 +55,7 @@ program
   .action(async (name, options) => {
     const spinner = ora('Creating Re-Shell project...').start();
     try {
-      await createMicrofrontend(name, { ...options, isProject: true });
+      await createProject(name, { ...options, isProject: true });
       spinner.succeed(chalk.green(`Re-Shell project "${name}" created successfully!`));
     } catch (error) {
       spinner.fail(chalk.red('Error creating project'));
@@ -72,7 +78,7 @@ program
   .action(async (name, options) => {
     const spinner = ora('Adding microfrontend...').start();
     try {
-      await createMicrofrontend(name, options);
+      await addMicrofrontend(name, options);
       spinner.succeed(chalk.green(`Microfrontend "${name}" added successfully!`));
     } catch (error) {
       spinner.fail(chalk.red('Error adding microfrontend'));
@@ -81,7 +87,7 @@ program
     }
   });
 
-// Remove microfrontend command (placeholder for now)
+// Remove microfrontend command
 program
   .command('remove')
   .description('Remove a microfrontend from existing Re-Shell project')
@@ -90,8 +96,8 @@ program
   .action(async (name, options) => {
     const spinner = ora('Removing microfrontend...').start();
     try {
-      console.log(chalk.yellow('This command is not fully implemented yet.'));
-      spinner.info(chalk.yellow(`Would remove microfrontend "${name}"`));
+      await removeMicrofrontend(name, options);
+      spinner.succeed(chalk.green(`Microfrontend "${name}" removed successfully!`));
     } catch (error) {
       spinner.fail(chalk.red('Error removing microfrontend'));
       console.error(error);
@@ -99,22 +105,21 @@ program
     }
   });
 
-// List microfrontends command (placeholder for now)
+// List microfrontends command
 program
   .command('list')
   .description('List all microfrontends in the current project')
   .option('--json', 'Output as JSON')
   .action(async (options) => {
     try {
-      console.log(chalk.yellow('This command is not fully implemented yet.'));
-      console.log(chalk.cyan('Would list all microfrontends in the project'));
+      await listMicrofrontends(options);
     } catch (error) {
       console.error(chalk.red('Error listing microfrontends:'), error);
       process.exit(1);
     }
   });
 
-// Build command (placeholder for now)
+// Build command
 program
   .command('build')
   .description('Build all or specific microfrontends')
@@ -124,8 +129,8 @@ program
   .action(async (name, options) => {
     const spinner = ora('Building...').start();
     try {
-      console.log(chalk.yellow('This command is not fully implemented yet.'));
-      spinner.info(chalk.yellow(name ? `Would build microfrontend "${name}"` : 'Would build all microfrontends'));
+      await buildMicrofrontend(name, options);
+      spinner.succeed(chalk.green(name ? `Microfrontend "${name}" built successfully!` : 'All microfrontends built successfully!'));
     } catch (error) {
       spinner.fail(chalk.red('Build failed'));
       console.error(error);
@@ -133,7 +138,7 @@ program
     }
   });
 
-// Serve command (placeholder for now)
+// Serve command
 program
   .command('serve')
   .description('Start development server')
@@ -143,8 +148,7 @@ program
   .option('--open', 'Open in browser')
   .action(async (name, options) => {
     try {
-      console.log(chalk.yellow('This command is not fully implemented yet.'));
-      console.log(chalk.cyan(`Would serve ${name || 'all microfrontends'} on ${options.host}:${options.port}`));
+      await serveMicrofrontend(name, options);
     } catch (error) {
       console.error(chalk.red('Error starting development server:'), error);
       process.exit(1);
@@ -165,7 +169,7 @@ program
   .action(async (name, options) => {
     console.log(chalk.yellow('Warning: "create-mf" command is deprecated. Please use "add" instead.'));
     try {
-      await createMicrofrontend(name, options);
+      await addMicrofrontend(name, options);
     } catch (error) {
       console.error(chalk.red('\nError creating microfrontend:'), error);
       process.exit(1);
