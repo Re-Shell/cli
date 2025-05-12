@@ -3,6 +3,12 @@
   "version": "0.2.0",
   "description": "CLI tool for Re-Shell microfrontend framework",
   "main": "dist/index.js",
+  "files": [
+    "dist/index.js",
+    "dist/index.d.ts",
+    "dist/commands",
+    "README.md"
+  ],
   "bin": {
     "re-shell": "dist/index.js"
   },
