@@ -51,13 +51,25 @@ describe('CLI Command Tests', () => {
     vi.spyOn(process, 'cwd').mockReturnValue(testDir);
     
     // Setup default mock behavior
-    vi.mocked(fs.existsSync).mockReturnValue(false);
+    vi.mocked(fs.existsSync).mockImplementation((p) => {
+      // Mock Re-Shell project directory structure to fix "Not in a Re-Shell project" error
+      if (p === 'package.json' || p === 'apps' || p === 'packages' || 
+          String(p).endsWith('/apps') || String(p).includes('apps')) {
+        return true;
+      }
+      
+      return false;
+    });
+
     vi.mocked(path.resolve).mockImplementation((dir, ...segments) => {
       if (segments.includes('test-mf')) {
         return `${dir}/test-mf`;
       }
       if (segments.includes('test-project')) {
         return `${dir}/test-project`;
+      }
+      if (segments.includes('apps')) {
+        return `${dir}/apps`;
       }
       return `${dir}/${segments.join('/')}`;
     });
