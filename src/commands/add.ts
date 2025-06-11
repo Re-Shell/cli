@@ -1,11 +1,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { exec } from 'child_process';
-import { promisify } from 'util';
 import prompts from 'prompts';
 import chalk from 'chalk';
-
-const execAsync = promisify(exec);
 
 interface AddMicrofrontendOptions {
   team?: string;
@@ -31,8 +27,6 @@ export async function addMicrofrontend(
     team,
     org = 're-shell', 
     description = `${name} microfrontend for Re-Shell`,
-    template = 'react-ts',
-    route = `/${name.toLowerCase()}`,
     port = '5173'
   } = options;
 

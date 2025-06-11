@@ -128,7 +128,7 @@ export async function initMonorepo(
     }
 
     // Initialize monorepo structure
-    const config = await initializeMonorepo(
+    await initializeMonorepo(
       normalizedName,
       finalOptions.packageManager as 'npm' | 'yarn' | 'pnpm',
       finalOptions.structure

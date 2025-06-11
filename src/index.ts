@@ -21,7 +21,6 @@ import {
   initSubmodules,
   manageSubmodules
 } from './commands/submodule';
-import { getFrameworkChoices } from './utils/framework';
 
 // Get version from package.json
 const packageJsonPath = path.resolve(__dirname, '../package.json');

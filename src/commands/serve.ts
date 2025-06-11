@@ -1,10 +1,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { exec } from 'child_process';
-import { promisify } from 'util';
 import chalk from 'chalk';
-
-const execAsync = promisify(exec);
 
 interface ServeOptions {
   port?: string;
@@ -63,16 +60,16 @@ export async function serveMicrofrontend(
       const childProcess = exec(serveCommand);
       
       // Handle process output
-      childProcess.stdout?.on('data', (data) => {
+      childProcess.stdout?.on('data', (data: Buffer) => {
         console.log(data.toString());
       });
       
-      childProcess.stderr?.on('data', (data) => {
+      childProcess.stderr?.on('data', (data: Buffer) => {
         console.error(data.toString());
       });
       
       // Handle process exit
-      childProcess.on('exit', (code) => {
+      childProcess.on('exit', (code: number | null) => {
         if (code !== 0) {
           console.error(chalk.red(`Development server exited with code ${code}`));
         }
@@ -103,16 +100,16 @@ export async function serveMicrofrontend(
       const childProcess = exec(devCommand);
       
       // Handle process output
-      childProcess.stdout?.on('data', (data) => {
+      childProcess.stdout?.on('data', (data: Buffer) => {
         console.log(data.toString());
       });
       
-      childProcess.stderr?.on('data', (data) => {
+      childProcess.stderr?.on('data', (data: Buffer) => {
         console.error(data.toString());
       });
       
       // Handle process exit
-      childProcess.on('exit', (code) => {
+      childProcess.on('exit', (code: number | null) => {
         if (code !== 0) {
           console.error(chalk.red(`Development servers exited with code ${code}`));
         }
