@@ -1,0 +1,552 @@
+================================================================================
+                    RE-SHELL CLI - COMPLETE FEATURE LIST
+                              Version 0.2.1
+================================================================================
+
+OVERVIEW
+--------
+Re-Shell CLI is a comprehensive command-line interface for creating and managing 
+microfrontend applications and monorepo workspaces. It supports multiple 
+frameworks, provides extensive workspace management, and includes Git submodule 
+integration.
+
+================================================================================
+                              CORE COMMANDS
+================================================================================
+
+1. INIT COMMAND
+---------------
+Command: re-shell init <name>
+Purpose: Initialize a new monorepo workspace
+
+Arguments:
+  - name: Name of the monorepo (required)
+
+Options:
+  - --package-manager <pm>: Package manager to use (npm|yarn|pnpm) [default: pnpm]
+  - --no-git: Skip Git repository initialization
+  - --no-submodules: Skip submodule support setup
+  - --force: Overwrite existing directory
+
+Features:
+  - Creates complete monorepo directory structure:
+    - apps/     - Applications
+    - packages/ - Shared packages
+    - libs/     - Libraries
+    - tools/    - Tools and utilities
+    - docs/     - Documentation
+  - Interactive prompts for missing configuration
+  - Customizable directory structure during setup
+  - Generates root package.json with workspace configuration
+  - Creates development environment files:
+    - .nvmrc (Node version)
+    - .editorconfig (Editor configuration)
+    - .vscode/settings.json (VSCode settings)
+    - .vscode/extensions.json (Recommended extensions)
+  - Sets up GitHub Actions workflow (if Git enabled)
+  - Creates Docker configuration:
+    - Dockerfile
+    - .dockerignore
+  - Generates submodule helper scripts (if enabled)
+  - Initializes Git repository with proper .gitignore
+
+================================================================================
+
+2. CREATE COMMAND
+-----------------
+Command: re-shell create <name>
+Purpose: Create new project/workspace with shell application
+
+Arguments:
+  - name: Name of the project/workspace (required)
+
+Options:
+  - -t, --team <team>: Team name
+  - -o, --org <organization>: Organization name [default: re-shell]
+  - -d, --description <description>: Project description
+  - --template <template>: Template to use (react|react-ts) [default: react-ts]
+  - --package-manager <pm>: Package manager (npm|yarn|pnpm) [default: pnpm]
+  - --type <type>: Workspace type (app|package|lib|tool) - monorepo only
+  - --port <port>: Development server port [default: 5173]
+  - --route <route>: Route path for the app
+
+Features:
+  - Auto-detects monorepo vs standalone project
+  - Supports 6 framework templates:
+    - React (JavaScript)
+    - React with TypeScript
+    - Vue 3 (JavaScript)
+    - Vue 3 with TypeScript
+    - Svelte (JavaScript)
+    - Svelte with TypeScript
+  - Interactive framework selection
+  - Generates framework-specific configurations
+  - Creates complete project structure
+  - Sets up module federation with Vite
+  - Configures development environment
+  - Includes sample components and tests
+
+================================================================================
+
+3. ADD COMMAND
+--------------
+Command: re-shell add <name>
+Purpose: Add new microfrontend to existing project
+
+Arguments:
+  - name: Name of the microfrontend (required)
+
+Options:
+  - -t, --team <team>: Team name
+  - -o, --org <organization>: Organization name [default: re-shell]
+  - -d, --description <description>: Microfrontend description
+  - --template <template>: Template to use (react|react-ts) [default: react-ts]
+  - --route <route>: Route path for the microfrontend
+  - --port <port>: Dev server port [default: 5173]
+
+Features:
+  - Creates microfrontend in apps/ directory
+  - Generates Vite configuration for module federation
+  - Sets up entry point with mount/unmount lifecycle
+  - Creates eventBus for inter-microfrontend communication
+  - Includes development HTML file for standalone testing
+  - Auto-generates integration documentation
+  - Configures build output for UMD format
+  - Sets up TypeScript configuration (if applicable)
+  - Creates ESLint configuration
+  - Includes sample App component
+
+================================================================================
+
+4. REMOVE COMMAND
+-----------------
+Command: re-shell remove <name>
+Purpose: Remove microfrontend from project
+
+Arguments:
+  - name: Name of the microfrontend to remove (required)
+
+Options:
+  - --force: Force removal without confirmation
+
+Features:
+  - Interactive confirmation prompt (bypassed with --force)
+  - Validates microfrontend existence
+  - Checks for references in shell application
+  - Warns about manual cleanup requirements
+  - Completely removes microfrontend directory
+  - Suggests files to check for references
+
+================================================================================
+
+5. LIST COMMAND
+---------------
+Command: re-shell list
+Purpose: List all microfrontends in current project
+
+Options:
+  - --json: Output as JSON format
+
+Features:
+  - Displays comprehensive microfrontend information:
+    - Name
+    - Version
+    - Team/Author
+    - Route
+    - Path
+  - Automatically excludes shell application
+  - Formatted table output (default)
+  - JSON output for programmatic use
+  - Shows count of microfrontends found
+  - Handles missing package.json gracefully
+  - Color-coded output for better readability
+
+================================================================================
+
+6. BUILD COMMAND
+----------------
+Command: re-shell build [name]
+Purpose: Build microfrontends for deployment
+
+Arguments:
+  - name: Specific microfrontend to build (optional - builds all if omitted)
+
+Options:
+  - --production: Build for production environment
+  - --analyze: Analyze bundle size
+
+Features:
+  - Sets NODE_ENV based on production flag
+  - Auto-detects package manager (pnpm > yarn > npm)
+  - Supports bundle size analysis
+  - Can build individual or all microfrontends
+  - Executes build scripts from package.json
+  - Streams build output in real-time
+  - Handles build errors gracefully
+  - Shows success/failure status
+
+================================================================================
+
+7. SERVE COMMAND
+----------------
+Command: re-shell serve [name]
+Purpose: Start development server(s)
+
+Arguments:
+  - name: Specific microfrontend to serve (optional - serves all if omitted)
+
+Options:
+  - --port <port>: Port to serve on [default: 3000]
+  - --host <host>: Host to serve on [default: localhost]
+  - --open: Open in browser automatically
+
+Features:
+  - Serves individual or all applications
+  - Auto-detects package manager
+  - Keeps process running (Ctrl+C to stop)
+  - Streams server output in real-time
+  - Passes options to underlying dev server
+  - Shows server URL on startup
+  - Handles multiple concurrent servers
+  - Maintains interactive terminal session
+
+================================================================================
+                           WORKSPACE COMMANDS
+================================================================================
+
+8. WORKSPACE LIST
+-----------------
+Command: re-shell workspace list
+Purpose: List all workspaces in monorepo
+
+Options:
+  - --json: Output as JSON
+  - --type <type>: Filter by type (app|package|lib|tool)
+  - --framework <framework>: Filter by framework
+
+Features:
+  - Groups workspaces by type
+  - Shows framework badges with colors
+  - Displays version information
+  - Shows dependency count
+  - Supports filtering by multiple criteria
+  - Color-coded framework indicators:
+    - React: Blue
+    - Vue: Green
+    - Svelte: Orange
+    - Node: Green
+  - Formatted table or JSON output
+
+================================================================================
+
+9. WORKSPACE UPDATE
+-------------------
+Command: re-shell workspace update
+Purpose: Update workspace dependencies
+
+Options:
+  - --workspace <name>: Update specific workspace
+  - --dependency <name>: Update specific dependency
+  - --version <version>: Target version for dependency
+  - --dev: Update dev dependency
+
+Features:
+  - Updates dependencies across workspaces
+  - Can target specific workspace
+  - Supports specific dependency updates
+  - Handles dev dependencies separately
+  - Auto-detects package manager
+  - Shows progress with spinner
+  - Validates workspace existence
+  - Updates lock files appropriately
+
+================================================================================
+
+10. WORKSPACE GRAPH
+-------------------
+Command: re-shell workspace graph
+Purpose: Generate workspace dependency graph
+
+Options:
+  - --output <file>: Output file path
+  - --format <format>: Output format (text|json|mermaid) [default: text]
+
+Features:
+  - Analyzes workspace interdependencies
+  - Multiple output formats:
+    - Text: Human-readable tree
+    - JSON: Machine-readable data
+    - Mermaid: Diagram syntax
+  - Different node shapes by type:
+    - Apps: Rectangles
+    - Packages: Rounded rectangles
+    - Libraries: Hexagons
+    - Tools: Trapezoids
+  - Shows bidirectional dependencies
+  - Can save to file or display
+
+================================================================================
+                          SUBMODULE COMMANDS
+================================================================================
+
+11. SUBMODULE ADD
+-----------------
+Command: re-shell submodule add <url>
+Purpose: Add new Git submodule
+
+Arguments:
+  - url: Repository URL (required)
+
+Options:
+  - --path <path>: Submodule path
+  - --branch <branch>: Branch to track [default: main]
+
+Features:
+  - Interactive prompts for missing options
+  - Auto-generates path from repository URL
+  - Validates Git repository existence
+  - Updates submodule documentation
+  - Configures branch tracking
+  - Shows success confirmation
+
+================================================================================
+
+12. SUBMODULE REMOVE
+--------------------
+Command: re-shell submodule remove <path>
+Purpose: Remove Git submodule
+
+Arguments:
+  - path: Submodule path (required)
+
+Options:
+  - --force: Force removal without confirmation
+
+Features:
+  - Validates submodule existence
+  - Interactive confirmation prompt
+  - Properly deinitializes submodule
+  - Updates Git configuration
+  - Updates documentation
+  - Cleans up directories
+
+================================================================================
+
+13. SUBMODULE UPDATE
+--------------------
+Command: re-shell submodule update
+Purpose: Update Git submodules
+
+Options:
+  - --path <path>: Update specific submodule
+
+Features:
+  - Updates all or specific submodule
+  - Recursive update support
+  - Remote tracking updates
+  - Updates documentation after changes
+  - Shows update progress
+  - Handles update errors
+
+================================================================================
+
+14. SUBMODULE STATUS
+--------------------
+Command: re-shell submodule status
+Purpose: Show Git submodule status
+
+Features:
+  - Detailed status for each submodule:
+    - Path
+    - URL
+    - Branch
+    - Current commit
+    - Working directory status
+  - Color-coded status indicators:
+    - ✓ Clean (green)
+    - ⚡ Modified (yellow)
+    - ✗ Untracked (red)
+    - ↑ Ahead (blue)
+    - ↓ Behind (magenta)
+  - Summary statistics
+  - No submodules message
+
+================================================================================
+
+15. SUBMODULE INIT
+------------------
+Command: re-shell submodule init
+Purpose: Initialize Git submodules
+
+Features:
+  - Initializes submodules for new clones
+  - Runs update after initialization
+  - Recursive initialization
+  - Shows progress with spinner
+  - Error handling
+
+================================================================================
+
+16. SUBMODULE MANAGE
+--------------------
+Command: re-shell submodule manage
+Purpose: Interactive submodule management
+
+Features:
+  - Interactive menu system
+  - All submodule operations in one place
+  - Dynamic submodule selection
+  - Operation confirmation
+  - Combines all submodule commands
+  - User-friendly interface
+
+================================================================================
+                         ADDITIONAL FEATURES
+================================================================================
+
+SUPPORTED FRAMEWORKS
+--------------------
+1. React (JavaScript)
+   - Vite configuration
+   - Module federation setup
+   - Hot module replacement
+   - JSX support
+
+2. React with TypeScript
+   - Full TypeScript configuration
+   - Type definitions
+   - Strict mode support
+   - TSX support
+
+3. Vue 3 (JavaScript)
+   - Composition API
+   - Single File Components
+   - Vue Router ready
+   - Vite optimized
+
+4. Vue 3 with TypeScript
+   - TypeScript support
+   - Type-safe components
+   - Props validation
+   - IDE integration
+
+5. Svelte (JavaScript)
+   - SvelteKit ready
+   - Component compilation
+   - Reactive statements
+   - Scoped styling
+
+6. Svelte with TypeScript
+   - TypeScript preprocessing
+   - Type checking
+   - Enhanced IDE support
+   - Type-safe props
+
+================================================================================
+
+BUILD TOOL INTEGRATION
+----------------------
+- Vite as primary build tool
+- Module federation configuration
+- Hot module replacement
+- Optimized production builds
+- Code splitting support
+- Asset optimization
+- Environment variable handling
+
+================================================================================
+
+PACKAGE MANAGER SUPPORT
+-----------------------
+- pnpm (recommended default)
+  - Workspace support
+  - Efficient disk usage
+  - Strict dependencies
+
+- yarn
+  - Workspace protocol
+  - Plug'n'Play support
+  - Berry compatibility
+
+- npm
+  - Native workspaces
+  - Standard registry
+  - Wide compatibility
+
+================================================================================
+
+GIT INTEGRATION
+---------------
+- Automatic repository initialization
+- Comprehensive .gitignore generation
+- Submodule management suite
+- GitHub Actions workflow creation
+- Branch tracking configuration
+- Remote repository support
+
+================================================================================
+
+DEVELOPER EXPERIENCE
+--------------------
+- Interactive prompts for configuration
+- Color-coded output with chalk
+- Progress indicators with ora spinners
+- Comprehensive error messages
+- ASCII art banner for branding
+- Detailed help for each command
+- Validation and error prevention
+- Smart defaults for all options
+
+================================================================================
+
+GENERATED CONFIGURATIONS
+------------------------
+Project Files:
+- package.json with scripts and dependencies
+- tsconfig.json for TypeScript projects
+- vite.config.ts/js with module federation
+- .eslintrc.js with framework rules
+- README.md with documentation
+
+Development Environment:
+- .editorconfig for consistent coding
+- .nvmrc for Node version management
+- .vscode/settings.json for IDE
+- .vscode/extensions.json recommendations
+
+Build & Deploy:
+- Dockerfile for containerization
+- .dockerignore for Docker builds
+- .github/workflows/ci.yml for CI/CD
+- Build scripts in package.json
+
+================================================================================
+
+ERROR HANDLING
+--------------
+- Validation before operations
+- Clear error messages
+- Recovery suggestions
+- Non-destructive defaults
+- Confirmation prompts
+- Force flags for automation
+- Exit codes for scripting
+
+================================================================================
+
+MONOREPO FEATURES
+-----------------
+- Workspace management
+- Dependency analysis
+- Cross-package references
+- Shared configurations
+- Centralized tooling
+- Consistent versioning
+- Build orchestration
+
+================================================================================
+
+This comprehensive feature list covers all functionality available in the 
+Re-Shell CLI version 0.2.1. The CLI is designed to handle both monorepo 
+and standalone microfrontend development with extensive framework support 
+and developer-friendly features.

@@ -6,14 +6,34 @@ import { createProject } from '../src/commands/create';
 import { removeMicrofrontend } from '../src/commands/remove';
 import { listMicrofrontends } from '../src/commands/list';
 
+// Create a more comprehensive mock for fs-extra
+const mockFiles = new Map();
+
 // Mock the modules
 vi.mock('fs-extra', () => ({
-  existsSync: vi.fn(),
-  mkdirSync: vi.fn(),
-  writeFileSync: vi.fn(),
-  readFileSync: vi.fn(() => JSON.stringify({ version: '0.2.0' })),
-  readJsonSync: vi.fn(() => ({ microfrontends: [] })),
-  removeSync: vi.fn()
+  existsSync: vi.fn((path) => mockFiles.has(String(path))),
+  mkdirSync: vi.fn((path) => { mockFiles.set(String(path), 'directory'); }),
+  writeFileSync: vi.fn((path, content) => {
+    mockFiles.set(String(path), content);
+    return { path, content };
+  }),
+  readFileSync: vi.fn((path) => {
+    const content = mockFiles.get(String(path)) || JSON.stringify({ version: '0.2.0' });
+    return content;
+  }),
+  readJsonSync: vi.fn((path) => {
+    const content = mockFiles.get(String(path));
+    if (content) {
+      try {
+        return JSON.parse(content);
+      } catch {
+        return content;
+      }
+    }
+    return { microfrontends: [], workspaces: ['packages/*'] };
+  }),
+  removeSync: vi.fn((path) => { mockFiles.delete(String(path)); }),
+  readdirSync: vi.fn(() => ['mf1', 'mf2'])
 }));
 
 vi.mock('prompts', () => ({
@@ -46,49 +66,52 @@ describe('CLI Command Tests', () => {
   beforeEach(() => {
     // Reset mocks
     vi.resetAllMocks();
+    mockFiles.clear();
 
     // Mock process.cwd
     vi.spyOn(process, 'cwd').mockReturnValue(testDir);
-    
-    // Setup default mock behavior
-    vi.mocked(fs.existsSync).mockImplementation((p) => {
-      // Mock Re-Shell project directory structure to fix "Not in a Re-Shell project" error
-      if (p === 'package.json' || p === 'apps' || p === 'packages' || 
-          String(p).endsWith('/apps') || String(p).includes('apps')) {
-        return true;
-      }
-      
-      return false;
-    });
 
+    // Set up core files for Re-Shell project detection
+    mockFiles.set('package.json', JSON.stringify({
+      name: 'reshell-project',
+      workspaces: ['packages/*', 'apps/*']
+    }));
+    mockFiles.set('packages', 'directory');
+    mockFiles.set('apps', 'directory');
+
+    // Set up specific test paths
+    const appsTestMfPath = `${testDir}/apps/${testMfName}`;
+    mockFiles.set(appsTestMfPath, 'directory');
+
+    // Mock path.resolve to handle test paths consistently
     vi.mocked(path.resolve).mockImplementation((dir, ...segments) => {
       if (segments.includes('test-mf')) {
-        return `${dir}/test-mf`;
+        return `${dir}/${segments.join('/')}`;
       }
       if (segments.includes('test-project')) {
-        return `${dir}/test-project`;
-      }
-      if (segments.includes('apps')) {
-        return `${dir}/apps`;
+        return `${dir}/${segments.join('/')}`;
       }
       return `${dir}/${segments.join('/')}`;
     });
+
+    // Mock path.join to be consistent
+    vi.mocked(path.join).mockImplementation((...args) => args.join('/'));
   });
-  
+
   afterEach(() => {
     vi.clearAllMocks();
   });
-  
+
   describe('addMicrofrontend', () => {
     it('should create microfrontend directory structure', async () => {
       // Mock existsSync for Re-Shell project detection
       vi.mocked(fs.existsSync).mockImplementation((p) => {
-        if (p === 'package.json' || p === 'apps') {
+        if (p === 'package.json') {
           return true;
         }
         return false;
       });
-      
+
       // Call the function under test
       await addMicrofrontend(testMfName, {
         org: 're-shell',
@@ -100,29 +123,29 @@ describe('CLI Command Tests', () => {
       // Verify directories are created
       expect(fs.mkdirSync).toHaveBeenCalled();
       expect(fs.writeFileSync).toHaveBeenCalled();
-      
+
       // Check that files were created
       const writeFileCalls = vi.mocked(fs.writeFileSync).mock.calls;
       const createdFiles = writeFileCalls.map(call => call[0]);
-      
+
       expect(createdFiles).toContain(expect.stringContaining('package.json'));
       expect(createdFiles).toContain(expect.stringContaining('vite.config.ts'));
       expect(createdFiles).toContain(expect.stringContaining('App.tsx'));
     });
-    
+
     it('should handle existing directory error', async () => {
       // Mock existsSync to return true for directory existence check
       vi.mocked(fs.existsSync).mockImplementation((p) => {
         // For Re-Shell project detection
-        if (p === 'package.json' || p === 'apps') {
+        if (p === 'package.json') {
           return true;
         }
-        
+
         // For directory existence check
-        if (p.includes(testMfName)) {
+        if (String(p).includes(testMfName)) {
           return true;
         }
-        
+
         return false;
       });
 
@@ -135,15 +158,15 @@ describe('CLI Command Tests', () => {
           port: '5173'
         });
       }).rejects.toThrow(/Directory already exists/);
-      
+
       // Verify no directories are created
       expect(fs.mkdirSync).not.toHaveBeenCalled();
     });
-    
+
     it('should create proper package.json for Re-Shell project', async () => {
       // Mock existsSync for Re-Shell project detection
       vi.mocked(fs.existsSync).mockImplementation((p) => {
-        if (p === 'package.json' || p === 'apps') {
+        if (p === 'package.json') {
           return true;
         }
         return false;
@@ -159,12 +182,12 @@ describe('CLI Command Tests', () => {
 
       // Verify package.json is created with correct content
       const writeFileCalls = vi.mocked(fs.writeFileSync).mock.calls;
-      const packageJsonCall = writeFileCalls.find(call => 
-        call[0].toString().includes('package.json')
+      const packageJsonCall = writeFileCalls.find(call =>
+        String(call[0]).includes('package.json')
       );
-      
+
       expect(packageJsonCall).toBeDefined();
-      expect(packageJsonCall[1]).toContain('@re-shell/test-mf');
+      expect(packageJsonCall![1]).toContain('@re-shell/test-mf');
     });
 
     it('should create standalone package correctly', async () => {
@@ -181,22 +204,22 @@ describe('CLI Command Tests', () => {
 
       // Verify eventBus file is created for standalone
       const writeFileCalls = vi.mocked(fs.writeFileSync).mock.calls;
-      
+
       // Verify package.json has correct name
-      const packageJsonCall = writeFileCalls.find(call => 
-        call[0].toString().includes('package.json')
+      const packageJsonCall = writeFileCalls.find(call =>
+        String(call[0]).includes('package.json')
       );
-      
+
       expect(packageJsonCall).toBeDefined();
-      expect(packageJsonCall[1]).toContain('"name": "test-mf"');
-      
+      expect(packageJsonCall![1]).toContain('"name": "test-mf"');
+
       // Verify eventBus file exists
-      const eventBusCall = writeFileCalls.find(call => 
-        call[0].toString().includes('eventBus')
+      const eventBusCall = writeFileCalls.find(call =>
+        String(call[0]).includes('eventBus')
       );
-      
+
       expect(eventBusCall).toBeDefined();
-      expect(eventBusCall[1]).toContain('Simple event bus');
+      expect(eventBusCall![1]).toContain('Simple event bus');
     });
   });
 
@@ -206,17 +229,18 @@ describe('CLI Command Tests', () => {
       await createProject(testProjectName, {
         org: 're-shell',
         template: 'react-ts',
-        packageManager: 'pnpm'
+        packageManager: 'pnpm',
+        isProject: true
       });
 
       // Verify package.json is created
       const writeFileCalls = vi.mocked(fs.writeFileSync).mock.calls;
-      const packageJsonCall = writeFileCalls.find(call => 
-        call[0].toString().includes('package.json')
+      const packageJsonCall = writeFileCalls.find(call =>
+        String(call[0]).includes('package.json')
       );
-      
+
       expect(packageJsonCall).toBeDefined();
-      expect(packageJsonCall[1]).toContain('"name": "test-project"');
+      expect(packageJsonCall![1]).toContain('"name": "test-project"');
     });
 
     it('should handle existing project directory error', async () => {
@@ -228,7 +252,8 @@ describe('CLI Command Tests', () => {
         await createProject(testProjectName, {
           org: 're-shell',
           template: 'react-ts',
-          packageManager: 'pnpm'
+          packageManager: 'pnpm',
+          isProject: true
         });
       }).rejects.toThrow(/already exists/);
 
@@ -239,21 +264,9 @@ describe('CLI Command Tests', () => {
 
   describe('removeMicrofrontend', () => {
     it('should remove a microfrontend', async () => {
-      // Mock for Re-Shell project detection
-      vi.mocked(fs.existsSync).mockImplementation((p) => {
-        if (p === 'package.json') {
-          return true;
-        }
-        if (p.includes(testMfName)) {
-          return true;
-        }
-        return false;
-      });
-      
-      // Mock readJsonSync to return project configuration
-      vi.mocked(fs.readJsonSync).mockReturnValue({
-        workspaces: ['apps/*']
-      });
+      // Make sure the microfrontend directory exists in the apps directory
+      const mfPath = `${testDir}/apps/${testMfName}`;
+      mockFiles.set(mfPath, 'directory');
 
       // Call the function under test
       await removeMicrofrontend(testMfName, { force: true });
@@ -263,18 +276,9 @@ describe('CLI Command Tests', () => {
     });
 
     it('should throw error if microfrontend does not exist', async () => {
-      // Mock for Re-Shell project detection
-      vi.mocked(fs.existsSync).mockImplementation((p) => {
-        if (p === 'package.json') {
-          return true;
-        }
-        return false;
-      });
-      
-      // Mock readJsonSync to return project configuration
-      vi.mocked(fs.readJsonSync).mockReturnValue({
-        workspaces: ['apps/*']
-      });
+      // Make sure the microfrontend directory does NOT exist
+      const mfPath = `${testDir}/apps/${testMfName}`;
+      mockFiles.delete(mfPath);
 
       // Verify function throws error for non-existent microfrontend
       await expect(async () => {
@@ -292,32 +296,32 @@ describe('CLI Command Tests', () => {
         }
         return false;
       });
-      
+
       // Mock readJsonSync to return project configuration with microfrontends
       vi.mocked(fs.readJsonSync).mockImplementation((p) => {
         if (p === `${testDir}/package.json`) {
           return {
-            workspaces: ['apps/*']
+            workspaces: ['packages/*']
           };
         }
-        
-        if (p.includes('apps/mf1/package.json')) {
+
+        if (String(p).includes('packages/mf1/package.json')) {
           return {
             name: '@re-shell/mf1',
             reshell: { route: '/mf1' }
           };
         }
-        
-        if (p.includes('apps/mf2/package.json')) {
+
+        if (String(p).includes('packages/mf2/package.json')) {
           return {
             name: '@re-shell/mf2',
             reshell: { route: '/mf2' }
           };
         }
-        
+
         return {};
       });
-      
+
       // Mock directory content
       vi.mocked(fs).readdirSync = vi.fn().mockReturnValue(['mf1', 'mf2']);
 
@@ -336,32 +340,32 @@ describe('CLI Command Tests', () => {
         }
         return false;
       });
-      
+
       // Mock readJsonSync to return project configuration with microfrontends
       vi.mocked(fs.readJsonSync).mockImplementation((p) => {
         if (p === `${testDir}/package.json`) {
           return {
-            workspaces: ['apps/*']
+            workspaces: ['packages/*']
           };
         }
-        
-        if (p.includes('apps/mf1/package.json')) {
+
+        if (String(p).includes('packages/mf1/package.json')) {
           return {
             name: '@re-shell/mf1',
             reshell: { route: '/mf1' }
           };
         }
-        
-        if (p.includes('apps/mf2/package.json')) {
+
+        if (String(p).includes('packages/mf2/package.json')) {
           return {
             name: '@re-shell/mf2',
             reshell: { route: '/mf2' }
           };
         }
-        
+
         return {};
       });
-      
+
       // Mock directory content
       vi.mocked(fs).readdirSync = vi.fn().mockReturnValue(['mf1', 'mf2']);
 
