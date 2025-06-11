@@ -3,7 +3,7 @@ import * as path from 'path';
 import prompts from 'prompts';
 import chalk from 'chalk';
 import { initializeMonorepo, DEFAULT_MONOREPO_STRUCTURE } from '../utils/monorepo';
-import { initializeGitRepository, generateSubmoduleScript, createSubmoduleDocumentation } from '../utils/submodule';
+import { initializeGitRepository } from '../utils/submodule';
 
 interface InitOptions {
   packageManager?: 'npm' | 'yarn' | 'pnpm';
@@ -144,9 +144,8 @@ export async function initMonorepo(
 
     // Set up submodule support
     if (finalOptions.submodules) {
-      await generateSubmoduleScript(projectPath);
-      await createSubmoduleDocumentation(projectPath, []);
-      console.log(chalk.green('✓ Submodule support configured'));
+      // Submodule support is enabled but we don't create the helper files
+      console.log(chalk.green('✓ Submodule support enabled'));
     }
 
     // Create additional configuration files
@@ -165,7 +164,6 @@ export async function initMonorepo(
       console.log('\nSubmodule commands:');
       console.log('  • re-shell submodule add <url> <path>');
       console.log('  • re-shell submodule status');
-      console.log('  • ./scripts/submodule-helper.sh --help');
     }
 
   } catch (error) {
