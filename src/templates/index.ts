@@ -1,5 +1,3 @@
-import * as fs from 'fs-extra';
-import * as path from 'path';
 import { FrameworkConfig } from '../utils/framework';
 
 export interface TemplateContext {
@@ -33,7 +31,7 @@ export abstract class BaseTemplate {
   abstract generateFiles(): Promise<TemplateFile[]>;
 
   protected generatePackageJson(): any {
-    const { name, normalizedName, org, description, port } = this.context;
+    const { normalizedName, org, description, port } = this.context;
     
     return {
       name: `@${org.toLowerCase()}/${normalizedName}`,
@@ -63,7 +61,6 @@ export abstract class BaseTemplate {
 
   protected generateViteConfig(): string {
     const { normalizedName, port, hasTypeScript } = this.context;
-    const ext = hasTypeScript ? 'ts' : 'js';
     const entryExt = this.framework.name.includes('vue') ? 
       (hasTypeScript ? 'ts' : 'js') : 
       (hasTypeScript ? 'tsx' : 'jsx');
@@ -207,7 +204,7 @@ export default defineConfig({
   }
 
   protected generateEslintConfig(): string {
-    let config: any = {
+    const config: any = {
       env: {
         browser: true,
         es2021: true,
@@ -251,7 +248,7 @@ export default defineConfig({
   }
 
   protected generateReadme(): string {
-    const { name, normalizedName, framework, route, team, org } = this.context;
+    const { name, normalizedName, route, team, org } = this.context;
     
     return `# ${name}
 

@@ -36,7 +36,7 @@ export async function initializeGitRepository(projectPath: string): Promise<void
 export async function addSubmodule(
   submodulePath: string,
   repositoryUrl: string,
-  branch: string = 'main',
+  branch = 'main',
   targetPath?: string
 ): Promise<void> {
   const actualPath = targetPath || submodulePath;
@@ -99,7 +99,7 @@ export async function getSubmoduleStatus(): Promise<SubmoduleInfo[]> {
     for (const line of lines) {
       const match = line.match(/^([ +-U])([a-f0-9]+) (.+?)( \(.+\))?$/);
       if (match) {
-        const [, statusChar, commit, submodulePath, branchInfo] = match;
+        const [, statusChar, commit, submodulePath] = match;
         
         let status: SubmoduleInfo['status'] = 'clean';
         switch (statusChar) {

@@ -1,11 +1,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { exec } from 'child_process';
-import { promisify } from 'util';
 import YAML from 'yaml';
 import { globSync } from 'glob';
-
-const execAsync = promisify(exec);
 
 export interface MonorepoConfig {
   name: string;

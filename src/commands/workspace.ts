@@ -3,7 +3,6 @@ import * as path from 'path';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import chalk from 'chalk';
-import prompts from 'prompts';
 import { getWorkspaces, findMonorepoRoot, WorkspaceInfo } from '../utils/monorepo';
 
 const execAsync = promisify(exec);
@@ -109,7 +108,7 @@ export async function updateWorkspaces(options: WorkspaceUpdateOptions = {}): Pr
     if (options.workspace) {
       // Update specific workspace
       const workspace = workspaces.find((ws: WorkspaceInfo) =>
-        ws.name === options.workspace || ws.path.includes(options.workspace!)
+        ws.name === options.workspace || (options.workspace && ws.path.includes(options.workspace))
       );
       
       if (!workspace) {
@@ -195,7 +194,7 @@ export async function generateWorkspaceGraph(options: WorkspaceGraphOptions = {}
     const graph = await buildDependencyGraph(workspaces);
 
     switch (options.format) {
-      case 'json':
+      case 'json': {
         const jsonOutput = JSON.stringify(graph, null, 2);
         if (options.output) {
           await fs.writeFile(options.output, jsonOutput);
@@ -204,8 +203,9 @@ export async function generateWorkspaceGraph(options: WorkspaceGraphOptions = {}
           console.log(jsonOutput);
         }
         break;
+      }
         
-      case 'mermaid':
+      case 'mermaid': {
         const mermaidOutput = generateMermaidGraph(graph);
         if (options.output) {
           await fs.writeFile(options.output, mermaidOutput);
@@ -214,6 +214,7 @@ export async function generateWorkspaceGraph(options: WorkspaceGraphOptions = {}
           console.log(mermaidOutput);
         }
         break;
+      }
         
       default:
         displayTextGraph(graph);

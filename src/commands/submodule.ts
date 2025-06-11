@@ -266,7 +266,7 @@ export async function manageSubmodules(): Promise<void> {
         await showSubmoduleStatus();
         break;
         
-      case 'add':
+      case 'add': {
         const { url } = await prompts({
           type: 'text',
           name: 'url',
@@ -275,8 +275,9 @@ export async function manageSubmodules(): Promise<void> {
         });
         await addGitSubmodule(url);
         break;
+      }
         
-      case 'update':
+      case 'update': {
         const submodules = await getSubmoduleStatus();
         if (submodules.length === 0) {
           console.log(chalk.yellow('No submodules to update.'));
@@ -299,8 +300,9 @@ export async function manageSubmodules(): Promise<void> {
           await updateGitSubmodules({ path: updateTarget });
         }
         break;
+      }
         
-      case 'remove':
+      case 'remove': {
         const currentSubmodules = await getSubmoduleStatus();
         if (currentSubmodules.length === 0) {
           console.log(chalk.yellow('No submodules to remove.'));
@@ -316,10 +318,12 @@ export async function manageSubmodules(): Promise<void> {
         
         await removeGitSubmodule(removeTarget);
         break;
+      }
         
-      case 'init':
+      case 'init': {
         await initSubmodules();
         break;
+      }
     }
 
   } catch (error) {

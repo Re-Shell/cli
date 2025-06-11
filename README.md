@@ -1,4 +1,4 @@
-# Re-Shell CLI v0.2.1
+# Re-Shell CLI v0.2.2
 
 A powerful command-line interface for creating and managing multi-framework monorepo and microfrontend applications using the Re-Shell architecture.
 
@@ -616,11 +616,18 @@ If you're upgrading from Re-Shell CLI v0.1.x:
 re-shell create my-project
 re-shell add my-feature --template react-ts
 
-# New (v0.2.1)
+# New (v0.2.2)
 re-shell init my-project
 cd my-project
 re-shell create my-feature --framework react-ts --type app
 ```
+
+## What's New in v0.2.2
+
+- Fixed all unused variables and imports for cleaner code
+- Enhanced TypeScript strict mode compliance
+- Improved error handling and code organization
+- Updated dependencies and optimized performance
 
 ## What's New in v0.2.1
 
@@ -685,4 +692,4 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-**Re-Shell CLI v0.2.1** - Built with ❤️ for modern microfrontend development
+**Re-Shell CLI v0.2.2** - Built with ❤️ for modern microfrontend development
