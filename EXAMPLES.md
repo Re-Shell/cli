@@ -403,4 +403,412 @@ re-shell submodule add https://github.com/company/design-team.git teams/design
 # Main repository orchestrates integration
 ```
 
-This comprehensive example guide demonstrates the flexibility and power of Re-Shell CLI for various development scenarios, from simple applications to complex enterprise systems.
+## 🎯 Legacy Command Examples
+
+### Using the `add` Command (Legacy)
+
+```bash
+# Navigate to existing Re-Shell project
+cd my-existing-project
+
+# Add a new microfrontend using legacy command
+re-shell add user-profile --template react-ts --route /profile --port 5174
+
+# Add with team and organization
+re-shell add shopping-cart --template vue-ts --route /cart --team ecommerce --org mycompany
+
+# Add with custom description
+re-shell add notifications --template svelte-ts --route /notifications --description "Real-time notification system"
+```
+
+### Legacy Project Structure
+
+```bash
+# Traditional Re-Shell project structure (pre-monorepo)
+my-project/
+├── apps/
+│   ├── shell/             # Main shell application
+│   ├── user-profile/      # User profile microfrontend
+│   ├── shopping-cart/     # Shopping cart microfrontend
+│   └── notifications/     # Notifications microfrontend
+├── packages/
+│   └── shared/            # Shared utilities
+└── package.json
+```
+
+## 🔨 Build and Serve Examples
+
+### Building Applications
+
+```bash
+# Build all applications
+re-shell build
+
+# Build specific application
+re-shell build storefront
+
+# Production build with optimization
+re-shell build storefront --production
+
+# Build with bundle analysis
+re-shell build storefront --analyze
+```
+
+### Development Server
+
+```bash
+# Serve all applications
+re-shell serve
+
+# Serve specific application
+re-shell serve storefront
+
+# Serve with custom port and host
+re-shell serve storefront --port 8080 --host 0.0.0.0
+
+# Serve and open in browser
+re-shell serve storefront --open
+```
+
+### Build Pipeline Integration
+
+```bash
+# CI/CD Pipeline example
+#!/bin/bash
+set -e
+
+# Install dependencies
+pnpm install
+
+# Lint all code
+pnpm run lint
+
+# Run tests
+pnpm run test
+
+# Build all applications
+re-shell build --production
+
+# Deploy to staging
+./deploy.sh staging
+
+# Run E2E tests
+pnpm --filter e2e-tests test
+
+# Deploy to production (if tests pass)
+./deploy.sh production
+```
+
+## 🏃‍♂️ Quick Setup Examples
+
+### Simple Standalone Application
+
+```bash
+# Create a simple standalone React app
+re-shell create my-simple-app --framework react-ts
+
+# Directory structure:
+# my-simple-app/
+# ├── src/
+# ├── public/
+# ├── package.json
+# ├── vite.config.ts
+# └── tsconfig.json
+
+cd my-simple-app
+pnpm install
+pnpm run dev
+```
+
+### Microfrontend with Event Communication
+
+```bash
+# Create microfrontend with event bus setup
+re-shell create communication-demo --framework react-ts --type app
+
+# Example event bus usage in generated code:
+# src/eventBus.ts - Event communication setup
+# src/index.tsx - Mount/unmount lifecycle with events
+```
+
+## 📱 Mobile-First Examples
+
+### Progressive Web App Setup
+
+```bash
+# Create PWA-ready application
+re-shell create mobile-pwa --framework react-ts --type app --port 3000
+
+# Add PWA configuration (manual step after creation)
+cd apps/mobile-pwa
+pnpm add -D vite-plugin-pwa
+```
+
+### Responsive Design System
+
+```bash
+# Create design system with mobile-first approach
+re-shell create mobile-design-system --framework react-ts --type lib
+
+# Structure includes:
+# - Responsive components
+# - Mobile breakpoints
+# - Touch-friendly interactions
+# - Accessibility features
+```
+
+## 🌐 Multi-Language Examples
+
+### Internationalization Setup
+
+```bash
+# Create multi-language application
+re-shell create i18n-app --framework react-ts --type app
+
+# Add i18n libraries (manual step)
+cd apps/i18n-app
+pnpm add react-i18next i18next i18next-browser-languagedetector
+
+# Create language packages
+re-shell create locales --type package
+```
+
+### Multi-Region Deployment
+
+```bash
+# Create region-specific applications
+re-shell create app-us --framework react-ts --type app --port 3000
+re-shell create app-eu --framework react-ts --type app --port 3001
+re-shell create app-asia --framework react-ts --type app --port 3002
+
+# Shared localization package
+re-shell create shared-locales --type package
+```
+
+## 🔐 Security Examples
+
+### Authentication Microfrontend
+
+```bash
+# Create dedicated auth service
+re-shell create auth-service --framework react-ts --type app --route /auth
+
+# Create protected applications
+re-shell create secure-dashboard --framework vue-ts --type app --route /dashboard
+re-shell create admin-panel --framework react-ts --type app --route /admin
+
+# Shared auth utilities
+re-shell create auth-utils --type package
+```
+
+### Security Headers and Configuration
+
+```bash
+# Create security configuration package
+re-shell create security-config --type package
+
+# Example security setup in vite.config.ts:
+# - Content Security Policy
+# - CORS configuration
+# - Authentication middleware
+# - Rate limiting setup
+```
+
+## 🧩 Component Library Examples
+
+### Design System Creation
+
+```bash
+# Create comprehensive design system
+re-shell create design-system --framework react-ts --type lib
+
+# Component categories:
+re-shell create atoms --framework react-ts --type lib        # Basic components
+re-shell create molecules --framework react-ts --type lib    # Composite components
+re-shell create organisms --framework react-ts --type lib    # Complex components
+re-shell create templates --framework react-ts --type lib    # Page templates
+
+# Shared design tokens
+re-shell create design-tokens --type package
+```
+
+### Storybook Integration
+
+```bash
+# Create documentation workspace
+re-shell create storybook --type tool
+
+# Setup Storybook (manual steps after creation)
+cd tools/storybook
+pnpm add -D @storybook/react @storybook/builder-vite
+```
+
+## 🚀 Performance Examples
+
+### Micro-optimization Setup
+
+```bash
+# Create performance monitoring
+re-shell create performance-monitor --type package
+
+# Create lazy-loaded modules
+re-shell create lazy-dashboard --framework react-ts --type app
+re-shell create lazy-reports --framework vue-ts --type app
+
+# Bundle analysis tools
+re-shell create bundle-analyzer --type tool
+```
+
+### CDN and Caching Strategy
+
+```bash
+# Create CDN-optimized applications
+re-shell create cdn-optimized-app --framework react-ts --type app
+
+# Asset optimization workspace
+re-shell create asset-optimizer --type tool
+
+# Edge function workspace
+re-shell create edge-functions --type package
+```
+
+## 🔍 Debugging Examples
+
+### Development Tools Setup
+
+```bash
+# Create debugging utilities
+re-shell create dev-tools --type tool
+
+# Error tracking and logging
+re-shell create error-tracking --type package
+
+# Development dashboard
+re-shell create dev-dashboard --framework react-ts --type app --port 9000
+```
+
+### Troubleshooting Common Issues
+
+```bash
+# Check workspace health
+re-shell workspace list --json | jq '.[] | select(.hasErrors == true)'
+
+# Verify submodule integrity
+re-shell submodule status
+
+# Dependency conflict resolution
+re-shell workspace graph --format json | jq '.conflicts'
+
+# Build diagnostics
+re-shell build --analyze > build-report.txt
+```
+
+## 📦 Package Management Examples
+
+### Publishing Workflow
+
+```bash
+# Create publishable packages
+re-shell create ui-kit --framework react-ts --type package
+re-shell create utilities --type package
+re-shell create hooks --framework react-ts --type package
+
+# Setup publishing workflow
+# packages/ui-kit/package.json:
+# {
+#   "name": "@myorg/ui-kit",
+#   "version": "1.0.0",
+#   "main": "dist/index.js",
+#   "types": "dist/index.d.ts",
+#   "files": ["dist"],
+#   "publishConfig": {
+#     "access": "public"
+#   }
+# }
+```
+
+### Version Management
+
+```bash
+# Workspace version synchronization
+pnpm changeset init
+pnpm changeset
+pnpm changeset version
+pnpm changeset publish
+
+# Automated versioning with CLI
+re-shell workspace update --version patch
+```
+
+## 🌟 Advanced Integration Examples
+
+### Third-Party Service Integration
+
+```bash
+# Analytics integration
+re-shell create analytics-service --type package
+
+# Payment processing
+re-shell create payment-gateway --type package
+
+# Real-time features
+re-shell create websocket-service --type package
+
+# External API clients
+re-shell create api-clients --type package
+```
+
+### Micro-service Architecture
+
+```bash
+# API Gateway
+re-shell create api-gateway --type app --framework react-ts
+
+# Service discovery
+re-shell create service-registry --type package
+
+# Load balancer configuration
+re-shell create load-balancer-config --type tool
+
+# Health check monitoring
+re-shell create health-monitor --type package
+```
+
+## 🎓 Learning and Development Examples
+
+### Tutorial Projects
+
+```bash
+# Beginner tutorial
+re-shell init tutorial-basics
+cd tutorial-basics
+re-shell create hello-world --framework react --type app
+
+# Intermediate tutorial
+re-shell init tutorial-intermediate
+cd tutorial-intermediate
+re-shell create todo-app --framework vue-ts --type app
+re-shell create shared-api --type package
+
+# Advanced tutorial
+re-shell init tutorial-advanced
+cd tutorial-advanced
+re-shell create complex-dashboard --framework react-ts --type app
+re-shell create data-processing --type package
+re-shell create worker-service --type tool
+```
+
+### Prototype Development
+
+```bash
+# Rapid prototyping setup
+re-shell init prototype-2024
+cd prototype-2024
+
+# Quick feature exploration
+re-shell create feature-a --framework react-ts --type app --port 3000
+re-shell create feature-b --framework vue-ts --type app --port 3001
+re-shell create shared-proto-utils --type package
+```
+
+This comprehensive example guide demonstrates the flexibility and power of Re-Shell CLI for various development scenarios, from simple applications to complex enterprise systems, covering modern development practices, performance optimization, security considerations, and advanced architectural patterns.
