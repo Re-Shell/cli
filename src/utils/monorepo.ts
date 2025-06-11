@@ -2,8 +2,8 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import * as yaml from 'yaml';
-import { glob } from 'glob';
+import YAML from 'yaml';
+import { globSync } from 'glob';
 
 const execAsync = promisify(exec);
 
@@ -31,10 +31,10 @@ export interface WorkspaceInfo {
 
 export const DEFAULT_MONOREPO_STRUCTURE = {
   apps: 'apps',
-  packages: 'packages', 
+  packages: 'packages',
   libs: 'libs',
   tools: 'tools',
-  docs: 'docs'
+  docs: 'docs',
 };
 
 export async function initializeMonorepo(
@@ -54,14 +54,14 @@ export async function initializeMonorepo(
     fs.ensureDir(path.join(projectPath, structure.packages)),
     fs.ensureDir(path.join(projectPath, structure.libs)),
     fs.ensureDir(path.join(projectPath, structure.tools)),
-    fs.ensureDir(path.join(projectPath, structure.docs))
+    fs.ensureDir(path.join(projectPath, structure.docs)),
   ]);
 
   const workspaces = [
     `${structure.apps}/*`,
     `${structure.packages}/*`,
     `${structure.libs}/*`,
-    `${structure.tools}/*`
+    `${structure.tools}/*`,
   ];
 
   // Create root package.json
@@ -80,33 +80,30 @@ export async function initializeMonorepo(
       'type-check': `${packageManager} run --parallel -r type-check`,
       'workspace:list': 're-shell workspace list',
       'workspace:graph': 're-shell workspace graph',
-      'workspace:update': 're-shell workspace update'
+      'workspace:update': 're-shell workspace update',
     },
     devDependencies: {
-      '@re-shell/cli': '^0.2.0'
+      '@re-shell/cli': '^0.2.0',
     },
     engines: {
-      node: '>=16.0.0'
-    }
+      node: '>=16.0.0',
+    },
   };
 
-  await fs.writeFile(
-    path.join(projectPath, 'package.json'),
-    JSON.stringify(packageJson, null, 2)
-  );
+  await fs.writeFile(path.join(projectPath, 'package.json'), JSON.stringify(packageJson, null, 2));
 
   // Create workspace configuration
   if (packageManager === 'pnpm') {
     const pnpmWorkspace = {
-      packages: workspaces
+      packages: workspaces,
     };
     await fs.writeFile(
       path.join(projectPath, 'pnpm-workspace.yaml'),
-      yaml.stringify(pnpmWorkspace)
+      YAML.stringify(pnpmWorkspace)
     );
   } else if (packageManager === 'yarn') {
     const yarnWorkspace = {
-      workspaces: workspaces
+      workspaces: workspaces,
     };
     await fs.writeFile(
       path.join(projectPath, 'package.json'),
@@ -184,13 +181,13 @@ temp/
     name,
     packageManager,
     workspaces,
-    structure
+    structure,
   };
 }
 
 export async function getWorkspaces(rootPath: string = process.cwd()): Promise<WorkspaceInfo[]> {
   const packageJsonPath = path.join(rootPath, 'package.json');
-  
+
   if (!fs.existsSync(packageJsonPath)) {
     throw new Error('Not in a monorepo root (package.json not found)');
   }
@@ -210,7 +207,7 @@ export async function getWorkspaces(rootPath: string = process.cwd()): Promise<W
   // Check for pnpm-workspace.yaml
   const pnpmWorkspacePath = path.join(rootPath, 'pnpm-workspace.yaml');
   if (fs.existsSync(pnpmWorkspacePath)) {
-    const pnpmWorkspace = yaml.parse(await fs.readFile(pnpmWorkspacePath, 'utf8'));
+    const pnpmWorkspace = YAML.parse(await fs.readFile(pnpmWorkspacePath, 'utf8'));
     if (pnpmWorkspace.packages) {
       workspacePatterns = pnpmWorkspace.packages;
     }
@@ -220,16 +217,16 @@ export async function getWorkspaces(rootPath: string = process.cwd()): Promise<W
 
   // Find all workspace directories
   for (const pattern of workspacePatterns) {
-    const matches = await glob(pattern, { cwd: rootPath });
-    
+    const matches = globSync(pattern, { cwd: rootPath });
+
     for (const match of matches) {
       const workspacePath = path.join(rootPath, match);
       const workspacePackageJson = path.join(workspacePath, 'package.json');
-      
+
       if (fs.existsSync(workspacePackageJson)) {
         try {
           const workspacePackage = JSON.parse(await fs.readFile(workspacePackageJson, 'utf8'));
-          
+
           // Determine workspace type based on path
           let type: 'app' | 'package' | 'lib' | 'tool' = 'package';
           if (match.startsWith('apps/')) type = 'app';
@@ -247,8 +244,8 @@ export async function getWorkspaces(rootPath: string = process.cwd()): Promise<W
             version: workspacePackage.version || '0.0.0',
             dependencies: Object.keys({
               ...workspacePackage.dependencies,
-              ...workspacePackage.devDependencies
-            })
+              ...workspacePackage.devDependencies,
+            }),
           });
         } catch (error) {
           console.warn(`Failed to parse package.json for ${match}:`, error);
@@ -262,18 +259,18 @@ export async function getWorkspaces(rootPath: string = process.cwd()): Promise<W
 
 function detectFrameworkFromPackage(packageJson: any): string | undefined {
   const deps = { ...packageJson.dependencies, ...packageJson.devDependencies };
-  
+
   if (deps['@angular/core']) return 'angular';
   if (deps['vue']) return deps['typescript'] ? 'vue-ts' : 'vue';
   if (deps['svelte']) return deps['typescript'] ? 'svelte-ts' : 'svelte';
   if (deps['react']) return deps['typescript'] ? 'react-ts' : 'react';
-  
+
   return undefined;
 }
 
 export async function isMonorepoRoot(dirPath: string = process.cwd()): Promise<boolean> {
   const packageJsonPath = path.join(dirPath, 'package.json');
-  
+
   if (!fs.existsSync(packageJsonPath)) {
     return false;
   }
