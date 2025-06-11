@@ -1,4 +1,4 @@
-# Re-Shell CLI (v0.2.0)
+# Re-Shell CLI (v0.2.1)
 
 A comprehensive command-line interface for creating and managing microfrontend applications with Re-Shell.
 
@@ -90,7 +90,6 @@ Removes a microfrontend from an existing Re-Shell project.
 | Option | Description |
 |--------|-------------|
 | `--force` | Force removal without confirmation |
-| `--keep-code` | Keep the source code but unregister from shell |
 
 ### List Microfrontends
 
@@ -105,8 +104,6 @@ Lists all microfrontends in the current project.
 | Option | Description |
 |--------|-------------|
 | `--json` | Output as JSON |
-| `--format <format>` | Output format (table, json, yaml) |
-| `--include-details` | Include additional details about each microfrontend |
 
 ### Build Microfrontends
 
@@ -124,8 +121,6 @@ Builds all or a specific microfrontend.
 |--------|-------------|
 | `--production` | Build for production environment |
 | `--analyze` | Analyze bundle size |
-| `--watch` | Watch for changes and rebuild |
-| `--verbose` | Show detailed build output |
 
 ### Start Development Server
 
@@ -144,18 +139,26 @@ Starts the development server for all or a specific microfrontend.
 | `--port <port>` | Port to serve on (default: 3000) |
 | `--host <host>` | Host to serve on (default: localhost) |
 | `--open` | Open in browser |
-| `--https` | Use HTTPS |
-| `--proxy <config>` | Proxy configuration file |
+
+## What's New in v0.2.1
+
+### Bug Fixes and Improvements
+
+- Fixed version mismatch in package.json
+- Updated documentation to match actual CLI functionality
+- Removed deprecated options that were not implemented
+- Improved error handling and messages
 
 ## What's New in v0.2.0
 
 ### New Features
 
 - **Enhanced Command Structure**: Improved command organization and help messages
-- **Build Command Improvements**: Added watch mode and bundle analysis
-- **Serve Command Updates**: HTTPS support and improved proxy configuration
-- **List Command Enhancements**: Multiple output formats and detailed information
-- **Project Templates**: Additional project templates with better customization
+- **Build Command**: New command for building microfrontends with production mode and bundle analysis
+- **Serve Command**: New command for starting development servers with customizable ports and hosts
+- **List Command**: New command for listing all microfrontends with JSON output support
+- **Remove Command**: New command for removing microfrontends with force option
+- **ASCII Banner**: Added visual branding when running CLI commands
 - **Performance Optimizations**: Faster builds and more efficient resource usage
 
 ### Breaking Changes
@@ -169,9 +172,6 @@ Re-Shell creates the following project structure:
 
 ```
 my-project/
-├── apps/                 # Microfrontend applications
-│   ├── shell/            # Main shell application
-│   └── test-app/         # Test application for development
 ├── packages/             # Shared libraries
 └── docs/                 # Documentation
 ```
@@ -197,16 +197,6 @@ const microfrontends = [
 ];
 ```
 
-## Testing with Test Application
-
-The CLI automatically configures the test application to include your new microfrontends.
-
-To run the test application:
-
-```bash
-# From the root of your Re-Shell project
-pnpm --filter test-app dev
-```
 
 ## License
 
