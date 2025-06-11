@@ -1,17 +1,13 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { exec } from 'child_process';
-import { promisify } from 'util';
 import prompts from 'prompts';
 import chalk from 'chalk';
 import { getFrameworkChoices, getFrameworkConfig, validateFramework } from '../utils/framework';
-import { findMonorepoRoot, isMonorepoRoot } from '../utils/monorepo';
+import { findMonorepoRoot } from '../utils/monorepo';
 import { ReactTemplate } from '../templates/react';
 import { VueTemplate } from '../templates/vue';
 import { SvelteTemplate } from '../templates/svelte';
 import { BaseTemplate, TemplateContext } from '../templates/index';
-
-const execAsync = promisify(exec);
 
 interface CreateProjectOptions {
   team?: string;
@@ -42,7 +38,6 @@ export async function createProject(
   const inMonorepo = !!monorepoRoot;
 
   // Determine if this is a monorepo project creation or workspace creation
-  const isMonorepoProject = options.isProject && !inMonorepo;
   const isWorkspaceCreation = inMonorepo || options.type;
 
   if (isWorkspaceCreation) {
@@ -179,9 +174,7 @@ async function createMonorepoProject(
   const {
     team,
     org = 're-shell',
-    description = `${name} - A Re-Shell microfrontend project`,
-    template = 'react-ts',
-    packageManager = 'pnpm'
+    description = `${name} - A Re-Shell microfrontend project`
   } = options;
 
   // Normalize name to kebab-case for consistency
@@ -263,13 +256,6 @@ async function createMonorepoProject(
 
   // Create workspace config
   if (finalOptions.packageManager === 'pnpm') {
-    const workspaceConfig = {
-      packages: [
-        "apps/*",
-        "packages/*"
-      ]
-    };
-    
     fs.writeFileSync(
       path.join(projectPath, 'pnpm-workspace.yaml'),
       `packages:\n  - 'apps/*'\n  - 'packages/*'\n`
