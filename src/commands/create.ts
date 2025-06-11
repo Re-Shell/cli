@@ -4,6 +4,12 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import prompts from 'prompts';
 import chalk from 'chalk';
+import { getFrameworkChoices, getFrameworkConfig, validateFramework } from '../utils/framework';
+import { findMonorepoRoot, isMonorepoRoot } from '../utils/monorepo';
+import { ReactTemplate } from '../templates/react';
+import { VueTemplate } from '../templates/vue';
+import { SvelteTemplate } from '../templates/svelte';
+import { BaseTemplate, TemplateContext } from '../templates/index';
 
 const execAsync = promisify(exec);
 
@@ -12,24 +18,167 @@ interface CreateProjectOptions {
   org?: string;
   description?: string;
   template?: string;
+  framework?: string;
   packageManager?: string;
-  isProject: boolean;
+  type?: 'app' | 'package' | 'lib' | 'tool';
+  port?: string;
+  route?: string;
+  isProject?: boolean;
 }
 
 /**
- * Creates a new Re-Shell project with shell application
- * 
- * @param name - Name of the project
+ * Creates a new Re-Shell project or workspace
+ *
+ * @param name - Name of the project/workspace
  * @param options - Additional options for project creation
- * @version 0.1.0
+ * @version 0.2.0
  */
 export async function createProject(
   name: string,
   options: CreateProjectOptions
 ): Promise<void> {
-  const { 
+  // Check if we're in a monorepo
+  const monorepoRoot = await findMonorepoRoot();
+  const inMonorepo = !!monorepoRoot;
+
+  // Determine if this is a monorepo project creation or workspace creation
+  const isMonorepoProject = options.isProject && !inMonorepo;
+  const isWorkspaceCreation = inMonorepo || options.type;
+
+  if (isWorkspaceCreation) {
+    await createWorkspace(name, options, monorepoRoot);
+  } else {
+    await createMonorepoProject(name, options);
+  }
+}
+
+/**
+ * Creates a new workspace (app/package/lib/tool) in an existing monorepo
+ */
+async function createWorkspace(
+  name: string,
+  options: CreateProjectOptions,
+  monorepoRoot?: string | null
+): Promise<void> {
+  const {
     team,
-    org = 're-shell', 
+    org = 're-shell',
+    description,
+    framework,
+    packageManager = 'pnpm',
+    type = 'app',
+    port = '5173',
+    route
+  } = options;
+
+  const normalizedName = name.toLowerCase().replace(/\s+/g, '-');
+  const rootPath = monorepoRoot || process.cwd();
+
+  console.log(chalk.cyan(`Creating ${type} "${normalizedName}"...`));
+
+  // Interactive prompts for missing options
+  const responses = await prompts([
+    {
+      type: !framework ? 'select' : null,
+      name: 'framework',
+      message: 'Select a framework:',
+      choices: getFrameworkChoices(),
+      initial: 1 // Default to react-ts
+    },
+    {
+      type: type === 'app' && !port ? 'text' : null,
+      name: 'port',
+      message: 'Development server port:',
+      initial: '5173',
+      validate: (value: string) => {
+        const num = parseInt(value);
+        return (num > 0 && num < 65536) ? true : 'Port must be between 1 and 65535';
+      }
+    },
+    {
+      type: type === 'app' && !route ? 'text' : null,
+      name: 'route',
+      message: 'Route path:',
+      initial: `/${normalizedName}`,
+      validate: (value: string) => value.startsWith('/') ? true : 'Route must start with /'
+    }
+  ]);
+
+  // Merge responses with options
+  const finalFramework = framework || responses.framework || 'react-ts';
+  const finalPort = port || responses.port || '5173';
+  const finalRoute = route || responses.route || `/${normalizedName}`;
+
+  // Validate framework
+  if (!validateFramework(finalFramework)) {
+    throw new Error(`Unsupported framework: ${finalFramework}`);
+  }
+
+  // Determine workspace path based on type
+  const typeDir = type === 'app' ? 'apps' :
+                  type === 'package' ? 'packages' :
+                  type === 'lib' ? 'libs' : 'tools';
+
+  const workspacePath = path.join(rootPath, typeDir, normalizedName);
+
+  // Check if directory already exists
+  if (fs.existsSync(workspacePath)) {
+    throw new Error(`Directory already exists: ${workspacePath}`);
+  }
+
+  // Get framework configuration
+  const frameworkConfig = getFrameworkConfig(finalFramework);
+
+  // Create template context
+  const templateContext: TemplateContext = {
+    name,
+    normalizedName,
+    framework: finalFramework,
+    hasTypeScript: frameworkConfig.hasTypeScript || false,
+    port: finalPort,
+    route: type === 'app' ? finalRoute : undefined,
+    org,
+    team,
+    description: description || `${name} - A ${frameworkConfig.displayName} ${type}`,
+    packageManager
+  };
+
+  // Generate files using appropriate template
+  const template = createTemplate(frameworkConfig, templateContext);
+  const files = await template.generateFiles();
+
+  // Create workspace directory
+  await fs.ensureDir(workspacePath);
+
+  // Write all generated files
+  for (const file of files) {
+    const filePath = path.join(workspacePath, file.path);
+    await fs.ensureDir(path.dirname(filePath));
+    await fs.writeFile(filePath, file.content);
+
+    if (file.executable) {
+      await fs.chmod(filePath, '755');
+    }
+  }
+
+  console.log(chalk.green(`✓ ${type.charAt(0).toUpperCase() + type.slice(1)} "${normalizedName}" created successfully!`));
+  console.log(chalk.gray(`Path: ${path.relative(process.cwd(), workspacePath)}`));
+  console.log('\nNext steps:');
+  console.log(`  1. cd ${path.relative(process.cwd(), workspacePath)}`);
+  console.log(`  2. ${packageManager} install`);
+  console.log(`  3. ${packageManager} run dev`);
+}
+
+/**
+ * Creates a new monorepo project (legacy function for backward compatibility)
+ */
+async function createMonorepoProject(
+  name: string,
+  options: CreateProjectOptions
+): Promise<void> {
+  const {
+    team,
+    org = 're-shell',
     description = `${name} - A Re-Shell microfrontend project`,
     template = 'react-ts',
     packageManager = 'pnpm'
@@ -37,7 +186,7 @@ export async function createProject(
 
   // Normalize name to kebab-case for consistency
   const normalizedName = name.toLowerCase().replace(/\s+/g, '-');
-  
+
   console.log(chalk.cyan(`Creating Re-Shell project "${normalizedName}"...`));
 
   // Ask for additional information if not provided
@@ -71,7 +220,7 @@ export async function createProject(
     template: options.template || responses.template,
     packageManager: options.packageManager || responses.packageManager
   };
-  
+
   // Create project structure
   const projectPath = path.resolve(process.cwd(), normalizedName);
 
@@ -85,11 +234,6 @@ export async function createProject(
   fs.mkdirSync(path.join(projectPath, 'apps'));
   fs.mkdirSync(path.join(projectPath, 'packages'));
   fs.mkdirSync(path.join(projectPath, 'docs'));
-  
-  // Create shell application
-  fs.mkdirSync(path.join(projectPath, 'apps', 'shell'));
-  fs.mkdirSync(path.join(projectPath, 'apps', 'shell', 'src'));
-  fs.mkdirSync(path.join(projectPath, 'apps', 'shell', 'public'));
 
   // Create package.json for the project
   const packageJson = {
@@ -186,4 +330,25 @@ For more information, see the [Re-Shell documentation](https://github.com/your-o
   console.log(`  2. ${finalOptions.packageManager} install`);
   console.log(`  3. ${finalOptions.packageManager} run dev`);
   console.log(`  4. re-shell add my-feature (to add your first microfrontend)`);
+}
+
+/**
+ * Creates appropriate template instance based on framework
+ */
+function createTemplate(framework: any, context: TemplateContext): BaseTemplate {
+  switch (framework.name) {
+    case 'react':
+    case 'react-ts':
+      return new ReactTemplate(framework, context);
+    case 'vue':
+    case 'vue-ts':
+      return new VueTemplate(framework, context);
+    case 'svelte':
+    case 'svelte-ts':
+      return new SvelteTemplate(framework, context);
+    // Add more frameworks as templates are implemented
+    default:
+      // Fallback to React template for unsupported frameworks
+      return new ReactTemplate(framework, context);
+  }
 }
