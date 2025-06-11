@@ -72,6 +72,22 @@ re-shell create dashboard --framework svelte-ts --type app --port 3002
 re-shell create utils --type package
 ```
 
+## 📚 Examples
+
+For comprehensive examples including real-world scenarios, framework-specific setups, enterprise patterns, and advanced workflows, see our **[Examples Guide](EXAMPLES.md)**.
+
+The examples cover:
+- 🏪 **E-commerce Platform** - Multi-team, multi-framework setup
+- 🏢 **Enterprise Dashboard** - Complex microfrontend architecture  
+- 🔧 **Workspace Management** - Dependency management and visualization
+- 🔗 **Git Submodules** - External dependency integration
+- 🏗️ **Framework-Specific** - React, Vue, Svelte examples
+- 🚀 **Development Workflows** - Local development and production builds
+- 🐳 **Docker Integration** - Containerization examples
+- 📊 **Monitoring** - Analytics and reporting
+- 🔄 **Migration Strategies** - Legacy system modernization
+- 📈 **Scaling Patterns** - Large team and enterprise setups
+
 ## 📋 Commands Reference
 
 ### Core Commands
