@@ -1,18 +1,19 @@
-# Re-Shell CLI v0.2.6
+# Re-Shell CLI v0.2.7
 
 A powerful command-line interface for creating and managing multi-framework monorepo and microfrontend applications using the Re-Shell architecture.
 
 ## 🚀 Features
 
-- **🎯 Multi-Framework Support**: React, Vue, Svelte with TypeScript support
-- **📦 Monorepo Architecture**: Built-in workspace management with pnpm/yarn/npm support  
-- **🔧 Git Submodule Integration**: Advanced submodule management and documentation
-- **🛠️ Microfrontend Ready**: Designed specifically for microfrontend patterns
-- **📱 Modern Tooling**: Vite-powered builds, ESLint, and comprehensive templates
-- **📊 Workspace Management**: Dependency tracking, updates, and visualization
-- **💬 Interactive CLI**: User-friendly prompts and comprehensive help
-- **🐳 Docker Support**: Ready-to-use Docker configurations
-- **📋 Documentation**: Auto-generated documentation and examples
+- **🎯 Multi-Framework Support**: React, Vue, Svelte with TypeScript-first approach
+- **📦 Advanced Monorepo**: Workspace management with pnpm/yarn/npm support and dependency graphs
+- **🔧 Git Submodule Integration**: Full lifecycle management with documentation auto-generation
+- **🛠️ Microfrontend Architecture**: UMD builds, standardized mount/unmount APIs, event communication
+- **📱 Modern Tooling**: Vite-powered builds, ESLint strict mode, comprehensive templates
+- **📊 Workspace Intelligence**: Dependency tracking, updates, visualization (text/JSON/Mermaid)
+- **💬 Smart CLI**: Interactive prompts with non-interactive CI/CD mode (`--yes` flag)
+- **🐳 Production Ready**: Docker multi-stage builds, GitHub Actions workflows
+- **📋 Auto Documentation**: Generated READMEs, API docs, and workspace insights
+- **🔄 Auto Updates**: Built-in update detection and package manager integration
 
 ## 📦 Installation
 
@@ -39,12 +40,12 @@ cd my-monorepo
 ```
 
 This creates a complete monorepo with:
-- Multi-framework workspace support
-- Git repository initialization  
-- Submodule management setup
-- Development tooling configuration
-- Docker support
-- CI/CD workflows
+- **5 workspace types**: `apps/`, `packages/`, `libs/`, `tools/`, `docs/`
+- **Git repository** with submodule support
+- **Package manager** configuration (pnpm/yarn/npm)
+- **Development tooling**: ESLint, TypeScript, Vite
+- **Docker & CI/CD**: Multi-stage builds, GitHub Actions
+- **VSCode workspace**: Settings, extensions, tasks
 
 ### 2. Create Your First Application
 
@@ -130,18 +131,33 @@ re-shell init my-project --force -y
 ```
 
 #### `re-shell update`
-Check for Re-Shell CLI updates.
+Check for and perform Re-Shell CLI updates.
 
 **Features:**
-- Checks npm registry for latest version
-- Compares with current installed version
-- Provides update instructions for npm, yarn, and pnpm
-- Non-intrusive background checks (cached for 24 hours)
-- Shows changelog link for version updates
+- **Auto-detection**: Checks npm registry for latest version
+- **Package Manager Detection**: Automatically detects npm, yarn, or pnpm
+- **Interactive Updates**: Prompts for confirmation before updating
+- **Actual Updates**: Performs real package updates (not just notifications)
+- **Background Checks**: Non-intrusive checks on all commands (cached for 24 hours)
+- **Version Comparison**: Smart semantic version comparison
+- **Update Instructions**: Provides manual update commands if auto-update fails
+
+**Auto-Update Behavior:**
+- All CLI commands automatically check for updates (except `update` and `--version`)
+- Updates are cached for 24 hours to avoid performance impact
+- Non-interactive environments skip update prompts
 
 **Example:**
 ```bash
+# Check and update CLI
 re-shell update
+
+# Manual update if auto-update fails
+npm install -g @re-shell/cli@latest
+# or
+pnpm add -g @re-shell/cli@latest
+# or  
+yarn global add @re-shell/cli@latest
 ```
 
 #### `re-shell create <name>`
