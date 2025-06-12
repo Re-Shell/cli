@@ -5,6 +5,26 @@ All notable changes to the `@re-shell/cli` package will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.7] - 2024-12-06
+
+### Added
+- **Comprehensive Documentation**: Updated README with detailed feature descriptions and examples
+- **Enhanced Feature Set**: Added descriptions for all workspace commands, submodule management, and advanced CLI capabilities
+- **Auto-Update Documentation**: Complete documentation for new update functionality with package manager detection
+- **Framework Support**: Documented support for React, Vue, and Svelte with TypeScript-first approach
+
+### Changed  
+- **Improved README**: More accurate feature descriptions reflecting current CLI capabilities
+- **Better Examples**: Enhanced code examples and usage patterns for all commands
+- **Feature Categorization**: Organized features by functionality (workspace management, submodules, microfrontends)
+- **Modern Descriptions**: Updated language to reflect advanced monorepo and microfrontend architecture
+
+### Enhanced
+- **Workspace Intelligence**: Better documentation of dependency graphs and workspace management features
+- **Production Readiness**: Highlighted Docker multi-stage builds and GitHub Actions CI/CD capabilities
+- **Developer Experience**: Emphasized TypeScript-first approach and modern tooling integration
+- **Update System**: Documented automatic update detection and interactive package manager support
+
 ## [0.2.6] - 2024-12-06
 
 ### Fixed
