@@ -35,8 +35,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Re-Shell/re-shell.git",
-    "directory": "packages/cli"
+    "url": "git+https://github.com/Re-Shell/cli.git"
   },
   "publishConfig": {
     "access": "public"
