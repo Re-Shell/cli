@@ -50,20 +50,22 @@ export class ProgressSpinner {
   succeed(text?: string): this {
     if (this.isInteractive) {
       this.spinner.succeed(text);
-      this.forceFlush();
     } else {
       console.log(chalk.green('✅'), text || 'Done');
     }
+    // Ensure final output is flushed and terminal is reset
+    this.finalFlush();
     return this;
   }
 
   fail(text?: string): this {
     if (this.isInteractive) {
       this.spinner.fail(text);
-      this.forceFlush();
     } else {
       console.log(chalk.red('❌'), text || 'Failed');
     }
+    // Ensure final output is flushed and terminal is reset
+    this.finalFlush();
     return this;
   }
 
@@ -140,6 +142,27 @@ export class ProgressSpinner {
           process.stdout.write('\x1b[?25h'); // Show cursor
         }
       });
+    } catch (error) {
+      // Ignore flush errors - they're not critical
+    }
+  }
+
+  private finalFlush(): void {
+    try {
+      // Final flush to ensure all output is displayed immediately
+      process.stdout.write('');
+      if (typeof (process.stdout as any)._flush === 'function') {
+        (process.stdout as any)._flush();
+      }
+      
+      // Ensure cursor is visible and terminal is in proper state
+      if (process.stdout.isTTY) {
+        process.stdout.write('\x1b[?25h'); // Show cursor
+        process.stdout.write('\x1b[0m');   // Reset colors
+      }
+      
+      // Force immediate flush with newline
+      console.log(''); // This ensures a newline and flushes output
     } catch (error) {
       // Ignore flush errors - they're not critical
     }

@@ -5,6 +5,29 @@ All notable changes to the `@re-shell/cli` package will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.6] - 2024-12-06
+
+### Fixed
+- **CRITICAL**: Fixed terminal hanging after command completion that required Enter key press
+- **CRITICAL**: Enhanced update command to actually perform package updates instead of just showing availability
+- **CRITICAL**: Added automatic update checks before running any CLI command 
+- Fixed TypeScript compilation errors in update functionality
+- Improved terminal state reset and cursor management after command completion
+- Enhanced spinner finalFlush() method for proper terminal cleanup
+
+### Added  
+- Automatic update detection and notification for all CLI commands
+- Interactive package manager detection (npm, yarn, pnpm) for updates
+- Enhanced finalFlush() method in ProgressSpinner for immediate terminal reset
+- Comprehensive package manager support for automated updates
+- Better error handling for update processes
+
+### Changed
+- Update command now performs actual package updates with user confirmation
+- All commands now check for updates automatically (except update/version commands)
+- Improved terminal output flushing and state management
+- Enhanced spinner behavior with proper cleanup and cursor restoration
+
 ## [0.2.5] - 2024-12-06
 
 ### Fixed
