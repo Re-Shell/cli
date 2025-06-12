@@ -50,6 +50,7 @@ export async function initMonorepo(
   // Force non-interactive mode if not in a TTY environment or when --yes is used
   const forceNonInteractive = !process.stdout.isTTY || process.env.CI || options.yes;
   
+  
   if (!forceNonInteractive) {
     // Only run prompts if in interactive mode and --yes flag is not used
     const promptsToRun: PromptObject[] = [];
@@ -95,12 +96,27 @@ export async function initMonorepo(
     });
     
     if (promptsToRun.length > 0) {
+      // Stop spinner before prompts to avoid interference
+      if (options.spinner) {
+        options.spinner.stop();
+      }
+      
       responses = await prompts(promptsToRun);
+      
+      // Restart spinner after prompts
+      if (options.spinner) {
+        options.spinner.start();
+      }
     }
   }
 
   let customStructure = {};
   if (responses.customStructure && !forceNonInteractive) {
+    // Stop spinner for custom structure prompts
+    if (options.spinner) {
+      options.spinner.stop();
+    }
+    
     const structureResponses = await prompts([
       {
         type: 'text',
@@ -134,6 +150,11 @@ export async function initMonorepo(
       }
     ]);
     customStructure = structureResponses;
+    
+    // Restart spinner
+    if (options.spinner) {
+      options.spinner.start();
+    }
   }
 
   // Merge options with responses
