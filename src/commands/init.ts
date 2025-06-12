@@ -1,9 +1,10 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import prompts from 'prompts';
+import prompts, { PromptObject } from 'prompts';
 import chalk from 'chalk';
 import { initializeMonorepo, DEFAULT_MONOREPO_STRUCTURE } from '../utils/monorepo';
 import { initializeGitRepository } from '../utils/submodule';
+import { ProgressSpinner, flushOutput } from '../utils/spinner';
 
 interface InitOptions {
   packageManager?: 'npm' | 'yarn' | 'pnpm';
@@ -11,6 +12,8 @@ interface InitOptions {
   git?: boolean;
   submodules?: boolean;
   force?: boolean;
+  yes?: boolean;
+  spinner?: ProgressSpinner;
 }
 
 /**
@@ -41,41 +44,63 @@ export async function initMonorepo(
     }
   }
 
-  // Interactive prompts for missing options
-  const responses = await prompts([
-    {
-      type: options.packageManager ? null : 'select',
-      name: 'packageManager',
-      message: 'Select a package manager:',
-      choices: [
-        { title: 'pnpm (recommended)', value: 'pnpm' },
-        { title: 'yarn', value: 'yarn' },
-        { title: 'npm', value: 'npm' }
-      ],
-      initial: 0
-    },
-    {
-      type: options.git !== undefined ? null : 'confirm',
-      name: 'git',
-      message: 'Initialize Git repository?',
-      initial: true
-    },
-    {
-      type: options.submodules !== undefined ? null : 'confirm',
-      name: 'submodules',
-      message: 'Set up Git submodule support?',
-      initial: true
-    },
-    {
-      type: 'confirm',
+  // Interactive prompts for missing options (skip if --yes flag is used)
+  let responses: any = {};
+  
+  // Force non-interactive mode if not in a TTY environment or when --yes is used
+  const forceNonInteractive = !process.stdout.isTTY || process.env.CI || options.yes;
+  
+  if (!forceNonInteractive) {
+    // Only run prompts if in interactive mode and --yes flag is not used
+    const promptsToRun: PromptObject[] = [];
+    
+    if (!options.packageManager) {
+      promptsToRun.push({
+        type: 'select' as const,
+        name: 'packageManager',
+        message: 'Select a package manager:',
+        choices: [
+          { title: 'pnpm (recommended)', value: 'pnpm' },
+          { title: 'yarn', value: 'yarn' },
+          { title: 'npm', value: 'npm' }
+        ],
+        initial: 0
+      });
+    }
+    
+    if (options.git === undefined) {
+      promptsToRun.push({
+        type: 'confirm' as const,
+        name: 'git',
+        message: 'Initialize Git repository?',
+        initial: true
+      });
+    }
+    
+    if (options.submodules === undefined) {
+      promptsToRun.push({
+        type: 'confirm' as const,
+        name: 'submodules',
+        message: 'Set up Git submodule support?',
+        initial: true
+      });
+    }
+    
+    // Only ask about custom structure if not using --yes
+    promptsToRun.push({
+      type: 'confirm' as const,
       name: 'customStructure',
       message: 'Customize directory structure?',
       initial: false
+    });
+    
+    if (promptsToRun.length > 0) {
+      responses = await prompts(promptsToRun);
     }
-  ]);
+  }
 
   let customStructure = {};
-  if (responses.customStructure) {
+  if (responses.customStructure && !forceNonInteractive) {
     const structureResponses = await prompts([
       {
         type: 'text',
@@ -119,52 +144,52 @@ export async function initMonorepo(
     structure: { ...options.structure, ...customStructure }
   };
 
-  console.log(chalk.cyan(`\nInitializing monorepo "${normalizedName}"...`));
-
+  const spinner = options.spinner;
+  
   try {
     // Remove existing directory if force option is used
     if (fs.existsSync(projectPath) && options.force) {
+      if (spinner) spinner.setText('Removing existing directory...');
+      flushOutput();
       await fs.remove(projectPath);
     }
 
     // Initialize monorepo structure
+    if (spinner) spinner.setText('Creating monorepo structure...');
+    flushOutput();
     await initializeMonorepo(
       normalizedName,
       finalOptions.packageManager as 'npm' | 'yarn' | 'pnpm',
       finalOptions.structure
     );
 
-    console.log(chalk.green('✓ Monorepo structure created'));
-
     // Initialize Git repository
     if (finalOptions.git) {
+      if (spinner) spinner.setText('Initializing Git repository...');
+      flushOutput();
       await initializeGitRepository(projectPath);
-      console.log(chalk.green('✓ Git repository initialized'));
     }
 
     // Set up submodule support
     if (finalOptions.submodules) {
+      if (spinner) spinner.setText('Setting up submodule support...');
+      flushOutput();
       // Submodule support is enabled but we don't create the helper files
-      console.log(chalk.green('✓ Submodule support enabled'));
+      await new Promise(resolve => setTimeout(resolve, 100)); // Small delay for UX
     }
 
     // Create additional configuration files
+    if (spinner) spinner.setText('Creating configuration files...');
+    flushOutput();
     await createAdditionalConfigs(projectPath, finalOptions);
-    console.log(chalk.green('✓ Configuration files created'));
 
-    // Success message
-    console.log(chalk.green(`\n🎉 Monorepo "${normalizedName}" initialized successfully!`));
-    console.log('\nNext steps:');
-    console.log(`  1. cd ${normalizedName}`);
-    console.log(`  2. ${finalOptions.packageManager} install`);
-    console.log('  3. re-shell create my-app --framework react-ts');
-    console.log('  4. re-shell workspace list');
-
-    if (finalOptions.submodules) {
-      console.log('\nSubmodule commands:');
-      console.log('  • re-shell submodule add <url> <path>');
-      console.log('  • re-shell submodule status');
-    }
+    // All operations completed successfully - the main CLI will handle the success message
+    // Store success info for the CLI to display
+    (global as any).__RE_SHELL_INIT_SUCCESS__ = {
+      name: normalizedName,
+      packageManager: finalOptions.packageManager,
+      submodules: finalOptions.submodules
+    };
 
   } catch (error) {
     console.error(chalk.red('Error initializing monorepo:'), error);

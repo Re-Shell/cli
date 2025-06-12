@@ -1,4 +1,4 @@
-# Re-Shell CLI v0.2.2
+# Re-Shell CLI v0.2.5
 
 A powerful command-line interface for creating and managing multi-framework monorepo and microfrontend applications using the Re-Shell architecture.
 
@@ -103,10 +103,12 @@ Initialize a new monorepo workspace.
 - `--no-git` - Skip Git repository initialization
 - `--no-submodules` - Skip submodule support setup
 - `--force` - Overwrite existing directory
+- `-y, --yes` - Skip interactive prompts and use defaults (ideal for CI/CD)
 
 **Features:**
 - Creates complete monorepo directory structure (apps/, packages/, libs/, tools/, docs/)
-- Interactive prompts for missing configuration
+- Interactive prompts for missing configuration (skipped with --yes flag)
+- Auto-detection of non-interactive environments (CI/CD, Docker containers)
 - Customizable directory structure during setup
 - Generates root package.json with workspace configuration
 - Creates development environment files (.nvmrc, .editorconfig, .vscode/)
@@ -115,9 +117,16 @@ Initialize a new monorepo workspace.
 - Generates submodule helper scripts (if enabled)
 - Initializes Git repository with proper .gitignore
 
-**Example:**
+**Examples:**
 ```bash
+# Interactive mode (default)
 re-shell init my-project --package-manager pnpm
+
+# Non-interactive mode for CI/CD
+re-shell init my-project --package-manager pnpm --no-git --no-submodules -y
+
+# Force overwrite existing directory
+re-shell init my-project --force -y
 ```
 
 #### `re-shell update`
@@ -631,23 +640,49 @@ If you're upgrading from Re-Shell CLI v0.1.x:
 re-shell create my-project
 re-shell add my-feature --template react-ts
 
-# New (v0.2.2)
+# New (v0.2.5)
 re-shell init my-project
 cd my-project
 re-shell create my-feature --framework react-ts --type app
 ```
 
+## What's New in v0.2.5
+
+### 🐛 Critical Bug Fixes
+- **✅ FIXED: Terminal Output Buffering**: Completely resolved the issue where CLI commands would hang with "Creating..." text
+- **✅ FIXED: Non-TTY Environment Hanging**: Resolved hanging issues in environments where `process.stdout.isTTY` is undefined
+- **✅ IMPROVED: Interactive Prompts**: Fixed prompts appearing even when using `--yes/-y` flag
+- **✅ ENHANCED: Progress Indication**: Spinner now properly advances through each step with real-time updates
+- **✅ ADDED: Non-Interactive Mode**: New `--yes/-y` flag to skip all interactive prompts for CI/CD environments
+- **✅ IMPROVED: Environment Detection**: Better detection of CI environments and non-interactive terminals
+
+### 🚀 New Features
+- **📋 Step-by-Step Progress**: Detailed progress updates for each initialization step
+- **⚡ Enhanced Terminal Compatibility**: Better support for various terminal emulators and environments
+- **🔧 Improved Error Handling**: More robust error handling during initialization process
+
+### 🔧 Technical Improvements
+- Enhanced output flushing mechanisms for immediate terminal feedback
+- Better spinner state management and cleanup
+- Improved prompts conditional logic for non-interactive mode
+- More robust terminal compatibility detection
+- **Auto-detection of non-TTY environments**: CLI automatically switches to non-interactive mode in environments like CI/CD, Docker containers, or terminals without TTY support
+- **Force non-interactive mode**: CLI will skip all prompts when `process.stdout.isTTY` is false, preventing hanging issues
+
 ## What's New in v0.2.4
 
 ### Bug Fixes
-- **Fixed Terminal Output Buffering**: Resolved issue where CLI commands would hang with "Creating..." text until Enter was pressed
-- **Improved Spinner Behavior**: Enhanced spinner and progress indicators for better terminal compatibility
-- **Better Terminal Detection**: Added fallback behavior for non-interactive terminals (CI environments, etc.)
-- **Immediate Output Flushing**: All CLI output now appears immediately without requiring user input
+- **✅ Fixed Terminal Output Buffering**: Resolved issue where CLI commands would hang with "Creating..." text until Enter was pressed
+- **✅ Improved Spinner Behavior**: Enhanced spinner and progress indicators for better terminal compatibility
+- **✅ Better Terminal Detection**: Added fallback behavior for non-interactive terminals (CI environments, etc.)
+- **✅ Immediate Output Flushing**: All CLI output now appears immediately without requiring user input
+- **✅ Enhanced Progress Updates**: Spinner now properly updates during each step of the initialization process
 
 ### Improvements
 - Enhanced terminal experience across different environments
 - Better support for various terminal emulators and shell environments
+- Improved progress indication with step-by-step updates
+- More robust output flushing for immediate terminal feedback
 
 ## What's New in v0.2.3
 
@@ -714,21 +749,40 @@ const microfrontends = [
 ];
 ```
 
+## 🔗 Related Packages
+
+- **[@re-shell/core](https://github.com/Re-Shell/reshell-monorepo/tree/main/packages/core)** - Core microfrontend framework and utilities
+- **[@re-shell/ui](https://github.com/Re-Shell/reshell-monorepo/tree/main/packages/ui)** - Comprehensive React component library for microfrontend applications
+
+## 📖 Documentation
+
+For comprehensive documentation, examples, and guides, visit:
+
+- **[CLI Documentation](https://github.com/Re-Shell/reshell-monorepo/tree/main/packages/cli/docs)**
+- **[Examples Guide](https://github.com/Re-Shell/reshell-monorepo/blob/main/packages/cli/EXAMPLES.md)**
+- **[Getting Started](https://github.com/Re-Shell/reshell-monorepo/blob/main/docs/getting-started.md)**
+- **[Best Practices](https://github.com/Re-Shell/reshell-monorepo/blob/main/docs/best-practices.md)**
+
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+We welcome contributions! Please see our [Contributing Guide](https://github.com/Re-Shell/reshell-monorepo/blob/main/CONTRIBUTING.md) for details on:
+
+- Code of Conduct
+- Development setup
+- Submitting pull requests
+- Reporting issues
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+MIT License - see [LICENSE](https://github.com/Re-Shell/reshell-monorepo/blob/main/LICENSE) file for details.
 
 ## 🆘 Support
 
-- 📖 [Documentation](https://github.com/Re-Shell/cli/docs)
-- 🐛 [Issue Tracker](https://github.com/Re-Shell/cli/issues)
-- 💬 [Discussions](https://github.com/Re-Shell/cli/discussions)
+- 📖 [Documentation](https://github.com/Re-Shell/reshell-monorepo/tree/main/packages/cli/docs)
+- 🐛 [Issue Tracker](https://github.com/Re-Shell/reshell-monorepo/issues)
+- 💬 [Discussions](https://github.com/Re-Shell/reshell-monorepo/discussions)
 - 📧 [Email Support](mailto:support@re-shell.org)
 
 ---
 
-**Re-Shell CLI v0.2.2** - Built with ❤️ for modern microfrontend development
+**Re-Shell CLI v0.2.5** - Built with ❤️ for modern microfrontend development
