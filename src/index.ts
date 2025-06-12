@@ -71,10 +71,14 @@ program
   .command('init')
   .description('Initialize a new monorepo workspace')
   .argument('<name>', 'Name of the monorepo')
-  .option('--package-manager <pm>', 'Package manager to use (npm, yarn, pnpm)', 'pnpm')
+  .option('--package-manager <pm>', 'Package manager to use (npm, yarn, pnpm, bun)', 'pnpm')
+  .option('--template <template>', 'Template to use (blank, ecommerce, dashboard, saas)', 'blank')
+  .option('--preset <name>', 'Use saved configuration preset')
+  .option('--skip-install', 'Skip dependency installation')
   .option('--no-git', 'Skip Git repository initialization')
   .option('--no-submodules', 'Skip submodule support setup')
   .option('--force', 'Overwrite existing directory')
+  .option('--debug', 'Enable debug output')
   .option('-y, --yes', 'Skip interactive prompts and use defaults')
   .action(async (name, options) => {
     const spinner = createSpinner('Initializing monorepo...').start();
@@ -82,9 +86,13 @@ program
     try {
       await initMonorepo(name, {
         packageManager: options.packageManager,
+        template: options.template,
+        preset: options.preset,
+        skipInstall: options.skipInstall,
         git: options.git !== false,
         submodules: options.submodules !== false,
         force: options.force,
+        debug: options.debug,
         yes: options.yes,
         spinner: spinner
       });
