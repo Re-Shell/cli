@@ -75,6 +75,7 @@ program
   .option('--no-git', 'Skip Git repository initialization')
   .option('--no-submodules', 'Skip submodule support setup')
   .option('--force', 'Overwrite existing directory')
+  .option('-y, --yes', 'Skip interactive prompts and use defaults')
   .action(async (name, options) => {
     const spinner = createSpinner('Initializing monorepo...').start();
     flushOutput();
@@ -83,9 +84,30 @@ program
         packageManager: options.packageManager,
         git: options.git !== false,
         submodules: options.submodules !== false,
-        force: options.force
+        force: options.force,
+        yes: options.yes,
+        spinner: spinner
       });
+      
+      // Get success info stored by initMonorepo
+      const successInfo = (global as any).__RE_SHELL_INIT_SUCCESS__;
       spinner.succeed(chalk.green(`Monorepo "${name}" initialized successfully!`));
+      
+      // Display next steps
+      console.log('\nNext steps:');
+      console.log(`  1. cd ${successInfo?.name || name}`);
+      console.log(`  2. ${successInfo?.packageManager || 'pnpm'} install`);
+      console.log('  3. re-shell create my-app --framework react-ts');
+      console.log('  4. re-shell workspace list');
+
+      if (successInfo?.submodules) {
+        console.log('\nSubmodule commands:');
+        console.log('  • re-shell submodule add <url> <path>');
+        console.log('  • re-shell submodule status');
+      }
+      
+      // Clean up global state
+      delete (global as any).__RE_SHELL_INIT_SUCCESS__;
     } catch (error) {
       spinner.fail(chalk.red('Error initializing monorepo'));
       console.error(error);
@@ -378,6 +400,7 @@ program
   });
 
 // Deprecated create-mf command removed in v0.2.0
+// Enhanced with --yes flag in v0.2.5 for non-interactive mode
 
 // Display help by default if no command is provided
 if (process.argv.length <= 2) {

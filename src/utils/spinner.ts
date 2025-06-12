@@ -19,14 +19,17 @@ export class ProgressSpinner {
       !process.env.CI &&
       !process.env.RE_SHELL_NO_SPINNER
     );
-
+    
     if (this.isInteractive) {
       this.spinner = ora({
         text: options.text,
         color: options.color as any || 'cyan',
         stream: options.stream || process.stdout,
-        // Force immediate output
-        discardStdin: false
+        // Enhanced configuration for better terminal compatibility
+        discardStdin: false,
+        hideCursor: true,
+        indent: 0,
+        spinner: 'dots'
       });
     } else {
       // For non-interactive terminals, just log the message
@@ -38,8 +41,8 @@ export class ProgressSpinner {
   start(): this {
     if (this.isInteractive) {
       this.spinner.start();
-      // Force flush the output
-      process.stdout.write('');
+      // Force flush the output immediately
+      this.forceFlush();
     }
     return this;
   }
@@ -47,6 +50,7 @@ export class ProgressSpinner {
   succeed(text?: string): this {
     if (this.isInteractive) {
       this.spinner.succeed(text);
+      this.forceFlush();
     } else {
       console.log(chalk.green('✅'), text || 'Done');
     }
@@ -56,6 +60,7 @@ export class ProgressSpinner {
   fail(text?: string): this {
     if (this.isInteractive) {
       this.spinner.fail(text);
+      this.forceFlush();
     } else {
       console.log(chalk.red('❌'), text || 'Failed');
     }
@@ -90,6 +95,7 @@ export class ProgressSpinner {
   setText(text: string): this {
     if (this.isInteractive) {
       this.spinner.text = text;
+      this.forceFlush();
     } else {
       console.log(chalk.cyan('⏳'), text);
     }
@@ -113,10 +119,30 @@ export class ProgressSpinner {
   render(): this {
     if (this.isInteractive) {
       this.spinner.render();
-      // Force flush
-      process.stdout.write('');
+      this.forceFlush();
     }
     return this;
+  }
+
+  private forceFlush(): void {
+    try {
+      // Multiple approaches to ensure output is flushed immediately
+      if (process.stdout.write('')) {
+        process.stdout.write('');
+      }
+      if (typeof (process.stdout as any)._flush === 'function') {
+        (process.stdout as any)._flush();
+      }
+      // Force a small delay to ensure output reaches terminal
+      process.nextTick(() => {
+        if (process.stdout.isTTY) {
+          process.stdout.write('\x1b[?25l'); // Hide cursor
+          process.stdout.write('\x1b[?25h'); // Show cursor
+        }
+      });
+    } catch (error) {
+      // Ignore flush errors - they're not critical
+    }
   }
 }
 
@@ -127,11 +153,32 @@ export function createSpinner(text: string, color?: string): ProgressSpinner {
 
 // Helper function to force flush output
 export function flushOutput(): void {
-  if (process.stdout.write('')) {
-    process.stdout.write('');
-  }
-  if (process.stderr.write('')) {
-    process.stderr.write('');
+  try {
+    // Force immediate output flushing
+    if (process.stdout.write('')) {
+      process.stdout.write('');
+    }
+    if (process.stderr.write('')) {
+      process.stderr.write('');
+    }
+    
+    // Try additional flush methods if available
+    if (typeof (process.stdout as any)._flush === 'function') {
+      (process.stdout as any)._flush();
+    }
+    if (typeof (process.stderr as any)._flush === 'function') {
+      (process.stderr as any)._flush();
+    }
+    
+    // Ensure output appears immediately in terminal
+    process.nextTick(() => {
+      if (process.stdout.isTTY) {
+        // Force a cursor movement to trigger terminal update
+        process.stdout.write('\x1b[0G');
+      }
+    });
+  } catch (error) {
+    // Ignore flush errors - they're not critical
   }
 }
 

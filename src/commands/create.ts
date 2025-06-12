@@ -27,7 +27,7 @@ interface CreateProjectOptions {
  *
  * @param name - Name of the project/workspace
  * @param options - Additional options for project creation
- * @version 0.2.0
+ * @version 0.2.5
  */
 export async function createProject(
   name: string,
