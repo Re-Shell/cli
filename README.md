@@ -932,21 +932,21 @@ const microfrontends = [
 
 ## 🔗 Related Packages
 
-- **[@re-shell/core](https://github.com/Re-Shell/re-shell/tree/main/packages/core)** - Core microfrontend framework and utilities
-- **[@re-shell/ui](https://github.com/Re-Shell/re-shell/tree/main/packages/ui)** - Comprehensive React component library for microfrontend applications
+- **[@re-shell/core](https://github.com/Re-Shell/core)** - Core microfrontend framework and utilities
+- **[@re-shell/ui](https://github.com/Re-Shell/ui)** - Comprehensive React component library for microfrontend applications
 
 ## 📖 Documentation
 
 For comprehensive documentation, examples, and guides, visit:
 
-- **[CLI Documentation](https://github.com/Re-Shell/re-shell/tree/main/packages/cli/docs)**
-- **[Examples Guide](https://github.com/Re-Shell/re-shell/blob/main/packages/cli/EXAMPLES.md)**
-- **[Getting Started](https://github.com/Re-Shell/re-shell/blob/main/docs/getting-started.md)**
-- **[Best Practices](https://github.com/Re-Shell/re-shell/blob/main/docs/best-practices.md)**
+- **[CLI Documentation](https://github.com/Re-Shell/cli/tree/main/docs)**
+- **[Examples Guide](https://github.com/Re-Shell/cli/blob/main/EXAMPLES.md)**
+- **[Getting Started](https://github.com/Re-Shell/cli/blob/main/docs/getting-started.md)**
+- **[Best Practices](https://github.com/Re-Shell/cli/blob/main/docs/best-practices.md)**
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guide](https://github.com/Re-Shell/re-shell/blob/main/CONTRIBUTING.md) for details on:
+We welcome contributions! Please see our [Contributing Guide](https://github.com/Re-Shell/cli/blob/main/CONTRIBUTING.md) for details on:
 
 - Code of Conduct
 - Development setup
@@ -955,13 +955,13 @@ We welcome contributions! Please see our [Contributing Guide](https://github.com
 
 ## 📄 License
 
-MIT License - see [LICENSE](https://github.com/Re-Shell/re-shell/blob/main/LICENSE) file for details.
+MIT License - see [LICENSE](https://github.com/Re-Shell/cli/blob/main/LICENSE) file for details.
 
 ## 🆘 Support
 
-- 📖 [Documentation](https://github.com/Re-Shell/re-shell/tree/main/packages/cli/docs)
-- 🐛 [Issue Tracker](https://github.com/Re-Shell/re-shell/issues)
-- 💬 [Discussions](https://github.com/Re-Shell/re-shell/discussions)
+- 📖 [Documentation](https://github.com/Re-Shell/cli/tree/main/docs)
+- 🐛 [Issue Tracker](https://github.com/Re-Shell/cli/issues)
+- 💬 [Discussions](https://github.com/Re-Shell/cli/discussions)
 - 📧 [Email Support](mailto:support@re-shell.org)
 
 ---

@@ -714,7 +714,28 @@ async function applyTemplate(
 
   // Create template-specific README
   const readmePath = path.join(projectPath, 'README.md');
-  const existingReadme = await fs.readFile(readmePath, 'utf8');
+  let existingReadme = '';
+  try {
+    existingReadme = await fs.readFile(readmePath, 'utf8');
+  } catch {
+    // README doesn't exist yet, create a basic one
+    existingReadme = `# ${path.basename(projectPath)}
+
+A Re-Shell monorepo project created with the CLI.
+
+## Getting Started
+
+1. Install dependencies:
+   \`\`\`bash
+   ${options.packageManager} install
+   \`\`\`
+
+2. Start development:
+   \`\`\`bash
+   ${options.packageManager} run dev
+   \`\`\`
+`;
+  }
   const templateReadme = `${existingReadme}
 
 ## Template: ${templateConfig.name}
