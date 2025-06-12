@@ -120,6 +120,21 @@ Initialize a new monorepo workspace.
 re-shell init my-project --package-manager pnpm
 ```
 
+#### `re-shell update`
+Check for Re-Shell CLI updates.
+
+**Features:**
+- Checks npm registry for latest version
+- Compares with current installed version
+- Provides update instructions for npm, yarn, and pnpm
+- Non-intrusive background checks (cached for 24 hours)
+- Shows changelog link for version updates
+
+**Example:**
+```bash
+re-shell update
+```
+
 #### `re-shell create <name>`
 Create a new workspace (app, package, lib, or tool).
 
@@ -621,6 +636,18 @@ re-shell init my-project
 cd my-project
 re-shell create my-feature --framework react-ts --type app
 ```
+
+## What's New in v0.2.3
+
+### New Features
+- **Automatic Update Notifications**: CLI now checks for updates and notifies you when a new version is available
+- **Update Command**: New `re-shell update` command to check for and install updates
+- **Framework Option**: Added `--framework` option to `create` command for better clarity (backward compatible with `--template`)
+- **Version Caching**: Update checks are cached for 24 hours to avoid excessive network requests
+
+### Improvements
+- Better command option handling and backward compatibility
+- Enhanced user experience with non-intrusive update notifications
 
 ## What's New in v0.2.2
 
