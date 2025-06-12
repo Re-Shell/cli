@@ -21,6 +21,7 @@ import {
   initSubmodules,
   manageSubmodules
 } from './commands/submodule';
+import { checkForUpdates, runUpdateCommand } from './utils/checkUpdate';
 
 // Get version from package.json
 const packageJsonPath = path.resolve(__dirname, '../package.json');
@@ -39,6 +40,11 @@ const banner = `
 `;
 
 const program = new Command();
+
+// Check for updates in the background (non-blocking)
+if (!process.argv.includes('update') && !process.argv.includes('--version') && !process.argv.includes('-V')) {
+  checkForUpdates(version);
+}
 
 // Display banner for main command
 if (process.argv.length <= 2 ||
@@ -86,8 +92,16 @@ program
   .option('-o, --org <organization>', 'Organization name', 're-shell')
   .option('-d, --description <description>', 'Project description')
   .option('--template <template>', 'Template to use (react, react-ts)', 'react-ts')
+  .option('--framework <framework>', 'Framework to use (react|react-ts|vue|vue-ts|svelte|svelte-ts)')
+  .option('--type <type>', 'Workspace type (app|package|lib|tool) - monorepo only')
+  .option('--port <port>', 'Development server port [default: 5173]')
+  .option('--route <route>', 'Route path (for apps)')
   .option('--package-manager <pm>', 'Package manager to use (npm, yarn, pnpm)', 'pnpm')
   .action(async (name, options) => {
+    // Handle backward compatibility: if template is provided but not framework, map it
+    if (options.template && !options.framework) {
+      options.framework = options.template;
+    }
     const spinner = ora('Creating Re-Shell project...').start();
     try {
       await createProject(name, { ...options, isProject: true });
@@ -334,6 +348,14 @@ submoduleCommand
       console.error(chalk.red('Error managing submodules:'), error);
       process.exit(1);
     }
+  });
+
+// Update command
+program
+  .command('update')
+  .description('Check for CLI updates')
+  .action(async () => {
+    await runUpdateCommand();
   });
 
 // Deprecated create-mf command removed in v0.2.0
