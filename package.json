@@ -4,9 +4,7 @@
   "description": "CLI tool for Re-Shell microfrontend framework",
   "main": "dist/index.js",
   "files": [
-    "dist/index.js",
-    "dist/index.d.ts",
-    "dist/commands",
+    "dist/**/*",
     "README.md"
   ],
   "bin": {

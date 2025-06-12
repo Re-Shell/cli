@@ -1,43 +1,778 @@
 # Re-Shell CLI Examples
 
-This document provides comprehensive examples of using Re-Shell CLI for various scenarios.
+This document provides comprehensive real-world scenarios and examples for using the Re-Shell CLI to build microfrontend applications.
 
-## 🚀 Getting Started Examples
+## Table of Contents
 
-### Example 1: E-commerce Platform
+1. [Getting Started](#getting-started)
+2. [E-commerce Platform](#e-commerce-platform)
+3. [Banking Dashboard](#banking-dashboard)
+4. [SaaS Admin Panel](#saas-admin-panel)
+5. [Healthcare Portal](#healthcare-portal)
+6. [Educational Platform](#educational-platform)
+7. [Advanced Scenarios](#advanced-scenarios)
 
-Create a multi-framework e-commerce platform with different teams using different technologies.
+## Getting Started
+
+### Basic Setup
 
 ```bash
-# Initialize the monorepo
-re-shell init ecommerce-platform
+# Install Re-Shell CLI globally
+npm install -g @re-shell/cli
+
+# Verify installation
+re-shell --version
+```
+
+## E-commerce Platform
+
+Build a complete e-commerce platform with separate microfrontends for different features.
+
+### 1. Initialize the Project
+
+```bash
+# Create the monorepo
+re-shell init ecommerce-platform --package-manager pnpm
+
+# Navigate to the project
 cd ecommerce-platform
 
 # Install dependencies
 pnpm install
-
-# Create the main storefront (React team)
-re-shell create storefront --framework react-ts --type app --port 3000 --route /
-
-# Create admin panel (Vue team)  
-re-shell create admin --framework vue-ts --type app --port 3001 --route /admin
-
-# Create mobile app shell (Svelte team)
-re-shell create mobile --framework svelte-ts --type app --port 3002 --route /mobile
-
-# Create shared UI components library
-re-shell create ui-components --framework react-ts --type lib
-
-# Create shared utilities
-re-shell create utils --type package
-
-# Create API client library
-re-shell create api-client --framework react-ts --type lib
 ```
 
-### Example 2: Enterprise Dashboard
+### 2. Create Product Catalog Microfrontend
 
-Build an enterprise dashboard with multiple microfrontends.
+```bash
+# Add product catalog
+re-shell add product-catalog \
+  --team ProductTeam \
+  --template react \
+  --route /products \
+  --port 5001
+
+# Navigate and customize
+cd apps/product-catalog
+
+# Install Re-Shell packages
+pnpm add @re-shell/core @re-shell/ui
+```
+
+Update `apps/product-catalog/src/App.jsx`:
+
+```jsx
+import React, { useState, useEffect } from 'react';
+import { Card, Button, Badge, Grid, Input } from '@re-shell/ui';
+import { eventBus } from '@re-shell/core';
+
+function App() {
+  const [products, setProducts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    // Listen for cart events
+    const unsubscribe = eventBus.on('cart:updated', (data) => {
+      console.log('Cart updated:', data);
+    });
+
+    // Load products
+    setProducts([
+      { id: 1, name: 'Laptop', price: 999, stock: 5 },
+      { id: 2, name: 'Mouse', price: 29, stock: 50 },
+      { id: 3, name: 'Keyboard', price: 79, stock: 25 },
+    ]);
+
+    return () => eventBus.off(unsubscribe);
+  }, []);
+
+  const addToCart = (product) => {
+    eventBus.emit('cart:add', { 
+      payload: product,
+      source: 'product-catalog'
+    });
+  };
+
+  const filteredProducts = products.filter(p => 
+    p.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <div style={{ padding: '20px' }}>
+      <h1>Product Catalog</h1>
+      
+      <Input
+        placeholder="Search products..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        style={{ marginBottom: '20px' }}
+      />
+
+      <Grid cols={3} gap={20}>
+        {filteredProducts.map(product => (
+          <Card key={product.id}>
+            <h3>{product.name}</h3>
+            <p>${product.price}</p>
+            <Badge variant={product.stock > 10 ? 'success' : 'warning'}>
+              Stock: {product.stock}
+            </Badge>
+            <Button 
+              onClick={() => addToCart(product)}
+              variant="primary"
+              fullWidth
+              style={{ marginTop: '10px' }}
+            >
+              Add to Cart
+            </Button>
+          </Card>
+        ))}
+      </Grid>
+    </div>
+  );
+}
+
+export default App;
+```
+
+### 3. Create Shopping Cart Microfrontend
+
+```bash
+# Add shopping cart
+re-shell add shopping-cart \
+  --team CheckoutTeam \
+  --template react \
+  --route /cart \
+  --port 5002
+
+# Navigate and setup
+cd ../shopping-cart
+pnpm add @re-shell/core @re-shell/ui
+```
+
+Update `apps/shopping-cart/src/App.jsx`:
+
+```jsx
+import React, { useState, useEffect } from 'react';
+import { Card, Button, Badge, Alert, List } from '@re-shell/ui';
+import { eventBus } from '@re-shell/core';
+
+function App() {
+  const [cartItems, setCartItems] = useState([]);
+  const [total, setTotal] = useState(0);
+
+  useEffect(() => {
+    // Listen for add to cart events
+    const unsubscribe = eventBus.on('cart:add', (data) => {
+      const product = data.payload;
+      setCartItems(prev => {
+        const existing = prev.find(item => item.id === product.id);
+        if (existing) {
+          return prev.map(item =>
+            item.id === product.id
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          );
+        }
+        return [...prev, { ...product, quantity: 1 }];
+      });
+    });
+
+    return () => eventBus.off(unsubscribe);
+  }, []);
+
+  useEffect(() => {
+    const newTotal = cartItems.reduce((sum, item) => 
+      sum + (item.price * item.quantity), 0
+    );
+    setTotal(newTotal);
+    
+    // Emit cart updated event
+    eventBus.emit('cart:updated', { 
+      payload: { items: cartItems, total: newTotal },
+      source: 'shopping-cart'
+    });
+  }, [cartItems]);
+
+  const removeItem = (id) => {
+    setCartItems(prev => prev.filter(item => item.id !== id));
+  };
+
+  const checkout = () => {
+    eventBus.emit('checkout:initiate', {
+      payload: { items: cartItems, total },
+      source: 'shopping-cart'
+    });
+  };
+
+  return (
+    <div style={{ padding: '20px' }}>
+      <Card>
+        <h2>Shopping Cart</h2>
+        
+        {cartItems.length === 0 ? (
+          <Alert variant="info">Your cart is empty</Alert>
+        ) : (
+          <>
+            <List>
+              {cartItems.map(item => (
+                <List.Item key={item.id}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div>
+                      <strong>{item.name}</strong>
+                      <Badge variant="secondary" style={{ marginLeft: '10px' }}>
+                        Qty: {item.quantity}
+                      </Badge>
+                    </div>
+                    <div>
+                      ${(item.price * item.quantity).toFixed(2)}
+                      <Button 
+                        size="small" 
+                        variant="danger"
+                        onClick={() => removeItem(item.id)}
+                        style={{ marginLeft: '10px' }}
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  </div>
+                </List.Item>
+              ))}
+            </List>
+            
+            <div style={{ marginTop: '20px', textAlign: 'right' }}>
+              <h3>Total: ${total.toFixed(2)}</h3>
+              <Button 
+                variant="success" 
+                size="large"
+                onClick={checkout}
+              >
+                Proceed to Checkout
+              </Button>
+            </div>
+          </>
+        )}
+      </Card>
+    </div>
+  );
+}
+
+export default App;
+```
+
+### 4. Create User Account Microfrontend
+
+```bash
+# Add user account
+re-shell add user-account \
+  --team UserTeam \
+  --template react \
+  --route /account \
+  --port 5003
+```
+
+### 5. Build and Run
+
+```bash
+# Go back to root
+cd ../..
+
+# Build all microfrontends
+re-shell build
+
+# Run all microfrontends
+re-shell serve
+```
+
+## Banking Dashboard
+
+Create a secure banking dashboard with multiple specialized microfrontends.
+
+### 1. Initialize Banking Project
+
+```bash
+re-shell init banking-dashboard --package-manager pnpm
+cd banking-dashboard
+pnpm install
+```
+
+### 2. Create Account Overview
+
+```bash
+re-shell add account-overview \
+  --team AccountTeam \
+  --template react \
+  --route /accounts \
+  --port 6001
+```
+
+### 3. Create Transaction History
+
+```bash
+re-shell add transactions \
+  --team TransactionTeam \
+  --template react \
+  --route /transactions \
+  --port 6002
+```
+
+### 4. Create Payment Module
+
+```bash
+re-shell add payments \
+  --team PaymentTeam \
+  --template react \
+  --route /payments \
+  --port 6003
+```
+
+### 5. Implement Secure Communication
+
+Update `apps/account-overview/src/App.jsx`:
+
+```jsx
+import React, { useState, useEffect } from 'react';
+import { Card, Table, Badge, Alert, Progress } from '@re-shell/ui';
+import { eventBus, performance } from '@re-shell/core';
+
+function App() {
+  const [accounts, setAccounts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Track performance
+    const perfId = performance.startMeasure('account-load');
+
+    // Simulate secure API call
+    setTimeout(() => {
+      setAccounts([
+        { id: 1, type: 'Checking', balance: 5420.50, status: 'active' },
+        { id: 2, type: 'Savings', balance: 12500.00, status: 'active' },
+        { id: 3, type: 'Credit', balance: -1250.00, limit: 5000, status: 'active' }
+      ]);
+      setLoading(false);
+      
+      performance.endMeasure(perfId);
+      
+      // Notify other microfrontends
+      eventBus.emit('accounts:loaded', {
+        payload: { count: 3 },
+        namespace: 'banking',
+        source: 'account-overview'
+      });
+    }, 1000);
+  }, []);
+
+  const initiateTransfer = (accountId) => {
+    eventBus.emit('transfer:initiate', {
+      payload: { fromAccount: accountId },
+      namespace: 'banking',
+      source: 'account-overview'
+    });
+  };
+
+  return (
+    <div style={{ padding: '20px' }}>
+      <h1>Account Overview</h1>
+      
+      {loading ? (
+        <Card>
+          <Progress indeterminate />
+          <p>Loading accounts securely...</p>
+        </Card>
+      ) : (
+        <Table>
+          <Table.Head>
+            <Table.Row>
+              <Table.Cell>Account Type</Table.Cell>
+              <Table.Cell>Balance</Table.Cell>
+              <Table.Cell>Status</Table.Cell>
+              <Table.Cell>Actions</Table.Cell>
+            </Table.Row>
+          </Table.Head>
+          <Table.Body>
+            {accounts.map(account => (
+              <Table.Row key={account.id}>
+                <Table.Cell>{account.type}</Table.Cell>
+                <Table.Cell>
+                  <strong>${account.balance.toFixed(2)}</strong>
+                </Table.Cell>
+                <Table.Cell>
+                  <Badge variant="success">{account.status}</Badge>
+                </Table.Cell>
+                <Table.Cell>
+                  <Button 
+                    size="small"
+                    onClick={() => initiateTransfer(account.id)}
+                  >
+                    Transfer
+                  </Button>
+                </Table.Cell>
+              </Table.Row>
+            ))}
+          </Table.Body>
+        </Table>
+      )}
+      
+      <Alert variant="info" style={{ marginTop: '20px' }}>
+        All transactions are encrypted and secure
+      </Alert>
+    </div>
+  );
+}
+
+export default App;
+```
+
+## SaaS Admin Panel
+
+Build a comprehensive admin panel for a SaaS application.
+
+### 1. Initialize Admin Panel
+
+```bash
+re-shell init saas-admin --package-manager yarn
+cd saas-admin
+yarn install
+```
+
+### 2. Create Dashboard
+
+```bash
+re-shell add admin-dashboard \
+  --team AdminTeam \
+  --template react \
+  --route /dashboard \
+  --port 7001
+```
+
+### 3. Create User Management
+
+```bash
+re-shell add user-management \
+  --team AdminTeam \
+  --template react \
+  --route /users \
+  --port 7002
+```
+
+### 4. Create Analytics Module
+
+```bash
+re-shell add analytics \
+  --team DataTeam \
+  --template react \
+  --route /analytics \
+  --port 7003
+```
+
+## Healthcare Portal
+
+Create a healthcare portal with patient and provider microfrontends.
+
+### 1. Initialize Healthcare Project
+
+```bash
+re-shell init healthcare-portal --package-manager pnpm
+cd healthcare-portal
+pnpm install
+```
+
+### 2. Create Patient Portal
+
+```bash
+re-shell add patient-portal \
+  --team PatientTeam \
+  --template react \
+  --route /patient \
+  --port 8001
+```
+
+### 3. Create Provider Dashboard
+
+```bash
+re-shell add provider-dashboard \
+  --team ProviderTeam \
+  --template react \
+  --route /provider \
+  --port 8002
+```
+
+### 4. Create Appointment Scheduler
+
+```bash
+re-shell add appointments \
+  --team SchedulingTeam \
+  --template react \
+  --route /appointments \
+  --port 8003
+```
+
+## Educational Platform
+
+Build an educational platform with courses, assessments, and progress tracking.
+
+### 1. Initialize Education Project
+
+```bash
+re-shell init edu-platform --package-manager npm
+cd edu-platform
+npm install
+```
+
+### 2. Create Course Catalog
+
+```bash
+re-shell add course-catalog \
+  --team ContentTeam \
+  --template react \
+  --route /courses \
+  --port 9001
+```
+
+### 3. Create Student Dashboard
+
+```bash
+re-shell add student-dashboard \
+  --team StudentTeam \
+  --template react \
+  --route /student \
+  --port 9002
+```
+
+## Advanced Scenarios
+
+### Cross-Framework Integration
+
+Create microfrontends with different frameworks:
+
+```bash
+# React microfrontend
+re-shell add react-mf --template react --team ReactTeam
+
+# Vue microfrontend  
+re-shell add vue-mf --template vue --team VueTeam
+
+# Svelte microfrontend
+re-shell add svelte-mf --template svelte --team SvelteTeam
+```
+
+### Workspace Management
+
+```bash
+# List all workspaces
+re-shell workspace list
+
+# Show dependency graph
+re-shell workspace graph
+
+# Update dependencies in specific workspace
+re-shell workspace update --workspace react-mf --dependency react --version 18.2.0
+
+# Generate Mermaid diagram
+re-shell workspace graph --format mermaid --output deps.mmd
+```
+
+### CLI Command Testing
+
+```bash
+# Test all CLI commands
+re-shell --version
+re-shell list
+re-shell list --json
+re-shell build dashboard
+re-shell build
+re-shell remove test-app
+re-shell submodule status
+```
+
+### Performance Monitoring
+
+```javascript
+// In shell application
+import { performance } from '@re-shell/core';
+
+// Configure performance monitoring
+performance.configure({
+  thresholds: {
+    loadTime: 3000,
+    renderTime: 1000,
+    mountTime: 500
+  },
+  enableLogging: true
+});
+
+// Monitor microfrontend loading
+performance.on('measure:complete', (data) => {
+  if (data.duration > data.threshold) {
+    console.warn(`Performance issue: ${data.name} took ${data.duration}ms`);
+  }
+});
+```
+
+### Event Communication Examples
+
+```javascript
+// Product catalog communicates with shopping cart
+import { eventBus } from '@re-shell/core';
+
+// Emit events
+eventBus.emit('cart:add', {
+  payload: { id: 1, name: 'Product', price: 99 },
+  source: 'product-catalog'
+});
+
+// Listen for events
+const unsubscribe = eventBus.on('cart:updated', (data) => {
+  console.log('Cart updated:', data.payload);
+});
+
+// Clean up
+return () => eventBus.off(unsubscribe);
+```
+
+### Testing Integration
+
+```bash
+# Run tests for specific microfrontend
+cd apps/product-catalog
+npm test
+
+# Integration testing across microfrontends
+# Create test file: tests/integration/cross-mf.test.js
+```
+
+```javascript
+import { eventBus } from '@re-shell/core';
+import { render, waitFor } from '@testing-library/react';
+
+describe('Cross-Microfrontend Communication', () => {
+  it('should handle cart events between product catalog and shopping cart', async () => {
+    // Emit event from product catalog
+    eventBus.emit('cart:add', {
+      payload: { id: 1, name: 'Test Product', price: 99 },
+      source: 'product-catalog'
+    });
+
+    // Verify event received in shopping cart
+    await waitFor(() => {
+      const cartEvents = eventBus.getEventHistory()
+        .filter(e => e.source === 'shopping-cart');
+      expect(cartEvents).toHaveLength(1);
+    });
+  });
+});
+```
+
+## Best Practices
+
+### 1. Consistent Naming Convention
+
+```bash
+# Use kebab-case for microfrontend names
+re-shell add user-profile     # ✓ Good
+re-shell add UserProfile      # ✗ Avoid
+re-shell add user_profile     # ✗ Avoid
+```
+
+### 2. Team Organization
+
+```bash
+# Organize by feature teams
+re-shell add checkout --team CheckoutTeam
+re-shell add inventory --team InventoryTeam
+re-shell add customer-support --team SupportTeam
+```
+
+### 3. Port Management
+
+```bash
+# Use consistent port ranges
+# 5000-5099: Product-related microfrontends
+# 5100-5199: User-related microfrontends
+# 5200-5299: Admin-related microfrontends
+
+re-shell add products --port 5001
+re-shell add inventory --port 5002
+re-shell add user-profile --port 5101
+re-shell add user-settings --port 5102
+```
+
+### 4. Version Management
+
+```json
+// In package.json of each microfrontend
+{
+  "peerDependencies": {
+    "@re-shell/core": "^0.3.0",
+    "@re-shell/ui": "^0.2.0"
+  }
+}
+```
+
+### 5. Error Handling
+
+```javascript
+// Global error boundary in shell
+import { ErrorBoundary } from '@re-shell/core';
+
+function Shell() {
+  return (
+    <ErrorBoundary
+      fallback={<ErrorFallback />}
+      onError={(error, errorInfo) => {
+        // Log to monitoring service
+        logError({ error, errorInfo, source: 'shell' });
+      }}
+    >
+      <MicrofrontendContainer />
+    </ErrorBoundary>
+  );
+}
+```
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Port conflicts**
+   ```bash
+   # Check if port is in use
+   lsof -i :5001
+   
+   # Use different port
+   re-shell add my-app --port 5555
+   ```
+
+2. **Build failures**
+   ```bash
+   # Clean and rebuild
+   re-shell clean
+   re-shell build
+   ```
+
+3. **Module resolution**
+   ```bash
+   # Clear node_modules and reinstall
+   rm -rf node_modules
+   pnpm install
+   ```
+
+4. **Event bus issues**
+   ```javascript
+   // Enable debug mode
+   import { eventBus } from '@re-shell/core';
+   eventBus.setDebugMode(true);
+   ```
+
+## Contributing
+
+To contribute examples:
+
+1. Fork the repository
+2. Add your example to this file
+3. Test all commands
+4. Submit a pull request
+
+For more information, visit [Re-Shell Documentation](https://github.com/Re-Shell/re-shell).
 
 ```bash
 # Initialize monorepo
