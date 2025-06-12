@@ -44,14 +44,8 @@ export async function initializeMonorepo(
   // Create root directory
   await fs.ensureDir(projectPath);
 
-  // Create directory structure
-  await Promise.all([
-    fs.ensureDir(path.join(projectPath, structure.apps)),
-    fs.ensureDir(path.join(projectPath, structure.packages)),
-    fs.ensureDir(path.join(projectPath, structure.libs)),
-    fs.ensureDir(path.join(projectPath, structure.tools)),
-    fs.ensureDir(path.join(projectPath, structure.docs)),
-  ]);
+  // Create apps directory (main directory for microfrontend apps)
+  await fs.ensureDir(path.join(projectPath, structure.apps));
 
   const workspaces = [
     `${structure.apps}/*`,
