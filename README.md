@@ -1,4 +1,4 @@
-# Re-Shell CLI v0.2.5
+# Re-Shell CLI v0.2.6
 
 A powerful command-line interface for creating and managing multi-framework monorepo and microfrontend applications using the Re-Shell architecture.
 
