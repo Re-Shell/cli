@@ -105,10 +105,16 @@ function showUpdateNotification(currentVersion: string, latestVersion: string): 
   console.log(chalk.yellow('║') + '                                                                ' + chalk.yellow('║'));
   console.log(chalk.yellow('╚════════════════════════════════════════════════════════════════╝'));
   console.log();
+  
+  // Force flush output
+  process.stdout.write('');
+  process.stderr.write('');
 }
 
 export async function runUpdateCommand(): Promise<void> {
-  const spinner = (await import('ora')).default('Checking for updates...').start();
+  const { createSpinner, flushOutput } = await import('./spinner');
+  const spinner = createSpinner('Checking for updates...').start();
+  flushOutput();
 
   try {
     const packageJsonPath = path.resolve(__dirname, '../../package.json');
