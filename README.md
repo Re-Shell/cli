@@ -1,11 +1,11 @@
-# Re-Shell CLI v0.2.7
+# Re-Shell CLI v0.2.8
 
 A powerful command-line interface for creating and managing multi-framework monorepo and microfrontend applications using the Re-Shell architecture.
 
 ## 🚀 Features
 
 - **🎯 Multi-Framework Support**: React, Vue, Svelte with TypeScript-first approach
-- **📦 Advanced Monorepo**: Workspace management with pnpm/yarn/npm support and dependency graphs
+- **📦 Advanced Monorepo**: Workspace management with pnpm/yarn/npm/bun support and dependency graphs
 - **🔧 Git Submodule Integration**: Full lifecycle management with documentation auto-generation
 - **🛠️ Microfrontend Architecture**: UMD builds, standardized mount/unmount APIs, event communication
 - **📱 Modern Tooling**: Vite-powered builds, ESLint strict mode, comprehensive templates
@@ -14,6 +14,10 @@ A powerful command-line interface for creating and managing multi-framework mono
 - **🐳 Production Ready**: Docker multi-stage builds, GitHub Actions workflows
 - **📋 Auto Documentation**: Generated READMEs, API docs, and workspace insights
 - **🔄 Auto Updates**: Built-in update detection and package manager integration
+- **🔐 Security First**: Automatic vulnerability scanning and security best practices
+- **🎨 Template System**: Built-in templates (e-commerce, dashboard, SaaS) with smart scaffolding
+- **⚙️ Configuration Management**: Preset system for saving and reusing project configurations
+- **🧰 Professional Tooling**: ESLint, Prettier, Husky, CommitLint, and more out-of-the-box
 
 ## 📦 Installation
 
@@ -100,34 +104,52 @@ Initialize a new monorepo workspace.
 - `name` - Name of the monorepo (required)
 
 **Options:**
-- `--package-manager <pm>` - Package manager to use (npm|yarn|pnpm) [default: pnpm]
+- `--package-manager <pm>` - Package manager to use (npm|yarn|pnpm|bun) [default: auto-detected]
+- `--template <template>` - Template to use (blank|ecommerce|dashboard|saas) [default: blank]
+- `--preset <name>` - Use saved configuration preset
+- `--skip-install` - Skip dependency installation
 - `--no-git` - Skip Git repository initialization
 - `--no-submodules` - Skip submodule support setup
 - `--force` - Overwrite existing directory
+- `--debug` - Enable debug output
 - `-y, --yes` - Skip interactive prompts and use defaults (ideal for CI/CD)
 
-**Features:**
-- Creates complete monorepo directory structure (apps/, packages/, libs/, tools/, docs/)
-- Interactive prompts for missing configuration (skipped with --yes flag)
-- Auto-detection of non-interactive environments (CI/CD, Docker containers)
-- Customizable directory structure during setup
-- Generates root package.json with workspace configuration
-- Creates development environment files (.nvmrc, .editorconfig, .vscode/)
-- Sets up GitHub Actions workflow (if Git enabled)
-- Creates Docker configuration (Dockerfile, .dockerignore)
-- Generates submodule helper scripts (if enabled)
-- Initializes Git repository with proper .gitignore
+**Enhanced Features:**
+- **🎨 Template System**: Choose from pre-built templates (e-commerce, dashboard, SaaS)
+- **🔍 Auto-Detection**: Automatically detects package manager and system requirements
+- **⚙️ Preset Management**: Save and reuse project configurations
+- **🔐 Security Scanning**: Automatic vulnerability assessment with remediation guidance
+- **🧰 Professional Tooling**: Complete setup with ESLint, Prettier, Husky, CommitLint
+- **📋 Quality Gates**: Git hooks for code quality enforcement
+- **🐳 Container Ready**: Docker and docker-compose configuration
+- **⚡ Modern Build Tools**: Turborepo configuration for monorepo optimization
+- **📚 Documentation**: Auto-generated contributing guidelines and security policies
+- **🔄 Dependency Management**: Renovate configuration for automated updates
+- **🧪 Testing Setup**: Jest configuration with coverage thresholds
+- **💻 IDE Integration**: VS Code workspace with recommended extensions
 
 **Examples:**
 ```bash
-# Interactive mode (default)
-re-shell init my-project --package-manager pnpm
+# Interactive mode with template selection
+re-shell init my-project
+
+# E-commerce template with auto-detected package manager
+re-shell init ecommerce-site --template ecommerce
+
+# Dashboard template with pnpm
+re-shell init analytics-app --template dashboard --package-manager pnpm
+
+# Use saved preset
+re-shell init new-project --preset my-company-setup
 
 # Non-interactive mode for CI/CD
-re-shell init my-project --package-manager pnpm --no-git --no-submodules -y
+re-shell init my-project --template saas --package-manager pnpm --yes
 
-# Force overwrite existing directory
-re-shell init my-project --force -y
+# Development mode with debug output
+re-shell init test-project --debug --skip-install
+
+# Force overwrite with specific configuration
+re-shell init my-project --template ecommerce --force --yes
 ```
 
 #### `re-shell update`
@@ -555,16 +577,25 @@ re-shell submodule manage
   - Workspace support
   - Efficient disk usage
   - Strict dependencies
+  - Auto-detected when available
+
+- **bun (experimental)**
+  - Ultra-fast package installation
+  - Built-in bundler
+  - JavaScript runtime
+  - Emerging ecosystem
 
 - **yarn**
   - Workspace protocol
   - Plug'n'Play support
   - Berry compatibility
+  - Mature ecosystem
 
 - **npm**
   - Native workspaces
   - Standard registry
   - Wide compatibility
+  - Always available fallback
 
 ## 🛠️ Build Tool Integration
 
@@ -609,16 +640,55 @@ re-shell workspace update
 re-shell workspace update --dependency react --version ^18.3.0
 ```
 
+## 🎨 Template System
+
+### Available Templates
+
+#### Blank Template (`blank`)
+- **Description**: Clean monorepo structure without pre-configured applications
+- **Best for**: Custom setups, learning, and experimentation
+- **Includes**: Basic workspace structure, development tooling
+
+#### E-commerce Template (`ecommerce`)
+- **Description**: Multi-team e-commerce platform setup
+- **Applications**: Shell app, product catalog, checkout flow
+- **Packages**: Shared UI components, cart state management
+- **Best for**: Online stores, marketplace platforms
+- **Technologies**: React/Vue/Svelte, state management, payment integration
+
+#### Dashboard Template (`dashboard`)
+- **Description**: Analytics and reporting platform
+- **Applications**: Shell app, analytics module, user management
+- **Packages**: Chart components, data processing utilities
+- **Best for**: Admin panels, business intelligence, monitoring
+- **Technologies**: Data visualization, user management, reporting
+
+#### SaaS Template (`saas`)
+- **Description**: Software-as-a-Service platform
+- **Applications**: Shell app, authentication, billing, admin panel
+- **Packages**: Auth utilities, payment integration
+- **Best for**: B2B platforms, subscription services, multi-tenant apps
+- **Technologies**: Authentication, billing systems, admin tools
+
+### Template Features
+
+- **Smart Scaffolding**: Template-specific directory structures
+- **Dependency Management**: Automatic installation of template dependencies
+- **Documentation**: Generated README with template-specific instructions
+- **Getting Started**: Step-by-step setup guides for each template
+
 ## 🎨 Developer Experience
 
 - **Interactive prompts** for configuration
 - **Color-coded output** with chalk
-- **Progress indicators** with ora spinners
+- **Progress indicators** with real-time updates
 - **Comprehensive error messages**
 - **ASCII art banner** for branding
 - **Detailed help** for each command
 - **Validation and error prevention**
 - **Smart defaults** for all options
+- **Auto-detection** of environment and tools
+- **Preset management** for team consistency
 
 ## 📄 Generated Configurations
 
@@ -626,20 +696,42 @@ re-shell workspace update --dependency react --version ^18.3.0
 - `package.json` with scripts and dependencies
 - `tsconfig.json` for TypeScript projects
 - `vite.config.ts/js` with module federation
-- `.eslintrc.js` with framework rules
-- `README.md` with documentation
+- `.eslintrc.json` with comprehensive rules
+- `README.md` with template-specific documentation
+- `turbo.json` for monorepo optimization
+
+### Code Quality & Standards
+- `.prettierrc` and `.prettierignore` for formatting
+- `.eslintrc.json` with React/TypeScript rules
+- `commitlint.config.js` for conventional commits
+- `.lintstagedrc.json` for pre-commit hooks
+- `.husky/` directory with Git hooks
 
 ### Development Environment
 - `.editorconfig` for consistent coding
 - `.nvmrc` for Node version management
-- `.vscode/settings.json` for IDE
-- `.vscode/extensions.json` recommendations
+- `.vscode/settings.json` for IDE optimization
+- `.vscode/extensions.json` with recommendations
+- `.env` and `.env.example` for environment variables
+
+### Testing & Quality
+- `jest.config.js` with coverage thresholds
+- Test directory structure
+- Coverage configuration
+- CI/CD integration
+
+### Documentation & Governance
+- `CONTRIBUTING.md` with development guidelines
+- `SECURITY.md` for security policies
+- `README.md` with getting started guide
+- Template-specific documentation
 
 ### Build & Deploy
-- `Dockerfile` for containerization
-- `.dockerignore` for Docker builds
+- `Dockerfile` with multi-stage builds
+- `docker-compose.yml` for local development
+- `.dockerignore` for optimized builds
 - `.github/workflows/ci.yml` for CI/CD
-- Build scripts in package.json
+- `renovate.json` for dependency management
 
 ## 🔄 Migration from v0.1.x
 
@@ -661,6 +753,79 @@ re-shell init my-project
 cd my-project
 re-shell create my-feature --framework react-ts --type app
 ```
+
+## What's New in v0.2.8
+
+### 🚀 World-Class Init Command Enhancement
+
+The init command has been completely transformed into a world-class development experience, rivaling and exceeding industry-leading CLI tools.
+
+#### 🎨 New Template System
+- **Built-in Templates**: Choose from professional templates (e-commerce, dashboard, SaaS)
+- **Smart Scaffolding**: Template-specific directory structures and dependencies
+- **Getting Started Guides**: Auto-generated documentation for each template
+
+#### ⚙️ Configuration Presets
+- **Save Configurations**: Save your preferred settings as named presets
+- **Reuse Presets**: Use `--preset` flag to apply saved configurations
+- **Team Consistency**: Share presets across team members
+
+#### 🔍 Enhanced Auto-Detection
+- **Package Manager Detection**: Automatically detects npm, yarn, pnpm, or bun
+- **System Requirements**: Validates Node.js version and available tools
+- **Smart Defaults**: Context-aware defaults based on your environment
+
+#### 🔐 Security & Quality First
+- **Vulnerability Scanning**: Automatic dependency vulnerability assessment
+- **Security Policies**: Generated SECURITY.md and security best practices
+- **Git Hooks**: Pre-commit hooks for code quality enforcement
+- **Conventional Commits**: CommitLint setup for standardized commit messages
+
+#### 🧰 Professional Tooling Suite
+- **Code Quality**: ESLint, Prettier, and comprehensive rules out-of-the-box
+- **Testing**: Jest configuration with coverage thresholds
+- **Build Optimization**: Turborepo configuration for monorepo performance
+- **CI/CD**: Enhanced GitHub Actions workflows
+- **Documentation**: Auto-generated CONTRIBUTING.md and project guidelines
+
+#### 🐳 Production-Ready Infrastructure
+- **Docker**: Multi-stage builds with package manager optimization
+- **Docker Compose**: Local development environment setup
+- **Dependency Management**: Renovate configuration for automated updates
+- **VS Code Integration**: Workspace settings and extension recommendations
+
+#### 📊 Enhanced Package Manager Support
+- **Bun Support**: Added experimental support for Bun package manager
+- **Auto-Detection**: Intelligently selects the best available package manager
+- **Lockfile Support**: Proper handling for all package manager lockfiles
+
+#### 🎯 Developer Experience Improvements
+- **Interactive Flows**: Enhanced prompts with better validation
+- **Progress Tracking**: Real-time progress indicators for all operations
+- **Debug Mode**: `--debug` flag for troubleshooting
+- **Error Handling**: Comprehensive error messages with remediation steps
+
+#### 🏗️ Infrastructure as Code
+- **Renovate**: Automated dependency updates with sensible defaults
+- **Quality Gates**: 80% code coverage thresholds
+- **Monorepo Optimization**: Advanced Turborepo pipeline configuration
+- **Multi-Stage Builds**: Optimized Docker builds for all package managers
+
+### 📈 Comparison with Industry Leaders
+
+The enhanced init command now matches or exceeds features found in:
+- **create-next-app**: Template selection, package manager detection
+- **Vue CLI**: Preset system, interactive configuration
+- **Nx**: Monorepo optimization, workspace management
+- **create-t3-app**: Type safety, modern tooling stack
+
+### 🔧 Breaking Changes
+- Package manager detection may select different defaults
+- New configuration files are generated (can be customized)
+- Template system replaces some hardcoded behaviors
+
+### 📦 Migration Guide
+Existing projects are not affected. New projects created with v0.2.8 will include all new features automatically.
 
 ## What's New in v0.2.5
 
@@ -767,21 +932,21 @@ const microfrontends = [
 
 ## 🔗 Related Packages
 
-- **[@re-shell/core](https://github.com/Re-Shell/reshell-monorepo/tree/main/packages/core)** - Core microfrontend framework and utilities
-- **[@re-shell/ui](https://github.com/Re-Shell/reshell-monorepo/tree/main/packages/ui)** - Comprehensive React component library for microfrontend applications
+- **[@re-shell/core](https://github.com/Re-Shell/re-shell/tree/main/packages/core)** - Core microfrontend framework and utilities
+- **[@re-shell/ui](https://github.com/Re-Shell/re-shell/tree/main/packages/ui)** - Comprehensive React component library for microfrontend applications
 
 ## 📖 Documentation
 
 For comprehensive documentation, examples, and guides, visit:
 
-- **[CLI Documentation](https://github.com/Re-Shell/reshell-monorepo/tree/main/packages/cli/docs)**
-- **[Examples Guide](https://github.com/Re-Shell/reshell-monorepo/blob/main/packages/cli/EXAMPLES.md)**
-- **[Getting Started](https://github.com/Re-Shell/reshell-monorepo/blob/main/docs/getting-started.md)**
-- **[Best Practices](https://github.com/Re-Shell/reshell-monorepo/blob/main/docs/best-practices.md)**
+- **[CLI Documentation](https://github.com/Re-Shell/re-shell/tree/main/packages/cli/docs)**
+- **[Examples Guide](https://github.com/Re-Shell/re-shell/blob/main/packages/cli/EXAMPLES.md)**
+- **[Getting Started](https://github.com/Re-Shell/re-shell/blob/main/docs/getting-started.md)**
+- **[Best Practices](https://github.com/Re-Shell/re-shell/blob/main/docs/best-practices.md)**
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guide](https://github.com/Re-Shell/reshell-monorepo/blob/main/CONTRIBUTING.md) for details on:
+We welcome contributions! Please see our [Contributing Guide](https://github.com/Re-Shell/re-shell/blob/main/CONTRIBUTING.md) for details on:
 
 - Code of Conduct
 - Development setup
@@ -790,15 +955,15 @@ We welcome contributions! Please see our [Contributing Guide](https://github.com
 
 ## 📄 License
 
-MIT License - see [LICENSE](https://github.com/Re-Shell/reshell-monorepo/blob/main/LICENSE) file for details.
+MIT License - see [LICENSE](https://github.com/Re-Shell/re-shell/blob/main/LICENSE) file for details.
 
 ## 🆘 Support
 
-- 📖 [Documentation](https://github.com/Re-Shell/reshell-monorepo/tree/main/packages/cli/docs)
-- 🐛 [Issue Tracker](https://github.com/Re-Shell/reshell-monorepo/issues)
-- 💬 [Discussions](https://github.com/Re-Shell/reshell-monorepo/discussions)
+- 📖 [Documentation](https://github.com/Re-Shell/re-shell/tree/main/packages/cli/docs)
+- 🐛 [Issue Tracker](https://github.com/Re-Shell/re-shell/issues)
+- 💬 [Discussions](https://github.com/Re-Shell/re-shell/discussions)
 - 📧 [Email Support](mailto:support@re-shell.org)
 
 ---
 
-**Re-Shell CLI v0.2.5** - Built with ❤️ for modern microfrontend development
+**Re-Shell CLI v0.2.8** - Built with ❤️ for modern microfrontend development
