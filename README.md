@@ -637,6 +637,18 @@ cd my-project
 re-shell create my-feature --framework react-ts --type app
 ```
 
+## What's New in v0.2.4
+
+### Bug Fixes
+- **Fixed Terminal Output Buffering**: Resolved issue where CLI commands would hang with "Creating..." text until Enter was pressed
+- **Improved Spinner Behavior**: Enhanced spinner and progress indicators for better terminal compatibility
+- **Better Terminal Detection**: Added fallback behavior for non-interactive terminals (CI environments, etc.)
+- **Immediate Output Flushing**: All CLI output now appears immediately without requiring user input
+
+### Improvements
+- Enhanced terminal experience across different environments
+- Better support for various terminal emulators and shell environments
+
 ## What's New in v0.2.3
 
 ### New Features

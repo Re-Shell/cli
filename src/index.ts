@@ -1,10 +1,19 @@
 #!/usr/bin/env node
 
+// Ensure immediate output for better terminal experience
+process.env.FORCE_COLOR = '1'; // Enable colors in terminal
+if (process.stdout.isTTY) {
+  process.stdout.setEncoding('utf8');
+}
+if (process.stderr.isTTY) {
+  process.stderr.setEncoding('utf8');
+}
+
 import { Command } from 'commander';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import chalk from 'chalk';
-import ora from 'ora';
+import { createSpinner, flushOutput } from './utils/spinner';
 import { createProject } from './commands/create';
 import { addMicrofrontend } from './commands/add';
 import { removeMicrofrontend } from './commands/remove';
@@ -67,7 +76,8 @@ program
   .option('--no-submodules', 'Skip submodule support setup')
   .option('--force', 'Overwrite existing directory')
   .action(async (name, options) => {
-    const spinner = ora('Initializing monorepo...').start();
+    const spinner = createSpinner('Initializing monorepo...').start();
+    flushOutput();
     try {
       await initMonorepo(name, {
         packageManager: options.packageManager,
@@ -102,7 +112,8 @@ program
     if (options.template && !options.framework) {
       options.framework = options.template;
     }
-    const spinner = ora('Creating Re-Shell project...').start();
+    const spinner = createSpinner('Creating Re-Shell project...').start();
+    flushOutput();
     try {
       await createProject(name, { ...options, isProject: true });
       spinner.succeed(chalk.green(`Re-Shell project "${name}" created successfully!`));
@@ -125,7 +136,8 @@ program
   .option('--route <route>', 'Route path for the microfrontend')
   .option('--port <port>', 'Dev server port', '5173')
   .action(async (name, options) => {
-    const spinner = ora('Adding microfrontend...').start();
+    const spinner = createSpinner('Adding microfrontend...').start();
+    flushOutput();
     try {
       await addMicrofrontend(name, options);
       spinner.succeed(chalk.green(`Microfrontend "${name}" added successfully!`));
@@ -143,7 +155,8 @@ program
   .argument('<name>', 'Name of the microfrontend to remove')
   .option('--force', 'Force removal without confirmation')
   .action(async (name, options) => {
-    const spinner = ora('Removing microfrontend...').start();
+    const spinner = createSpinner('Removing microfrontend...').start();
+    flushOutput();
     try {
       await removeMicrofrontend(name, options);
       spinner.succeed(chalk.green(`Microfrontend "${name}" removed successfully!`));
@@ -176,7 +189,8 @@ program
   .option('--production', 'Build for production environment')
   .option('--analyze', 'Analyze bundle size')
   .action(async (name, options) => {
-    const spinner = ora('Building...').start();
+    const spinner = createSpinner('Building...').start();
+    flushOutput();
     try {
       await buildMicrofrontend(name, options);
       spinner.succeed(chalk.green(name ? `Microfrontend "${name}" built successfully!` : 'All microfrontends built successfully!'));
@@ -232,7 +246,8 @@ workspaceCommand
   .option('--version <version>', 'Target version for dependency')
   .option('--dev', 'Update dev dependency')
   .action(async (options) => {
-    const spinner = ora('Updating workspaces...').start();
+    const spinner = createSpinner('Updating workspaces...').start();
+    flushOutput();
     try {
       await updateWorkspaces(options);
       spinner.succeed(chalk.green('Workspaces updated successfully!'));
@@ -268,7 +283,8 @@ submoduleCommand
   .option('--path <path>', 'Submodule path')
   .option('--branch <branch>', 'Branch to track', 'main')
   .action(async (url, options) => {
-    const spinner = ora('Adding submodule...').start();
+    const spinner = createSpinner('Adding submodule...').start();
+    flushOutput();
     try {
       await addGitSubmodule(url, options);
       spinner.succeed(chalk.green('Submodule added successfully!'));
@@ -284,7 +300,8 @@ submoduleCommand
   .description('Remove a Git submodule')
   .option('--force', 'Force removal without confirmation')
   .action(async (path, options) => {
-    const spinner = ora('Removing submodule...').start();
+    const spinner = createSpinner('Removing submodule...').start();
+    flushOutput();
     try {
       await removeGitSubmodule(path, options);
       spinner.succeed(chalk.green('Submodule removed successfully!'));
@@ -300,7 +317,8 @@ submoduleCommand
   .description('Update Git submodules')
   .option('--path <path>', 'Update specific submodule')
   .action(async (options) => {
-    const spinner = ora('Updating submodules...').start();
+    const spinner = createSpinner('Updating submodules...').start();
+    flushOutput();
     try {
       await updateGitSubmodules(options);
       spinner.succeed(chalk.green('Submodules updated successfully!'));
@@ -327,7 +345,8 @@ submoduleCommand
   .command('init')
   .description('Initialize Git submodules')
   .action(async () => {
-    const spinner = ora('Initializing submodules...').start();
+    const spinner = createSpinner('Initializing submodules...').start();
+    flushOutput();
     try {
       await initSubmodules();
       spinner.succeed(chalk.green('Submodules initialized successfully!'));
