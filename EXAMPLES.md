@@ -24,21 +24,92 @@ npm install -g @re-shell/cli
 re-shell --version
 ```
 
+### 🚀 New in v0.2.8: World-Class Init Experience
+
+Re-Shell CLI v0.2.8 introduces a completely enhanced init command with templates, presets, and professional tooling:
+
+#### Template-Based Initialization
+```bash
+# E-commerce platform with pre-configured structure
+re-shell init my-store --template ecommerce
+
+# Analytics dashboard with chart components
+re-shell init analytics-app --template dashboard
+
+# SaaS platform with auth, billing, and admin
+re-shell init my-saas --template saas
+
+# Clean slate for custom setups
+re-shell init custom-project --template blank
+```
+
+#### Configuration Presets
+```bash
+# Save your configuration for reuse
+re-shell init first-project --template saas --package-manager pnpm
+# During setup, save as "company-standard" preset
+
+# Reuse saved configuration
+re-shell init second-project --preset company-standard
+```
+
+#### Enhanced Features
+```bash
+# Auto-detect package manager (pnpm, yarn, npm, bun)
+re-shell init auto-project
+
+# CI/CD friendly non-interactive mode
+re-shell init ci-project --template saas --yes --skip-install
+
+# Debug mode for troubleshooting
+re-shell init debug-project --debug
+
+# Skip dependency installation
+re-shell init fast-project --skip-install
+```
+
+#### Generated Tooling Suite
+Every project now includes:
+- **Code Quality**: ESLint, Prettier, CommitLint
+- **Git Hooks**: Husky pre-commit hooks
+- **Testing**: Jest with coverage thresholds
+- **CI/CD**: GitHub Actions workflows
+- **Docker**: Multi-stage builds with optimization
+- **Documentation**: Contributing guidelines, security policies
+- **Monorepo**: Turborepo configuration
+- **Dependencies**: Renovate auto-updates
+
 ## E-commerce Platform
 
 Build a complete e-commerce platform with separate microfrontends for different features.
 
 ### 1. Initialize the Project
 
+#### Option A: Using E-commerce Template (Recommended)
 ```bash
-# Create the monorepo
-re-shell init ecommerce-platform --package-manager pnpm
+# Create with built-in e-commerce template
+re-shell init ecommerce-platform --template ecommerce
+
+# Navigate to the project (dependencies already installed)
+cd ecommerce-platform
+```
+
+#### Option B: Manual Setup
+```bash
+# Create the monorepo with auto-detected package manager
+re-shell init ecommerce-platform
 
 # Navigate to the project
 cd ecommerce-platform
 
-# Install dependencies
+# Install dependencies (if --skip-install was used)
 pnpm install
+```
+
+#### Option C: Using Saved Preset
+```bash
+# If you have a company preset saved
+re-shell init ecommerce-platform --preset company-ecommerce
 ```
 
 ### 2. Create Product Catalog Microfrontend
@@ -288,10 +359,28 @@ Create a secure banking dashboard with multiple specialized microfrontends.
 
 ### 1. Initialize Banking Project
 
+#### Option A: Using Dashboard Template (Recommended)
 ```bash
-re-shell init banking-dashboard --package-manager pnpm
+# Create with built-in dashboard template optimized for analytics
+re-shell init banking-dashboard --template dashboard
+
 cd banking-dashboard
-pnpm install
+```
+
+#### Option B: Manual Setup with Auto-Detection
+```bash
+# Create banking dashboard with auto-detected package manager
+re-shell init banking-dashboard
+
+cd banking-dashboard
+```
+
+#### Option C: Save Configuration as Preset
+```bash
+# Create with custom configuration and save as preset
+re-shell init banking-dashboard --template dashboard --package-manager pnpm
+# During setup, choose "Yes" when asked "Save this configuration as a preset?"
+# Name it "banking-setup" for future projects
 ```
 
 ### 2. Create Account Overview
@@ -428,10 +517,26 @@ Build a comprehensive admin panel for a SaaS application.
 
 ### 1. Initialize Admin Panel
 
+#### Option A: Using SaaS Template (Recommended)
 ```bash
-re-shell init saas-admin --package-manager yarn
+# Create with built-in SaaS template including auth, billing, and admin features
+re-shell init saas-admin --template saas
+
 cd saas-admin
-yarn install
+```
+
+#### Option B: Manual Setup with Yarn
+```bash
+# Create SaaS admin with specific package manager
+re-shell init saas-admin --package-manager yarn
+
+cd saas-admin
+```
+
+#### Option C: CI/CD Optimized Setup
+```bash
+# Non-interactive setup for automated deployment
+re-shell init saas-admin --template saas --package-manager yarn --yes --debug
 ```
 
 ### 2. Create Dashboard

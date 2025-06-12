@@ -5,6 +5,55 @@ All notable changes to the `@re-shell/cli` package will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.8] - 2024-12-12
+
+### 🚀 World-Class Init Command Enhancement
+
+The init command has been completely transformed into a world-class development experience, rivaling and exceeding industry-leading CLI tools.
+
+### Added
+- **🎨 Template System**: Built-in templates for e-commerce, dashboard, and SaaS applications
+- **⚙️ Configuration Presets**: Save and reuse project configurations with `--preset` flag
+- **🔍 Auto-Detection**: Automatic package manager detection (npm, yarn, pnpm, bun)
+- **🔐 Security Scanning**: Automatic vulnerability assessment with remediation guidance
+- **🧰 Professional Tooling**: ESLint, Prettier, Husky, CommitLint setup out-of-the-box
+- **📊 Bun Support**: Added experimental support for Bun package manager
+- **🐳 Enhanced Docker**: Multi-stage builds with package manager optimization
+- **📚 Documentation Suite**: Auto-generated CONTRIBUTING.md, SECURITY.md, and project guidelines
+- **🔄 Dependency Management**: Renovate configuration for automated updates
+- **🧪 Testing Setup**: Jest configuration with 80% coverage thresholds
+- **💻 IDE Integration**: VS Code workspace with recommended extensions
+- **🏗️ Turborepo Config**: Advanced monorepo optimization pipeline
+- **📋 Quality Gates**: Git hooks for code quality enforcement
+- **🎯 Debug Mode**: `--debug` flag for troubleshooting
+- **⚡ Skip Install**: `--skip-install` flag for CI environments
+
+### Enhanced
+- **Interactive Experience**: Enhanced prompts with better validation and user guidance
+- **Progress Tracking**: Real-time progress indicators for all operations
+- **Error Handling**: Comprehensive error messages with actionable remediation steps
+- **System Validation**: Node.js version checking and system requirements validation
+- **Smart Defaults**: Context-aware defaults based on environment detection
+
+### Changed
+- **Package Manager Detection**: Auto-selects the best available package manager
+- **Template Architecture**: Template-specific directory structures and dependencies
+- **Configuration Generation**: Comprehensive configuration files for modern development
+- **Documentation**: Template-specific README and getting started guides
+
+### Fixed
+- **Repository Links**: Updated all GitHub repository links to correct public repository
+- **Cross-Platform**: Improved cross-platform compatibility for disk space checks
+- **TypeScript Compilation**: Fixed all TypeScript compilation warnings and errors
+
+### Breaking Changes
+- Package manager detection may select different defaults
+- New configuration files are generated (can be customized)
+- Template system replaces some hardcoded behaviors
+
+### Migration Guide
+Existing projects are not affected. New projects created with v0.2.8 will include all new features automatically.
+
 ## [0.2.7] - 2024-12-06
 
 ### Added
