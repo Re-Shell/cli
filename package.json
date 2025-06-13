@@ -1,7 +1,7 @@
 {
   "name": "@re-shell/cli",
-  "version": "0.2.9",
-  "description": "CLI tool for Re-Shell microfrontend framework",
+  "version": "0.3.0",
+  "description": "World-class CLI tool for Re-Shell microfrontend framework with health diagnostics, bundle analysis, CI/CD generation, and code scaffolding",
   "main": "dist/index.js",
   "files": [
     "dist/**/*",
@@ -29,7 +29,15 @@
     "re-shell",
     "cli",
     "framework",
-    "micro-frontend"
+    "micro-frontend",
+    "monorepo",
+    "bundle-analysis",
+    "health-check",
+    "cicd",
+    "code-generation",
+    "performance",
+    "security",
+    "migration-tools"
   ],
   "author": "Re-Shell Organization",
   "license": "MIT",
