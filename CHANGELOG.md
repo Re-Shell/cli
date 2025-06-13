@@ -5,6 +5,21 @@ All notable changes to the `@re-shell/cli` package will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2024-12-13
+
+### Fixed
+- **Documentation Update**: Updated all documentation to reflect v0.3.1 version numbers
+- **NPM Package Documentation**: Fixed outdated documentation in npm package that was showing v0.2.9 content
+- **README Alignment**: Ensured all version references are consistent throughout documentation
+- **Package Description**: Enhanced package.json description with comprehensive feature highlights
+
+### Technical
+- **NPM Republish**: Resolved npm registry caching issues by publishing as v0.3.1
+- **Documentation Consistency**: All documentation files now accurately reflect the current feature set
+- **Version Alignment**: Synchronized GitHub tags, npm version, and documentation versions
+
+This patch release ensures that users see the correct v0.3.1 documentation with all enterprise-grade features properly documented.
+
 ## [0.3.0] - 2024-12-13
 
 ### 🚀 World-Class Feature Expansion - The Most Comprehensive CLI Tool
