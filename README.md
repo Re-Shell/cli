@@ -1,6 +1,6 @@
-# Re-Shell CLI v0.2.9
+# Re-Shell CLI v0.3.0
 
-A world-class command-line interface for creating and managing multi-framework monorepo and microfrontend applications using the Re-Shell architecture. Built with enterprise-grade reliability, zero terminal hanging, and performance that rivals industry-leading CLI tools.
+The most comprehensive and powerful world-class command-line interface for creating and managing multi-framework monorepo and microfrontend applications using the Re-Shell architecture. Built with enterprise-grade reliability, zero terminal hanging, comprehensive health diagnostics, advanced analytics, and performance that rivals industry-leading CLI tools.
 
 ## 🚀 Features
 
@@ -29,6 +29,17 @@ A world-class command-line interface for creating and managing multi-framework m
 - **⚙️ Configuration Management**: Preset system for saving and reusing project configurations
 - **🧰 Professional Tooling**: ESLint, Prettier, Husky, CommitLint, and more out-of-the-box
 
+### 🚀 World-Class Features (v0.3.0) - The Most Comprehensive CLI Tool Available
+- **🏥 Health Diagnostics & Auto-Fix**: 8-category comprehensive project health checks with automatic issue resolution
+- **📊 Advanced Multi-Dimensional Analysis**: Bundle size analysis, dependency insights, performance monitoring, security scanning, and vulnerability detection
+- **🔄 Intelligent Migration System**: Smart project import/export with automatic framework detection, backup/restore capabilities
+- **🤖 Advanced Code Generation**: Multi-framework component generation, React hooks, services, complete test suites, and comprehensive documentation
+- **🚀 Multi-Provider CI/CD Integration**: Generate configurations for GitHub Actions, GitLab CI, Jenkins, CircleCI, and Azure Pipelines
+- **📦 Enterprise Backup & Restore**: Timestamped project backups with manifest tracking and restoration capabilities
+- **🔍 Security-First Analysis**: Vulnerability detection, sensitive file checks, secret pattern analysis, and security recommendations
+- **⚡ Performance Intelligence**: Build time analysis, bundle optimization suggestions, and load time insights
+- **📚 Comprehensive Documentation**: Automatic API docs, README generation, TypeDoc configuration, and project documentation
+
 ## 📦 Installation
 
 Install the CLI globally using your preferred package manager:
@@ -56,7 +67,7 @@ cd my-monorepo
 This creates a complete monorepo with:
 - **5 workspace types**: `apps/`, `packages/`, `libs/`, `tools/`, `docs/`
 - **Git repository** with submodule support
-- **Package manager** configuration (pnpm/yarn/npm)
+- **Package manager** configuration (pnpm/yarn/npm/bun)
 - **Development tooling**: ESLint, TypeScript, Vite
 - **Docker & CI/CD**: Multi-stage builds, GitHub Actions
 - **VSCode workspace**: Settings, extensions, tasks
@@ -71,7 +82,20 @@ re-shell create my-app
 re-shell create my-app --framework react-ts --type app --port 3000
 ```
 
-### 3. Add More Workspaces
+### 3. Health Check & Analysis (🆕 v0.3.0)
+
+```bash
+# Run comprehensive health check with auto-fix
+re-shell doctor --fix --verbose
+
+# Complete project analysis (bundle, dependencies, performance, security)
+re-shell analyze --type all --output analysis.json --verbose
+
+# Generate comprehensive documentation
+re-shell generate docs --verbose
+```
+
+### 4. Add More Workspaces
 
 ```bash
 # Create a shared library
@@ -85,6 +109,29 @@ re-shell create dashboard --framework svelte-ts --type app --port 3002
 
 # Create a utility package
 re-shell create utils --type package
+```
+
+### 5. Advanced Code Generation & CI/CD (🆕 v0.3.0)
+
+```bash
+# Generate multi-framework components
+re-shell generate component MyButton --framework react --workspace ui-components --export
+
+# Generate React hooks with tests
+re-shell generate hook useUserData --workspace shared-hooks --export
+
+# Generate complete test suite
+re-shell generate test my-workspace --verbose
+
+# Generate multi-provider CI/CD configurations
+re-shell cicd generate --provider github --template advanced
+re-shell cicd deploy production
+
+# Smart project migration
+re-shell migrate import /path/to/existing/project --backup --verbose
+
+# Create project backup
+re-shell migrate backup --verbose
 ```
 
 ## 📚 Examples
@@ -464,6 +511,197 @@ Interactive submodule management.
 - Operation confirmation
 - Combines all submodule commands
 - User-friendly interface
+
+### Health & Analysis
+
+#### `re-shell doctor`
+Diagnose project health and identify issues.
+
+**Options:**
+- `--fix` - Automatically fix issues where possible
+- `--verbose` - Show detailed information
+- `--json` - Output results as JSON
+
+**Features:**
+- **Comprehensive Health Checks**: Validates monorepo structure, dependencies, security, workspace configuration, git setup, build configuration, performance, and file system health
+- **Auto-Fix Capabilities**: Automatically resolves common issues like missing .gitignore, security vulnerabilities, and configuration problems
+- **Detailed Reporting**: Provides actionable suggestions for each issue found
+- **Health Scoring**: Overall health score with categorized results (success, warning, error)
+- **Multi-Format Output**: Human-readable reports or JSON for programmatic use
+
+**Examples:**
+```bash
+# Basic health check
+re-shell doctor
+
+# Detailed check with auto-fix
+re-shell doctor --fix --verbose
+
+# JSON output for CI/CD
+re-shell doctor --json > health-report.json
+```
+
+#### `re-shell analyze`
+Analyze bundle size, dependencies, and performance.
+
+**Options:**
+- `--workspace <name>` - Analyze specific workspace
+- `--type <type>` - Analysis type (bundle|dependencies|performance|security|all) [default: all]
+- `--output <file>` - Save results to file
+- `--verbose` - Show detailed information
+- `--json` - Output results as JSON
+
+**Features:**
+- **Bundle Analysis**: Bundle size, gzipped size, asset breakdown, chunk analysis, and tree-shaking insights
+- **Dependency Analysis**: Total dependencies, outdated packages, duplicates, vulnerabilities, and license information
+- **Performance Analysis**: Build times, bundle sizes, load time estimates, and optimization suggestions
+- **Security Analysis**: Vulnerability scanning, sensitive file detection, secret pattern detection, and security recommendations
+- **Multi-Workspace Support**: Analyze individual or all workspaces
+- **Export Results**: Save analysis to JSON for further processing
+
+**Examples:**
+```bash
+# Analyze everything
+re-shell analyze
+
+# Bundle analysis only
+re-shell analyze --type bundle --workspace my-app
+
+# Full analysis with export
+re-shell analyze --type all --output analysis.json
+```
+
+### Migration & Backup
+
+#### `re-shell migrate import <source>`
+Import existing project into Re-Shell monorepo.
+
+**Arguments:**
+- `source` - Path to existing project (required)
+
+**Options:**
+- `--dry-run` - Show what would be imported without making changes
+- `--verbose` - Show detailed information
+- `--backup` - Create backup before import
+- `--force` - Overwrite existing files
+
+**Features:**
+- **Smart Analysis**: Automatically detects project type, framework, package manager, and tooling
+- **Monorepo Integration**: Imports standalone projects as workspaces or full monorepos
+- **Configuration Migration**: Updates package.json, workspace configuration, and build scripts
+- **Backup Support**: Optional backup creation before import
+- **Multi-Framework Support**: Handles React, Vue, Svelte, Angular, and vanilla JavaScript projects
+
+#### `re-shell migrate export <target>`
+Export Re-Shell project to external location.
+
+**Arguments:**
+- `target` - Target export location (required)
+
+**Options:**
+- `--force` - Overwrite target directory if it exists
+- `--verbose` - Show detailed information
+
+#### `re-shell migrate backup`
+Create backup of current project.
+
+**Options:**
+- `--verbose` - Show detailed information
+
+#### `re-shell migrate restore <backup> <target>`
+Restore project from backup.
+
+**Arguments:**
+- `backup` - Path to backup (required)
+- `target` - Target restore location (required)
+
+**Options:**
+- `--force` - Overwrite target directory if it exists
+- `--verbose` - Show detailed information
+
+### CI/CD Integration
+
+#### `re-shell cicd generate`
+Generate CI/CD configuration files.
+
+**Options:**
+- `--provider <provider>` - CI/CD provider (github|gitlab|jenkins|circleci|azure) [default: github]
+- `--template <template>` - Configuration template (basic|advanced|custom) [default: basic]
+- `--force` - Overwrite existing configuration
+- `--verbose` - Show detailed information
+
+**Features:**
+- **Multi-Provider Support**: Supports GitHub Actions, GitLab CI, Jenkins, CircleCI, and Azure Pipelines
+- **Template System**: Basic and advanced templates with best practices
+- **Monorepo Optimization**: Parallel builds, change detection, and dependency caching
+- **Security Integration**: Automated security scanning and vulnerability checks
+- **Performance Monitoring**: Bundle analysis and performance tracking
+- **Deploy Automation**: Environment-specific deployment configurations
+
+#### `re-shell cicd deploy <environment>`
+Generate deployment configuration for environment.
+
+**Arguments:**
+- `environment` - Target environment (required)
+
+**Options:**
+- `--verbose` - Show detailed information
+
+### Code Generation
+
+#### `re-shell generate component <name>`
+Generate a new component.
+
+**Arguments:**
+- `name` - Component name (required)
+
+**Options:**
+- `--framework <framework>` - Framework (react|vue|svelte|angular) [default: react]
+- `--workspace <workspace>` - Target workspace
+- `--export` - Add to index exports
+- `--verbose` - Show detailed information
+
+**Features:**
+- **Multi-Framework Support**: React, Vue, Svelte templates with TypeScript support
+- **Complete Generation**: Component file, styles, tests, and type definitions
+- **Export Management**: Automatic index.ts updates for easy importing
+- **Best Practices**: Follows framework conventions and industry standards
+
+#### `re-shell generate hook <name>`
+Generate a React hook.
+
+**Arguments:**
+- `name` - Hook name (required)
+
+**Options:**
+- `--workspace <workspace>` - Target workspace
+- `--export` - Add to index exports
+- `--verbose` - Show detailed information
+
+#### `re-shell generate service <name>`
+Generate a service class.
+
+**Arguments:**
+- `name` - Service name (required)
+
+**Options:**
+- `--workspace <workspace>` - Target workspace
+- `--verbose` - Show detailed information
+
+#### `re-shell generate test <workspace>`
+Generate test suite for workspace.
+
+**Arguments:**
+- `workspace` - Target workspace (required)
+
+**Options:**
+- `--verbose` - Show detailed information
+
+#### `re-shell generate docs`
+Generate project documentation.
+
+**Options:**
+- `--verbose` - Show detailed information
 
 ## 🏗️ Supported Frameworks
 
@@ -976,4 +1214,4 @@ MIT License - see [LICENSE](https://github.com/Re-Shell/cli/blob/main/LICENSE) f
 
 ---
 
-**Re-Shell CLI v0.2.8** - Built with ❤️ for modern microfrontend development
+**Re-Shell CLI v0.3.0** - The most comprehensive world-class CLI tool for modern microfrontend development. Built with ❤️ for enterprise developers who demand excellence.

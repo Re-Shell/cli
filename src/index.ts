@@ -35,6 +35,11 @@ import {
 } from './commands/submodule';
 import { checkForUpdates, runUpdateCommand } from './utils/checkUpdate';
 import { createAsyncCommand, handleError, withTimeout } from './utils/error-handler';
+import { runDoctorCheck } from './commands/doctor';
+import { importProject, exportProject, backupProject, restoreProject } from './commands/migrate';
+import { analyzeProject } from './commands/analyze';
+import { generateCICDConfig, generateDeployConfig, setupEnvironments } from './commands/cicd';
+import { generateCode, generateTests, generateDocumentation } from './commands/generate';
 
 // Get version from package.json
 const packageJsonPath = path.resolve(__dirname, '../package.json');
@@ -453,6 +458,279 @@ program
   .action(async () => {
     await runUpdateCommand();
   });
+
+// Doctor command - Health check and diagnostics
+program
+  .command('doctor')
+  .description('Diagnose project health and identify issues')
+  .option('--fix', 'Automatically fix issues where possible')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output results as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Running health check...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await runDoctorCheck({ ...options, spinner });
+      }, 120000); // 2 minute timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Health check completed!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+// Analyze command - Bundle and dependency analysis
+program
+  .command('analyze')
+  .description('Analyze bundle size, dependencies, and performance')
+  .option('--workspace <name>', 'Analyze specific workspace')
+  .option('--type <type>', 'Analysis type (bundle, dependencies, performance, security, all)', 'all')
+  .option('--output <file>', 'Save results to file')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output results as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Analyzing project...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await analyzeProject({ ...options, spinner });
+      }, 300000); // 5 minute timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Analysis completed!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+// Migration commands
+const migrateCommand = program.command('migrate').description('Import/export projects and manage migrations');
+
+migrateCommand
+  .command('import <source>')
+  .description('Import existing project into Re-Shell monorepo')
+  .option('--dry-run', 'Show what would be imported without making changes')
+  .option('--verbose', 'Show detailed information')
+  .option('--backup', 'Create backup before import')
+  .option('--force', 'Overwrite existing files')
+  .action(
+    createAsyncCommand(async (source, options) => {
+      const spinner = createSpinner('Importing project...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await importProject(source, { ...options, spinner });
+      }, 600000); // 10 minute timeout
+
+      spinner.succeed(chalk.green('Project imported successfully!'));
+    })
+  );
+
+migrateCommand
+  .command('export <target>')
+  .description('Export Re-Shell project to external location')
+  .option('--force', 'Overwrite target directory if it exists')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (target, options) => {
+      const spinner = createSpinner('Exporting project...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await exportProject(target, { ...options, spinner });
+      }, 300000); // 5 minute timeout
+
+      spinner.succeed(chalk.green('Project exported successfully!'));
+    })
+  );
+
+migrateCommand
+  .command('backup')
+  .description('Create backup of current project')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Creating backup...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await backupProject({ ...options, spinner });
+      }, 300000); // 5 minute timeout
+
+      spinner.succeed(chalk.green('Backup created successfully!'));
+    })
+  );
+
+migrateCommand
+  .command('restore <backup> <target>')
+  .description('Restore project from backup')
+  .option('--force', 'Overwrite target directory if it exists')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (backup, target, options) => {
+      const spinner = createSpinner('Restoring from backup...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await restoreProject(backup, target, { ...options, spinner });
+      }, 300000); // 5 minute timeout
+
+      spinner.succeed(chalk.green('Project restored successfully!'));
+    })
+  );
+
+// CI/CD commands
+const cicdCommand = program.command('cicd').description('Generate CI/CD configurations and deployment scripts');
+
+cicdCommand
+  .command('generate')
+  .description('Generate CI/CD configuration files')
+  .option('--provider <provider>', 'CI/CD provider (github, gitlab, jenkins, circleci, azure)', 'github')
+  .option('--template <template>', 'Configuration template (basic, advanced, custom)', 'basic')
+  .option('--force', 'Overwrite existing configuration')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Generating CI/CD configuration...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await generateCICDConfig({ ...options, spinner });
+      }, 120000); // 2 minute timeout
+
+      spinner.succeed(chalk.green('CI/CD configuration generated!'));
+    })
+  );
+
+cicdCommand
+  .command('deploy <environment>')
+  .description('Generate deployment configuration for environment')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (environment, options) => {
+      const spinner = createSpinner(`Generating deployment config for ${environment}...`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await generateDeployConfig(environment, { ...options, spinner });
+      }, 120000); // 2 minute timeout
+
+      spinner.succeed(chalk.green(`Deployment configuration for ${environment} generated!`));
+    })
+  );
+
+// Generate commands
+const generateCommand = program.command('generate').description('Generate code, tests, and documentation');
+
+generateCommand
+  .command('component <name>')
+  .description('Generate a new component')
+  .option('--framework <framework>', 'Framework (react, vue, svelte, angular)', 'react')
+  .option('--workspace <workspace>', 'Target workspace')
+  .option('--export', 'Add to index exports')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (name, options) => {
+      const spinner = createSpinner(`Generating component ${name}...`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await generateCode(name, { ...options, type: 'component', spinner });
+      }, 60000); // 1 minute timeout
+
+      spinner.succeed(chalk.green(`Component ${name} generated!`));
+    })
+  );
+
+generateCommand
+  .command('hook <name>')
+  .description('Generate a React hook')
+  .option('--workspace <workspace>', 'Target workspace')
+  .option('--export', 'Add to index exports')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (name, options) => {
+      const spinner = createSpinner(`Generating hook ${name}...`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await generateCode(name, { ...options, type: 'hook', framework: 'react', spinner });
+      }, 60000); // 1 minute timeout
+
+      spinner.succeed(chalk.green(`Hook ${name} generated!`));
+    })
+  );
+
+generateCommand
+  .command('service <name>')
+  .description('Generate a service class')
+  .option('--workspace <workspace>', 'Target workspace')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (name, options) => {
+      const spinner = createSpinner(`Generating service ${name}...`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await generateCode(name, { ...options, type: 'service', spinner });
+      }, 60000); // 1 minute timeout
+
+      spinner.succeed(chalk.green(`Service ${name} generated!`));
+    })
+  );
+
+generateCommand
+  .command('test <workspace>')
+  .description('Generate test suite for workspace')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (workspace, options) => {
+      const spinner = createSpinner(`Generating tests for ${workspace}...`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await generateTests(workspace, { ...options, spinner });
+      }, 120000); // 2 minute timeout
+
+      spinner.succeed(chalk.green(`Test suite for ${workspace} generated!`));
+    })
+  );
+
+generateCommand
+  .command('docs')
+  .description('Generate project documentation')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Generating documentation...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await generateDocumentation({ ...options, spinner });
+      }, 180000); // 3 minute timeout
+
+      spinner.succeed(chalk.green('Documentation generated!'));
+    })
+  );
 
 // Deprecated create-mf command removed in v0.2.0
 // Enhanced with --yes flag in v0.2.5 for non-interactive mode

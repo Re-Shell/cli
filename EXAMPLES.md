@@ -5,12 +5,13 @@ This document provides comprehensive real-world scenarios and examples for using
 ## Table of Contents
 
 1. [Getting Started](#getting-started)
-2. [E-commerce Platform](#e-commerce-platform)
-3. [Banking Dashboard](#banking-dashboard)
-4. [SaaS Admin Panel](#saas-admin-panel)
-5. [Healthcare Portal](#healthcare-portal)
-6. [Educational Platform](#educational-platform)
-7. [Advanced Scenarios](#advanced-scenarios)
+2. [World-Class Features (v0.3.0)](#world-class-features-v030)
+3. [E-commerce Platform](#e-commerce-platform)
+4. [Banking Dashboard](#banking-dashboard)
+5. [SaaS Admin Panel](#saas-admin-panel)
+6. [Healthcare Portal](#healthcare-portal)
+7. [Educational Platform](#educational-platform)
+8. [Advanced Scenarios](#advanced-scenarios)
 
 ## Getting Started
 
@@ -94,6 +95,279 @@ Every project now includes:
 - **Documentation**: Contributing guidelines, security policies
 - **Monorepo**: Turborepo configuration
 - **Dependencies**: Renovate auto-updates
+
+## World-Class Features (v0.3.0)
+
+Re-Shell CLI v0.3.0 introduces world-class features that make it the most comprehensive monorepo and microfrontend CLI tool available.
+
+### 🏥 Health Diagnostics & Analysis
+
+#### Complete Project Health Check
+```bash
+# Run comprehensive health check
+re-shell doctor
+
+# Example output:
+# 🏥 Re-Shell Health Check Results
+# 
+# Summary:
+#   ✓ 12 checks passed
+#   ⚠ 2 warnings  
+#   ✗ 1 errors
+#
+# ✓ package-json           Package.json structure is valid
+# ✓ dependency-duplicates  No dependency version conflicts found
+# ⚠ outdated-dependencies Found 5 outdated dependencies
+# ✗ security-audit        Found 3 security vulnerabilities
+```
+
+#### Auto-Fix Common Issues
+```bash
+# Automatically fix issues where possible
+re-shell doctor --fix --verbose
+
+# This will:
+# - Fix security vulnerabilities with npm audit fix
+# - Create missing .gitignore files
+# - Update outdated configurations
+# - Resolve dependency conflicts
+```
+
+#### Export Health Reports for CI/CD
+```bash
+# Generate JSON report for automation
+re-shell doctor --json > health-report.json
+
+# Use in CI/CD pipelines
+if ! re-shell doctor --json | jq -e '.checks[] | select(.status == "error")' > /dev/null; then
+  echo "Health check passed!"
+else
+  echo "Health check failed!"
+  exit 1
+fi
+```
+
+### 📊 Advanced Project Analysis
+
+#### Bundle Analysis
+```bash
+# Analyze all workspaces
+re-shell analyze --type bundle
+
+# Focus on specific workspace
+re-shell analyze --type bundle --workspace frontend-app
+
+# Export detailed analysis
+re-shell analyze --type bundle --output bundle-report.json
+```
+
+#### Dependency Analysis
+```bash
+# Check for outdated dependencies and security issues
+re-shell analyze --type dependencies
+
+# Example output:
+# 📦 frontend-app
+#   Dependencies:
+#     Total: 45
+#     Outdated: 8
+#     Vulnerabilities: 2 high, 1 medium
+```
+
+#### Performance Analysis
+```bash
+# Analyze build times and performance
+re-shell analyze --type performance
+
+# Get suggestions for optimization
+re-shell analyze --type performance --verbose
+```
+
+#### Complete Analysis with Export
+```bash
+# Comprehensive analysis of everything
+re-shell analyze --type all --output analysis.json --verbose
+
+# This analyzes:
+# - Bundle sizes and optimization opportunities
+# - Dependency health and security
+# - Build performance and bottlenecks
+# - Security vulnerabilities and best practices
+```
+
+### 🔄 Migration & Project Management
+
+#### Import Existing Projects
+```bash
+# Import a React project into your monorepo
+re-shell migrate import ../my-react-app
+
+# Import with backup (recommended)
+re-shell migrate import ../legacy-project --backup
+
+# Dry run to see what would happen
+re-shell migrate import ../complex-project --dry-run --verbose
+```
+
+#### Export Projects
+```bash
+# Export current monorepo for deployment
+re-shell migrate export ../deployment-package
+
+# Export with specific configuration
+re-shell migrate export ../backup --force
+```
+
+#### Backup and Restore
+```bash
+# Create timestamped backup
+re-shell migrate backup
+
+# Restore from backup
+re-shell migrate restore ../backup-2024-06-13T16-30-00 ../restored-project
+```
+
+### 🤖 Code Generation
+
+#### Generate React Components
+```bash
+# Generate a React component with TypeScript
+re-shell generate component UserProfile --framework react --workspace ui-components
+
+# Generate Vue component
+re-shell generate component ProductCard --framework vue --workspace product-catalog
+
+# Generate with automatic exports
+re-shell generate component Button --framework react --export --verbose
+```
+
+#### Generate React Hooks
+```bash
+# Generate custom hook
+re-shell generate hook useUserData --workspace shared-hooks
+
+# Generated files:
+# - src/hooks/useUserData.ts
+# - src/hooks/useUserData.test.ts
+```
+
+#### Generate Services
+```bash
+# Generate API service
+re-shell generate service UserService --workspace api-client
+
+# Generated files:
+# - src/services/UserService.ts
+# - src/services/UserService.test.ts
+```
+
+#### Generate Test Suites
+```bash
+# Generate complete test suite for workspace
+re-shell generate test frontend-app
+
+# Generated files:
+# - jest.config.js
+# - src/setupTests.ts
+# - src/test-utils/index.ts
+```
+
+#### Generate Documentation
+```bash
+# Generate project documentation
+re-shell generate docs
+
+# Generated files:
+# - README.md (updated)
+# - docs/ directory
+# - API documentation
+# - typedoc.json configuration
+```
+
+### 🚀 CI/CD Integration
+
+#### GitHub Actions (Recommended)
+```bash
+# Generate basic GitHub Actions workflow
+re-shell cicd generate --provider github
+
+# Generate advanced workflow with matrix builds
+re-shell cicd generate --provider github --template advanced
+
+# Files generated:
+# - .github/workflows/ci.yml
+# - .github/workflows/security.yml
+# - .github/workflows/advanced-ci.yml (if advanced)
+```
+
+#### GitLab CI
+```bash
+# Generate GitLab CI configuration
+re-shell cicd generate --provider gitlab --template advanced
+
+# Generated files:
+# - .gitlab-ci.yml
+```
+
+#### Multiple Providers
+```bash
+# Generate configurations for multiple providers
+re-shell cicd generate --provider github
+re-shell cicd generate --provider azure
+re-shell cicd generate --provider jenkins
+```
+
+#### Deployment Configuration
+```bash
+# Generate deployment config for staging
+re-shell cicd deploy staging
+
+# Generate production deployment
+re-shell cicd deploy production
+
+# Generated files:
+# - scripts/deploy/deploy.sh
+# - scripts/deploy/rollback.sh
+# - Dockerfile
+# - docker-compose.yml
+# - docker-compose.prod.yml
+```
+
+### 🔗 Complete Workflow Example
+
+Here's a complete workflow using all the new features:
+
+```bash
+# 1. Initialize with health-first approach
+re-shell init my-enterprise-app --template saas --yes
+
+# 2. Health check immediately
+cd my-enterprise-app
+re-shell doctor --fix
+
+# 3. Generate core components
+re-shell generate component Layout --framework react --workspace ui-components --export
+re-shell generate hook useAuth --workspace shared-hooks
+re-shell generate service AuthService --workspace api-client
+
+# 4. Set up CI/CD
+re-shell cicd generate --provider github --template advanced
+
+# 5. Create comprehensive analysis baseline
+re-shell analyze --type all --output baseline-analysis.json
+
+# 6. Set up deployment
+re-shell cicd deploy production
+
+# 7. Generate documentation
+re-shell generate docs
+
+# 8. Final health check and backup
+re-shell doctor --json > pre-deployment-health.json
+re-shell migrate backup
+
+# 9. Your enterprise-grade monorepo is ready!
+```
 
 ## E-commerce Platform
 
