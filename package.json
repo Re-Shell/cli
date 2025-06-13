@@ -1,6 +1,6 @@
 {
   "name": "@re-shell/cli",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "World-class CLI tool for Re-Shell microfrontend framework with health diagnostics, bundle analysis, CI/CD generation, and code scaffolding",
   "main": "dist/index.js",
   "files": [

@@ -96,9 +96,9 @@ Every project now includes:
 - **Monorepo**: Turborepo configuration
 - **Dependencies**: Renovate auto-updates
 
-## World-Class Features (v0.3.0)
+## World-Class Features (v0.3.1)
 
-Re-Shell CLI v0.3.0 introduces world-class features that make it the most comprehensive monorepo and microfrontend CLI tool available.
+Re-Shell CLI v0.3.1 introduces world-class features that make it the most comprehensive monorepo and microfrontend CLI tool available.
 
 ### 🏥 Health Diagnostics & Analysis
 

@@ -1,4 +1,4 @@
-# Re-Shell CLI v0.3.0
+# Re-Shell CLI v0.3.1
 
 The most comprehensive and powerful world-class command-line interface for creating and managing multi-framework monorepo and microfrontend applications using the Re-Shell architecture. Built with enterprise-grade reliability, zero terminal hanging, comprehensive health diagnostics, advanced analytics, and performance that rivals industry-leading CLI tools.
 
@@ -29,7 +29,7 @@ The most comprehensive and powerful world-class command-line interface for creat
 - **⚙️ Configuration Management**: Preset system for saving and reusing project configurations
 - **🧰 Professional Tooling**: ESLint, Prettier, Husky, CommitLint, and more out-of-the-box
 
-### 🚀 World-Class Features (v0.3.0) - The Most Comprehensive CLI Tool Available
+### 🚀 World-Class Features (v0.3.1) - The Most Comprehensive CLI Tool Available
 - **🏥 Health Diagnostics & Auto-Fix**: 8-category comprehensive project health checks with automatic issue resolution
 - **📊 Advanced Multi-Dimensional Analysis**: Bundle size analysis, dependency insights, performance monitoring, security scanning, and vulnerability detection
 - **🔄 Intelligent Migration System**: Smart project import/export with automatic framework detection, backup/restore capabilities
@@ -82,7 +82,7 @@ re-shell create my-app
 re-shell create my-app --framework react-ts --type app --port 3000
 ```
 
-### 3. Health Check & Analysis (🆕 v0.3.0)
+### 3. Health Check & Analysis (🆕 v0.3.1)
 
 ```bash
 # Run comprehensive health check with auto-fix
@@ -111,7 +111,7 @@ re-shell create dashboard --framework svelte-ts --type app --port 3002
 re-shell create utils --type package
 ```
 
-### 5. Advanced Code Generation & CI/CD (🆕 v0.3.0)
+### 5. Advanced Code Generation & CI/CD (🆕 v0.3.1)
 
 ```bash
 # Generate multi-framework components
@@ -1214,4 +1214,4 @@ MIT License - see [LICENSE](https://github.com/Re-Shell/cli/blob/main/LICENSE) f
 
 ---
 
-**Re-Shell CLI v0.3.0** - The most comprehensive world-class CLI tool for modern microfrontend development. Built with ❤️ for enterprise developers who demand excellence.
+**Re-Shell CLI v0.3.1** - The most comprehensive world-class CLI tool for modern microfrontend development. Built with ❤️ for enterprise developers who demand excellence.
