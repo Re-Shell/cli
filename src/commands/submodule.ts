@@ -7,22 +7,26 @@ import {
   getSubmoduleStatus,
   createSubmoduleDocumentation,
   isGitRepository,
-  SubmoduleInfo
+  SubmoduleInfo,
 } from '../utils/submodule';
 import { findMonorepoRoot } from '../utils/monorepo';
+import { ProgressSpinner } from '../utils/spinner';
 
 interface SubmoduleAddOptions {
   branch?: string;
   path?: string;
+  spinner?: ProgressSpinner;
 }
 
 interface SubmoduleUpdateOptions {
   path?: string;
   recursive?: boolean;
+  spinner?: ProgressSpinner;
 }
 
 interface SubmoduleRemoveOptions {
   force?: boolean;
+  spinner?: ProgressSpinner;
 }
 
 /**
@@ -32,10 +36,20 @@ export async function addGitSubmodule(
   repositoryUrl: string,
   options: SubmoduleAddOptions = {}
 ): Promise<void> {
+  const { spinner } = options;
+
   try {
+    if (spinner) {
+      spinner.setText('Checking Git repository...');
+    }
+
     // Ensure we're in a Git repository
     if (!(await isGitRepository())) {
       throw new Error('Not in a Git repository. Initialize Git first with: git init');
+    }
+
+    if (spinner) {
+      spinner.stop();
     }
 
     // Interactive prompts for missing options
@@ -45,36 +59,52 @@ export async function addGitSubmodule(
         name: 'path',
         message: 'Submodule path:',
         initial: repositoryUrl.split('/').pop()?.replace('.git', '') || 'submodule',
-        validate: (value: string) => value.trim() ? true : 'Path is required'
+        validate: (value: string) => (value.trim() ? true : 'Path is required'),
       },
       {
         type: options.branch ? null : 'text',
         name: 'branch',
         message: 'Branch to track:',
-        initial: 'main'
-      }
+        initial: 'main',
+      },
     ]);
 
     const finalOptions = {
       path: options.path || responses.path,
-      branch: options.branch || responses.branch || 'main'
+      branch: options.branch || responses.branch || 'main',
     };
+
+    if (spinner) {
+      spinner.start();
+      spinner.setText(`Adding submodule: ${repositoryUrl}`);
+    }
 
     console.log(chalk.cyan(`Adding submodule: ${repositoryUrl}`));
     console.log(chalk.gray(`Path: ${finalOptions.path}`));
     console.log(chalk.gray(`Branch: ${finalOptions.branch}`));
 
     await addSubmodule(finalOptions.path, repositoryUrl, finalOptions.branch);
-    
+
+    if (spinner) {
+      spinner.setText('Updating documentation...');
+    }
+
     // Update documentation
     const submodules = await getSubmoduleStatus();
-    const monorepoRoot = await findMonorepoRoot() || process.cwd();
+    const monorepoRoot = (await findMonorepoRoot()) || process.cwd();
     await createSubmoduleDocumentation(monorepoRoot, submodules);
 
-    console.log(chalk.green(`✓ Submodule added successfully: ${finalOptions.path}`));
-    console.log(chalk.gray('Documentation updated in docs/SUBMODULES.md'));
+    if (spinner) {
+      spinner.succeed(chalk.green(`✓ Submodule added successfully: ${finalOptions.path}`));
+    } else {
+      console.log(chalk.green(`✓ Submodule added successfully: ${finalOptions.path}`));
+    }
 
+    console.log(chalk.gray('Documentation updated in docs/SUBMODULES.md'));
   } catch (error) {
+    if (spinner) {
+      spinner.fail(chalk.red('Error adding submodule'));
+    }
     console.error(chalk.red('Error adding submodule:'), error);
     throw error;
   }
@@ -87,18 +117,34 @@ export async function removeGitSubmodule(
   submodulePath: string,
   options: SubmoduleRemoveOptions = {}
 ): Promise<void> {
+  const { spinner } = options;
+
   try {
+    if (spinner) {
+      spinner.setText('Checking Git repository...');
+    }
+
     // Ensure we're in a Git repository
     if (!(await isGitRepository())) {
       throw new Error('Not in a Git repository.');
     }
 
+    if (spinner) {
+      spinner.setText('Loading submodule information...');
+    }
+
     // Get current submodules to validate path
     const submodules = await getSubmoduleStatus();
-    const submodule = submodules.find(sub => sub.path === submodulePath || sub.name === submodulePath);
-    
+    const submodule = submodules.find(
+      sub => sub.path === submodulePath || sub.name === submodulePath
+    );
+
     if (!submodule) {
       throw new Error(`Submodule not found: ${submodulePath}`);
+    }
+
+    if (spinner) {
+      spinner.stop();
     }
 
     // Confirmation prompt unless force option is used
@@ -107,7 +153,7 @@ export async function removeGitSubmodule(
         type: 'confirm',
         name: 'confirm',
         message: `Are you sure you want to remove submodule "${submodule.path}"?`,
-        initial: false
+        initial: false,
       });
 
       if (!confirm) {
@@ -116,19 +162,35 @@ export async function removeGitSubmodule(
       }
     }
 
+    if (spinner) {
+      spinner.start();
+      spinner.setText(`Removing submodule: ${submodule.path}`);
+    }
+
     console.log(chalk.cyan(`Removing submodule: ${submodule.path}`));
 
     await removeSubmodule(submodule.path);
-    
+
+    if (spinner) {
+      spinner.setText('Updating documentation...');
+    }
+
     // Update documentation
     const updatedSubmodules = await getSubmoduleStatus();
-    const monorepoRoot = await findMonorepoRoot() || process.cwd();
+    const monorepoRoot = (await findMonorepoRoot()) || process.cwd();
     await createSubmoduleDocumentation(monorepoRoot, updatedSubmodules);
 
-    console.log(chalk.green(`✓ Submodule removed successfully: ${submodule.path}`));
-    console.log(chalk.gray('Documentation updated in docs/SUBMODULES.md'));
+    if (spinner) {
+      spinner.succeed(chalk.green(`✓ Submodule removed successfully: ${submodule.path}`));
+    } else {
+      console.log(chalk.green(`✓ Submodule removed successfully: ${submodule.path}`));
+    }
 
+    console.log(chalk.gray('Documentation updated in docs/SUBMODULES.md'));
   } catch (error) {
+    if (spinner) {
+      spinner.fail(chalk.red('Error removing submodule'));
+    }
     console.error(chalk.red('Error removing submodule:'), error);
     throw error;
   }
@@ -138,28 +200,58 @@ export async function removeGitSubmodule(
  * Update Git submodules
  */
 export async function updateGitSubmodules(options: SubmoduleUpdateOptions = {}): Promise<void> {
+  const { spinner } = options;
+
   try {
+    if (spinner) {
+      spinner.setText('Checking Git repository...');
+    }
+
     // Ensure we're in a Git repository
     if (!(await isGitRepository())) {
       throw new Error('Not in a Git repository.');
     }
 
     if (options.path) {
+      if (spinner) {
+        spinner.setText(`Updating submodule: ${options.path}`);
+      }
+
       console.log(chalk.cyan(`Updating submodule: ${options.path}`));
       await updateSubmodules(options.path);
-      console.log(chalk.green(`✓ Submodule updated: ${options.path}`));
+
+      if (spinner) {
+        spinner.succeed(chalk.green(`✓ Submodule updated: ${options.path}`));
+      } else {
+        console.log(chalk.green(`✓ Submodule updated: ${options.path}`));
+      }
     } else {
+      if (spinner) {
+        spinner.setText('Updating all submodules...');
+      }
+
       console.log(chalk.cyan('Updating all submodules...'));
       await updateSubmodules();
-      console.log(chalk.green('✓ All submodules updated'));
+
+      if (spinner) {
+        spinner.succeed(chalk.green('✓ All submodules updated'));
+      } else {
+        console.log(chalk.green('✓ All submodules updated'));
+      }
+    }
+
+    if (spinner) {
+      spinner.setText('Updating documentation...');
     }
 
     // Update documentation
     const submodules = await getSubmoduleStatus();
-    const monorepoRoot = await findMonorepoRoot() || process.cwd();
+    const monorepoRoot = (await findMonorepoRoot()) || process.cwd();
     await createSubmoduleDocumentation(monorepoRoot, submodules);
-
   } catch (error) {
+    if (spinner) {
+      spinner.fail(chalk.red('Error updating submodules'));
+    }
     console.error(chalk.red('Error updating submodules:'), error);
     throw error;
   }
@@ -170,12 +262,24 @@ export async function updateGitSubmodules(options: SubmoduleUpdateOptions = {}):
  */
 export async function showSubmoduleStatus(): Promise<void> {
   try {
-    // Ensure we're in a Git repository
-    if (!(await isGitRepository())) {
+    // Ensure we're in a Git repository with timeout
+    const isGitRepo = await Promise.race([
+      isGitRepository(),
+      new Promise<boolean>((_, reject) =>
+        setTimeout(() => reject(new Error('Timeout checking Git repository')), 3000)
+      ),
+    ]);
+
+    if (!isGitRepo) {
       throw new Error('Not in a Git repository.');
     }
 
-    const submodules = await getSubmoduleStatus();
+    const submodules = await Promise.race([
+      getSubmoduleStatus(),
+      new Promise<SubmoduleInfo[]>((_, reject) =>
+        setTimeout(() => reject(new Error('Timeout getting submodule status')), 5000)
+      ),
+    ]);
 
     if (submodules.length === 0) {
       console.log(chalk.yellow('No submodules found.'));
@@ -187,7 +291,7 @@ export async function showSubmoduleStatus(): Promise<void> {
     submodules.forEach((submodule: SubmoduleInfo) => {
       const statusColor = getStatusColor(submodule.status);
       const statusIcon = getStatusIcon(submodule.status);
-      
+
       console.log(`${statusIcon} ${chalk.bold(submodule.name)} ${statusColor(submodule.status)}`);
       console.log(`   ${chalk.gray('Path:')} ${submodule.path}`);
       console.log(`   ${chalk.gray('URL:')} ${submodule.url}`);
@@ -211,7 +315,6 @@ export async function showSubmoduleStatus(): Promise<void> {
         console.log(`  ${color(status)}: ${count}`);
       });
     }
-
   } catch (error) {
     console.error(chalk.red('Error getting submodule status:'), error);
     throw error;
@@ -231,7 +334,6 @@ export async function initSubmodules(): Promise<void> {
     console.log(chalk.cyan('Initializing submodules...'));
     await updateSubmodules(); // This will init and update
     console.log(chalk.green('✓ Submodules initialized'));
-
   } catch (error) {
     console.error(chalk.red('Error initializing submodules:'), error);
     throw error;
@@ -257,43 +359,43 @@ export async function manageSubmodules(): Promise<void> {
         { title: 'Add submodule', value: 'add' },
         { title: 'Update submodules', value: 'update' },
         { title: 'Remove submodule', value: 'remove' },
-        { title: 'Initialize submodules', value: 'init' }
-      ]
+        { title: 'Initialize submodules', value: 'init' },
+      ],
     });
 
     switch (action) {
       case 'status':
         await showSubmoduleStatus();
         break;
-        
+
       case 'add': {
         const { url } = await prompts({
           type: 'text',
           name: 'url',
           message: 'Repository URL:',
-          validate: (value: string) => value.trim() ? true : 'URL is required'
+          validate: (value: string) => (value.trim() ? true : 'URL is required'),
         });
         await addGitSubmodule(url);
         break;
       }
-        
+
       case 'update': {
         const submodules = await getSubmoduleStatus();
         if (submodules.length === 0) {
           console.log(chalk.yellow('No submodules to update.'));
           return;
         }
-        
+
         const { updateTarget } = await prompts({
           type: 'select',
           name: 'updateTarget',
           message: 'What to update?',
           choices: [
             { title: 'All submodules', value: 'all' },
-            ...submodules.map((sub: SubmoduleInfo) => ({ title: sub.path, value: sub.path }))
-          ]
+            ...submodules.map((sub: SubmoduleInfo) => ({ title: sub.path, value: sub.path })),
+          ],
         });
-        
+
         if (updateTarget === 'all') {
           await updateGitSubmodules();
         } else {
@@ -301,31 +403,33 @@ export async function manageSubmodules(): Promise<void> {
         }
         break;
       }
-        
+
       case 'remove': {
         const currentSubmodules = await getSubmoduleStatus();
         if (currentSubmodules.length === 0) {
           console.log(chalk.yellow('No submodules to remove.'));
           return;
         }
-        
+
         const { removeTarget } = await prompts({
           type: 'select',
           name: 'removeTarget',
           message: 'Which submodule to remove?',
-          choices: currentSubmodules.map((sub: SubmoduleInfo) => ({ title: sub.path, value: sub.path }))
+          choices: currentSubmodules.map((sub: SubmoduleInfo) => ({
+            title: sub.path,
+            value: sub.path,
+          })),
         });
-        
+
         await removeGitSubmodule(removeTarget);
         break;
       }
-        
+
       case 'init': {
         await initSubmodules();
         break;
       }
     }
-
   } catch (error) {
     console.error(chalk.red('Error managing submodules:'), error);
     throw error;
@@ -334,22 +438,34 @@ export async function manageSubmodules(): Promise<void> {
 
 function getStatusColor(status: SubmoduleInfo['status']): (text: string) => string {
   switch (status) {
-    case 'clean': return chalk.green;
-    case 'modified': return chalk.yellow;
-    case 'untracked': return chalk.red;
-    case 'ahead': return chalk.blue;
-    case 'behind': return chalk.magenta;
-    default: return chalk.gray;
+    case 'clean':
+      return chalk.green;
+    case 'modified':
+      return chalk.yellow;
+    case 'untracked':
+      return chalk.red;
+    case 'ahead':
+      return chalk.blue;
+    case 'behind':
+      return chalk.magenta;
+    default:
+      return chalk.gray;
   }
 }
 
 function getStatusIcon(status: SubmoduleInfo['status']): string {
   switch (status) {
-    case 'clean': return chalk.green('✓');
-    case 'modified': return chalk.yellow('●');
-    case 'untracked': return chalk.red('✗');
-    case 'ahead': return chalk.blue('↑');
-    case 'behind': return chalk.magenta('↓');
-    default: return chalk.gray('?');
+    case 'clean':
+      return chalk.green('✓');
+    case 'modified':
+      return chalk.yellow('●');
+    case 'untracked':
+      return chalk.red('✗');
+    case 'ahead':
+      return chalk.blue('↑');
+    case 'behind':
+      return chalk.magenta('↓');
+    default:
+      return chalk.gray('?');
   }
 }

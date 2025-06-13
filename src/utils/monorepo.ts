@@ -276,12 +276,15 @@ export async function isMonorepoRoot(dirPath: string = process.cwd()): Promise<b
 export async function findMonorepoRoot(startPath: string = process.cwd()): Promise<string | null> {
   let currentPath = path.resolve(startPath);
   const rootPath = path.parse(currentPath).root;
+  let depth = 0;
+  const maxDepth = 10; // Prevent searching too far up the filesystem
 
-  while (currentPath !== rootPath) {
+  while (currentPath !== rootPath && depth < maxDepth) {
     if (await isMonorepoRoot(currentPath)) {
       return currentPath;
     }
     currentPath = path.dirname(currentPath);
+    depth++;
   }
 
   return null;
