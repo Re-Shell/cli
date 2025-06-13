@@ -8,6 +8,7 @@ import { ReactTemplate } from '../templates/react';
 import { VueTemplate } from '../templates/vue';
 import { SvelteTemplate } from '../templates/svelte';
 import { BaseTemplate, TemplateContext } from '../templates/index';
+import { ProgressSpinner, flushOutput } from '../utils/spinner';
 
 interface CreateProjectOptions {
   team?: string;
@@ -20,6 +21,7 @@ interface CreateProjectOptions {
   port?: string;
   route?: string;
   isProject?: boolean;
+  spinner?: ProgressSpinner;
 }
 
 /**
@@ -29,10 +31,7 @@ interface CreateProjectOptions {
  * @param options - Additional options for project creation
  * @version 0.2.5
  */
-export async function createProject(
-  name: string,
-  options: CreateProjectOptions
-): Promise<void> {
+export async function createProject(name: string, options: CreateProjectOptions): Promise<void> {
   // Check if we're in a monorepo
   const monorepoRoot = await findMonorepoRoot();
   const inMonorepo = !!monorepoRoot;
@@ -63,13 +62,19 @@ async function createWorkspace(
     packageManager = 'pnpm',
     type = 'app',
     port = '5173',
-    route
+    route,
+    spinner,
   } = options;
 
   const normalizedName = name.toLowerCase().replace(/\s+/g, '-');
   const rootPath = monorepoRoot || process.cwd();
 
   console.log(chalk.cyan(`Creating ${type} "${normalizedName}"...`));
+
+  // Stop spinner for interactive prompts
+  if (spinner) {
+    spinner.stop();
+  }
 
   // Interactive prompts for missing options
   const responses = await prompts([
@@ -78,7 +83,7 @@ async function createWorkspace(
       name: 'framework',
       message: 'Select a framework:',
       choices: getFrameworkChoices(),
-      initial: 1 // Default to react-ts
+      initial: 1, // Default to react-ts
     },
     {
       type: type === 'app' && !port ? 'text' : null,
@@ -87,17 +92,24 @@ async function createWorkspace(
       initial: '5173',
       validate: (value: string) => {
         const num = parseInt(value);
-        return (num > 0 && num < 65536) ? true : 'Port must be between 1 and 65535';
-      }
+        return num > 0 && num < 65536 ? true : 'Port must be between 1 and 65535';
+      },
     },
     {
       type: type === 'app' && !route ? 'text' : null,
       name: 'route',
       message: 'Route path:',
       initial: `/${normalizedName}`,
-      validate: (value: string) => value.startsWith('/') ? true : 'Route must start with /'
-    }
+      validate: (value: string) => (value.startsWith('/') ? true : 'Route must start with /'),
+    },
   ]);
+
+  // Restart spinner for file operations
+  if (spinner) {
+    spinner.start();
+    spinner.setText(`Creating ${type} files...`);
+    flushOutput();
+  }
 
   // Merge responses with options
   const finalFramework = framework || responses.framework || 'react-ts';
@@ -110,15 +122,45 @@ async function createWorkspace(
   }
 
   // Determine workspace path based on type
-  const typeDir = type === 'app' ? 'apps' :
-                  type === 'package' ? 'packages' :
-                  type === 'lib' ? 'libs' : 'tools';
+  const typeDir =
+    type === 'app' ? 'apps' : type === 'package' ? 'packages' : type === 'lib' ? 'libs' : 'tools';
 
   const workspacePath = path.join(rootPath, typeDir, normalizedName);
 
-  // Check if directory already exists
+  // Check if directory already exists and handle it gracefully
   if (fs.existsSync(workspacePath)) {
-    throw new Error(`Directory already exists: ${workspacePath}`);
+    if (spinner) spinner.stop();
+
+    const { action } = await prompts({
+      type: 'select',
+      name: 'action',
+      message: `Directory "${normalizedName}" already exists in ${typeDir}/. What would you like to do?`,
+      choices: [
+        { title: 'Overwrite existing directory', value: 'overwrite' },
+        { title: 'Cancel', value: 'cancel' },
+      ],
+      initial: 0,
+    });
+
+    if (action === 'cancel') {
+      console.log(chalk.yellow('Operation cancelled.'));
+      return;
+    }
+
+    if (action === 'overwrite') {
+      if (spinner) {
+        spinner.start();
+        spinner.setText('Removing existing directory...');
+        flushOutput();
+      }
+      await fs.remove(workspacePath);
+    }
+
+    if (spinner) {
+      spinner.start();
+      spinner.setText(`Creating ${type} files...`);
+      flushOutput();
+    }
   }
 
   // Get framework configuration
@@ -135,7 +177,7 @@ async function createWorkspace(
     org,
     team,
     description: description || `${name} - A ${frameworkConfig.displayName} ${type}`,
-    packageManager
+    packageManager,
   };
 
   // Generate files using appropriate template
@@ -156,7 +198,11 @@ async function createWorkspace(
     }
   }
 
-  console.log(chalk.green(`✓ ${type.charAt(0).toUpperCase() + type.slice(1)} "${normalizedName}" created successfully!`));
+  console.log(
+    chalk.green(
+      `✓ ${type.charAt(0).toUpperCase() + type.slice(1)} "${normalizedName}" created successfully!`
+    )
+  );
   console.log(chalk.gray(`Path: ${path.relative(process.cwd(), workspacePath)}`));
   console.log('\nNext steps:');
   console.log(`  1. cd ${path.relative(process.cwd(), workspacePath)}`);
@@ -167,20 +213,23 @@ async function createWorkspace(
 /**
  * Creates a new monorepo project (legacy function for backward compatibility)
  */
-async function createMonorepoProject(
-  name: string,
-  options: CreateProjectOptions
-): Promise<void> {
+async function createMonorepoProject(name: string, options: CreateProjectOptions): Promise<void> {
   const {
     team,
     org = 're-shell',
-    description = `${name} - A Re-Shell microfrontend project`
+    description = `${name} - A Re-Shell microfrontend project`,
+    spinner,
   } = options;
 
   // Normalize name to kebab-case for consistency
   const normalizedName = name.toLowerCase().replace(/\s+/g, '-');
 
   console.log(chalk.cyan(`Creating Re-Shell project "${normalizedName}"...`));
+
+  // Stop spinner for interactive prompts
+  if (spinner) {
+    spinner.stop();
+  }
 
   // Ask for additional information if not provided
   const responses = await prompts([
@@ -190,9 +239,9 @@ async function createMonorepoProject(
       message: 'Select a template:',
       choices: [
         { title: 'React', value: 'react' },
-        { title: 'React with TypeScript', value: 'react-ts' }
+        { title: 'React with TypeScript', value: 'react-ts' },
       ],
-      initial: 1 // Default to react-ts
+      initial: 1, // Default to react-ts
     },
     {
       type: options.packageManager ? null : 'select',
@@ -201,18 +250,25 @@ async function createMonorepoProject(
       choices: [
         { title: 'npm', value: 'npm' },
         { title: 'yarn', value: 'yarn' },
-        { title: 'pnpm', value: 'pnpm' }
+        { title: 'pnpm', value: 'pnpm' },
       ],
-      initial: 2 // Default to pnpm
-    }
+      initial: 2, // Default to pnpm
+    },
   ]);
 
   // Merge responses with options
   const finalOptions = {
     ...options,
     template: options.template || responses.template,
-    packageManager: options.packageManager || responses.packageManager
+    packageManager: options.packageManager || responses.packageManager,
   };
+
+  // Restart spinner for file operations
+  if (spinner) {
+    spinner.start();
+    spinner.setText('Creating project structure...');
+    flushOutput();
+  }
 
   // Create project structure
   const projectPath = path.resolve(process.cwd(), normalizedName);
@@ -234,25 +290,19 @@ async function createMonorepoProject(
     version: '0.1.0',
     description,
     private: true,
-    workspaces: [
-      "apps/*",
-      "packages/*"
-    ],
+    workspaces: ['apps/*', 'packages/*'],
     scripts: {
       dev: `${finalOptions.packageManager} run --parallel -r dev`,
       build: `${finalOptions.packageManager} run --parallel -r build`,
       lint: `${finalOptions.packageManager} run --parallel -r lint`,
       test: `${finalOptions.packageManager} run --parallel -r test`,
-      clean: `${finalOptions.packageManager} run --parallel -r clean`
+      clean: `${finalOptions.packageManager} run --parallel -r clean`,
     },
     author: team || org,
-    license: 'MIT'
+    license: 'MIT',
   };
 
-  fs.writeFileSync(
-    path.join(projectPath, 'package.json'),
-    JSON.stringify(packageJson, null, 2)
-  );
+  fs.writeFileSync(path.join(projectPath, 'package.json'), JSON.stringify(packageJson, null, 2));
 
   // Create workspace config
   if (finalOptions.packageManager === 'pnpm') {
@@ -310,7 +360,9 @@ For more information, see the [Re-Shell documentation](https://github.com/your-o
 
   fs.writeFileSync(path.join(projectPath, 'README.md'), readmeContent);
 
-  console.log(chalk.green(`\nRe-Shell project "${normalizedName}" created successfully at ${projectPath}`));
+  console.log(
+    chalk.green(`\nRe-Shell project "${normalizedName}" created successfully at ${projectPath}`)
+  );
   console.log('\nNext steps:');
   console.log(`  1. cd ${normalizedName}`);
   console.log(`  2. ${finalOptions.packageManager} install`);

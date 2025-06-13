@@ -7,6 +7,7 @@ import chalk from 'chalk';
 import { initializeMonorepo, DEFAULT_MONOREPO_STRUCTURE } from '../utils/monorepo';
 import { initializeGitRepository } from '../utils/submodule';
 import { ProgressSpinner, flushOutput } from '../utils/spinner';
+import { AsyncPool } from '../utils/async-pool';
 
 interface InitOptions {
   packageManager?: 'npm' | 'yarn' | 'pnpm' | 'bun';
@@ -35,7 +36,7 @@ const TEMPLATES = {
     dependencies: ['@stripe/stripe-js', 'zustand', 'react-query'],
   },
   dashboard: {
-    name: 'Dashboard starter', 
+    name: 'Dashboard starter',
     description: 'Shell + analytics + user management',
     dependencies: ['recharts', 'd3', '@tanstack/react-table'],
   },
@@ -80,41 +81,77 @@ async function checkSystemRequirements(): Promise<{ errors: string[]; warnings: 
 }
 
 async function detectPackageManager(): Promise<'npm' | 'yarn' | 'pnpm' | 'bun'> {
-  // Check for lockfiles in current directory
-  if (fs.existsSync('bun.lockb')) return 'bun';
-  if (fs.existsSync('pnpm-lock.yaml')) return 'pnpm';
-  if (fs.existsSync('yarn.lock')) return 'yarn';
-  if (fs.existsSync('package-lock.json')) return 'npm';
+  // Check for lockfiles in current directory (parallel checks)
+  const lockfileChecks = await Promise.all([
+    fs.pathExists('bun.lockb').then(exists => (exists ? 'bun' : null)),
+    fs.pathExists('pnpm-lock.yaml').then(exists => (exists ? 'pnpm' : null)),
+    fs.pathExists('yarn.lock').then(exists => (exists ? 'yarn' : null)),
+    fs.pathExists('package-lock.json').then(exists => (exists ? 'npm' : null)),
+  ]);
 
-  // Check which package managers are installed
-  const managers: Array<'npm' | 'yarn' | 'pnpm' | 'bun'> = [];
-  
-  try {
-    execSync('bun --version', { stdio: 'ignore' });
-    managers.push('bun');
-  } catch {
-    // bun not installed
-  }
-  
-  try {
-    execSync('pnpm --version', { stdio: 'ignore' });
-    managers.push('pnpm');
-  } catch {
-    // pnpm not installed
-  }
-  
-  try {
-    execSync('yarn --version', { stdio: 'ignore' });
-    managers.push('yarn');
-  } catch {
-    // yarn not installed
+  // Return first found lockfile preference
+  for (const manager of lockfileChecks) {
+    if (manager) return manager as 'npm' | 'yarn' | 'pnpm' | 'bun';
   }
 
-  // npm is always available with Node.js
-  managers.push('npm');
+  // Check which package managers are installed (parallel execution)
+  const pool = new AsyncPool(4);
+  const managerChecks = await Promise.allSettled([
+    pool.add(
+      () =>
+        new Promise<'bun' | null>(resolve => {
+          try {
+            execSync('bun --version', { stdio: 'ignore', timeout: 5000 });
+            resolve('bun');
+          } catch {
+            resolve(null);
+          }
+        })
+    ),
+    pool.add(
+      () =>
+        new Promise<'pnpm' | null>(resolve => {
+          try {
+            execSync('pnpm --version', { stdio: 'ignore', timeout: 5000 });
+            resolve('pnpm');
+          } catch {
+            resolve(null);
+          }
+        })
+    ),
+    pool.add(
+      () =>
+        new Promise<'yarn' | null>(resolve => {
+          try {
+            execSync('yarn --version', { stdio: 'ignore', timeout: 5000 });
+            resolve('yarn');
+          } catch {
+            resolve(null);
+          }
+        })
+    ),
+    pool.add(
+      () =>
+        new Promise<'npm'>(resolve => {
+          // npm is always available with Node.js
+          resolve('npm');
+        })
+    ),
+  ]);
 
-  // Prefer pnpm for monorepos
-  return managers.includes('pnpm') ? 'pnpm' : managers[0];
+  // Extract successful results
+  const availableManagers = managerChecks
+    .filter(
+      (result): result is PromiseFulfilledResult<'npm' | 'yarn' | 'pnpm' | 'bun' | null> =>
+        result.status === 'fulfilled' && result.value !== null
+    )
+    .map(result => result.value as 'npm' | 'yarn' | 'pnpm' | 'bun');
+
+  // Prefer pnpm for monorepos, then bun, then yarn, then npm
+  if (availableManagers.includes('pnpm')) return 'pnpm';
+  if (availableManagers.includes('bun')) return 'bun';
+  if (availableManagers.includes('yarn')) return 'yarn';
+  return 'npm';
 }
 
 async function savePreset(name: string, config: any): Promise<void> {
@@ -141,7 +178,7 @@ async function loadPreset(name: string): Promise<any> {
 export async function initMonorepo(name: string, options: InitOptions = {}): Promise<void> {
   // System requirements check
   const { errors, warnings } = await checkSystemRequirements();
-  
+
   if (errors.length > 0) {
     console.error(chalk.red('System requirements not met:'));
     errors.forEach(err => console.error(chalk.red(`  • ${err}`)));
@@ -220,9 +257,9 @@ export async function initMonorepo(name: string, options: InitOptions = {}): Pro
       choices: [
         { title: 'Enter a new project name', value: 'rename' },
         { title: 'Overwrite existing directory', value: 'overwrite' },
-        { title: 'Cancel', value: 'cancel' }
+        { title: 'Cancel', value: 'cancel' },
       ],
-      initial: 0
+      initial: 0,
     });
 
     if (action === 'cancel') {
@@ -240,7 +277,7 @@ export async function initMonorepo(name: string, options: InitOptions = {}): Pro
         name: 'newName',
         message: 'Enter a new project name:',
         initial: normalizedName + '-2',
-        validate: (value) => {
+        validate: value => {
           const validation = validateProjectName(value);
           if (validation !== true) {
             return validation;
@@ -251,7 +288,7 @@ export async function initMonorepo(name: string, options: InitOptions = {}): Pro
             return `Directory "${normalized}" already exists`;
           }
           return true;
-        }
+        },
       });
 
       if (!newName) {
@@ -276,7 +313,7 @@ export async function initMonorepo(name: string, options: InitOptions = {}): Pro
 
     // Welcome message
     console.log(chalk.bold.cyan('\n🚀 Welcome to Re-Shell CLI!\n'));
-    console.log(chalk.gray('Let\'s create your new monorepo workspace.\n'));
+    console.log(chalk.gray("Let's create your new monorepo workspace.\n"));
 
     // Project type selection (for future full-stack support)
     promptsToRun.push({
@@ -284,9 +321,23 @@ export async function initMonorepo(name: string, options: InitOptions = {}): Pro
       name: 'projectType',
       message: 'Select project type:',
       choices: [
-        { title: 'Microfrontend Monorepo', value: 'frontend', description: 'Frontend applications with module federation' },
-        { title: 'Full-Stack Monorepo (Coming Soon)', value: 'fullstack', description: 'Frontend + Backend services', disabled: true },
-        { title: 'Microservices (Coming Soon)', value: 'backend', description: 'Backend services only', disabled: true }
+        {
+          title: 'Microfrontend Monorepo',
+          value: 'frontend',
+          description: 'Frontend applications with module federation',
+        },
+        {
+          title: 'Full-Stack Monorepo (Coming Soon)',
+          value: 'fullstack',
+          description: 'Frontend + Backend services',
+          disabled: true,
+        },
+        {
+          title: 'Microservices (Coming Soon)',
+          value: 'backend',
+          description: 'Backend services only',
+          disabled: true,
+        },
       ],
       initial: 0,
     });
@@ -298,9 +349,17 @@ export async function initMonorepo(name: string, options: InitOptions = {}): Pro
       message: 'Start with a template?',
       choices: [
         { title: 'Blank monorepo', value: 'blank' },
-        { title: 'E-commerce starter', value: 'ecommerce', description: 'Shell + product catalog + checkout' },
-        { title: 'Dashboard starter', value: 'dashboard', description: 'Shell + analytics + user management' },
-        { title: 'SaaS starter', value: 'saas', description: 'Shell + auth + billing + admin' }
+        {
+          title: 'E-commerce starter',
+          value: 'ecommerce',
+          description: 'Shell + product catalog + checkout',
+        },
+        {
+          title: 'Dashboard starter',
+          value: 'dashboard',
+          description: 'Shell + analytics + user management',
+        },
+        { title: 'SaaS starter', value: 'saas', description: 'Shell + auth + billing + admin' },
       ],
       initial: 0,
     });
@@ -325,7 +384,16 @@ export async function initMonorepo(name: string, options: InitOptions = {}): Pro
           { title: `npm${detectedPM === 'npm' ? ' ✓' : ''}`, value: 'npm' },
           { title: `bun (experimental)${detectedPM === 'bun' ? ' ✓' : ''}`, value: 'bun' },
         ],
-        initial: detectedPM === 'pnpm' ? 0 : detectedPM === 'yarn' ? 1 : detectedPM === 'npm' ? 2 : detectedPM === 'bun' ? 3 : 0,
+        initial:
+          detectedPM === 'pnpm'
+            ? 0
+            : detectedPM === 'yarn'
+            ? 1
+            : detectedPM === 'npm'
+            ? 2
+            : detectedPM === 'bun'
+            ? 3
+            : 0,
       });
     }
 
@@ -429,7 +497,7 @@ export async function initMonorepo(name: string, options: InitOptions = {}): Pro
       name: 'presetName',
       message: 'Enter a name for this preset:',
       initial: 'my-preset',
-      validate: (value) => {
+      validate: value => {
         if (!value || value.trim() === '') {
           return 'Preset name cannot be empty';
         }
@@ -437,7 +505,7 @@ export async function initMonorepo(name: string, options: InitOptions = {}): Pro
           return 'Preset name can only contain lowercase letters, numbers, and hyphens';
         }
         return true;
-      }
+      },
     });
 
     if (presetName) {
@@ -482,7 +550,7 @@ export async function initMonorepo(name: string, options: InitOptions = {}): Pro
       if (spinner) spinner.setText('Initializing Git repository...');
       flushOutput();
       await initializeGitRepository(projectPath);
-      
+
       // Add .gitignore
       const gitignore = `# Dependencies
 node_modules/
@@ -554,41 +622,59 @@ out/
     if (!finalOptions.skipInstall) {
       if (spinner) spinner.setText('Installing dependencies...');
       flushOutput();
-      
+
       try {
-        const installCmd = finalOptions.packageManager === 'npm' ? 'npm install' : `${finalOptions.packageManager} install`;
+        const installCmd =
+          finalOptions.packageManager === 'npm'
+            ? 'npm install'
+            : `${finalOptions.packageManager} install`;
         execSync(installCmd, {
           cwd: projectPath,
-          stdio: options.debug ? 'inherit' : 'ignore'
+          stdio: options.debug ? 'inherit' : 'ignore',
         });
 
         // Run vulnerability scan
         if (spinner) spinner.setText('Scanning for vulnerabilities...');
         flushOutput();
-        
+
         try {
-          const auditCmd = finalOptions.packageManager === 'npm' ? 'npm audit --json' :
-                          finalOptions.packageManager === 'yarn' ? 'yarn audit --json' :
-                          finalOptions.packageManager === 'pnpm' ? 'pnpm audit --json' :
-                          null;
-          
+          const auditCmd =
+            finalOptions.packageManager === 'npm'
+              ? 'npm audit --json'
+              : finalOptions.packageManager === 'yarn'
+              ? 'yarn audit --json'
+              : finalOptions.packageManager === 'pnpm'
+              ? 'pnpm audit --json'
+              : null;
+
           if (auditCmd) {
             const auditResult = execSync(auditCmd, {
               cwd: projectPath,
               encoding: 'utf8',
-              stdio: ['pipe', 'pipe', 'ignore']
+              stdio: ['pipe', 'pipe', 'ignore'],
             });
-            
+
             const audit = JSON.parse(auditResult);
             const vulnerabilities = audit.metadata?.vulnerabilities || {};
-            const total = Object.values(vulnerabilities).reduce((sum: number, count: any) => sum + count, 0);
-            
+            const total = Object.values(vulnerabilities).reduce(
+              (sum: number, count: any) => sum + count,
+              0
+            );
+
             if (total > 0) {
               console.log(chalk.yellow(`\n⚠️  Found ${total} vulnerabilities`));
               if (vulnerabilities.high || vulnerabilities.critical) {
-                console.log(chalk.red(`   Critical: ${vulnerabilities.critical || 0}, High: ${vulnerabilities.high || 0}`));
+                console.log(
+                  chalk.red(
+                    `   Critical: ${vulnerabilities.critical || 0}, High: ${
+                      vulnerabilities.high || 0
+                    }`
+                  )
+                );
               }
-              console.log(chalk.gray(`   Run '${finalOptions.packageManager} audit fix' to fix them\n`));
+              console.log(
+                chalk.gray(`   Run '${finalOptions.packageManager} audit fix' to fix them\n`)
+              );
             }
           }
         } catch {
@@ -596,7 +682,9 @@ out/
         }
       } catch (error) {
         console.warn(chalk.yellow('\nWarning: Failed to install dependencies'));
-        console.log(chalk.gray(`You can install them manually with: ${finalOptions.packageManager} install\n`));
+        console.log(
+          chalk.gray(`You can install them manually with: ${finalOptions.packageManager} install\n`)
+        );
       }
     }
 
@@ -604,12 +692,12 @@ out/
     if (finalOptions.git) {
       if (spinner) spinner.setText('Creating initial commit...');
       flushOutput();
-      
+
       try {
         execSync('git add -A', { cwd: projectPath, stdio: 'ignore' });
-        execSync('git commit -m "Initial commit from Re-Shell CLI"', { 
-          cwd: projectPath, 
-          stdio: 'ignore' 
+        execSync('git commit -m "Initial commit from Re-Shell CLI"', {
+          cwd: projectPath,
+          stdio: 'ignore',
         });
       } catch {
         // Ignore git errors
@@ -628,8 +716,8 @@ out/
         finalOptions.skipInstall ? `${finalOptions.packageManager} install` : null,
         'rs create shell-app --framework react-ts',
         'rs create my-app --framework vue-ts',
-        `${finalOptions.packageManager} run dev`
-      ].filter(Boolean)
+        `${finalOptions.packageManager} run dev`,
+      ].filter(Boolean),
     };
   } catch (error) {
     // Clean up on failure
@@ -640,10 +728,12 @@ out/
         // Ignore cleanup errors
       }
     }
-    
+
     // Provide helpful error messages
     if ((error as any).code === 'EACCES') {
-      console.error(chalk.red('Error: Permission denied. Try running with sudo or check directory permissions.'));
+      console.error(
+        chalk.red('Error: Permission denied. Try running with sudo or check directory permissions.')
+      );
     } else if ((error as any).code === 'ENOSPC') {
       console.error(chalk.red('Error: Not enough disk space.'));
     } else {
@@ -653,11 +743,7 @@ out/
   }
 }
 
-async function applyTemplate(
-  projectPath: string,
-  template: string,
-  options: any
-): Promise<void> {
+async function applyTemplate(projectPath: string, template: string, options: any): Promise<void> {
   const templateConfig = TEMPLATES[template as keyof typeof TEMPLATES];
   if (!templateConfig) return;
 
@@ -699,16 +785,16 @@ async function applyTemplate(
   if (templateConfig.dependencies.length > 0) {
     const packageJsonPath = path.join(projectPath, 'package.json');
     const packageJson = await fs.readJSON(packageJsonPath);
-    
+
     if (!packageJson.dependencies) {
       packageJson.dependencies = {};
     }
-    
+
     // Add template dependencies (versions would be fetched from registry in real implementation)
     templateConfig.dependencies.forEach(dep => {
       packageJson.dependencies[dep] = 'latest';
     });
-    
+
     await fs.writeJSON(packageJsonPath, packageJson, { spaces: 2 });
   }
 
@@ -744,26 +830,34 @@ ${templateConfig.description}
 
 ### Template Structure
 
-${template === 'ecommerce' ? `
+${
+  template === 'ecommerce'
+    ? `
 - \`apps/shell\` - Main application shell
 - \`apps/product-catalog\` - Product browsing and search
 - \`apps/checkout\` - Shopping cart and checkout flow
 - \`packages/shared-ui\` - Shared UI components
 - \`packages/cart-state\` - Cart state management
-` : template === 'dashboard' ? `
+`
+    : template === 'dashboard'
+    ? `
 - \`apps/shell\` - Main application shell
 - \`apps/analytics\` - Analytics and reporting
 - \`apps/user-management\` - User administration
 - \`packages/chart-components\` - Reusable chart components
 - \`packages/data-utils\` - Data processing utilities
-` : template === 'saas' ? `
+`
+    : template === 'saas'
+    ? `
 - \`apps/shell\` - Main application shell
 - \`apps/auth\` - Authentication and authorization
 - \`apps/billing\` - Subscription and billing management
 - \`apps/admin\` - Admin dashboard
 - \`packages/auth-utils\` - Authentication utilities
 - \`packages/payment-integration\` - Payment processing
-` : ''}
+`
+    : ''
+}
 
 ### Getting Started with ${templateConfig.name}
 
@@ -1037,7 +1131,7 @@ package-lock.json
   if (options.git) {
     const huskyDir = path.join(projectPath, '.husky');
     await fs.ensureDir(huskyDir);
-    
+
     const preCommit = `#!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
@@ -1088,10 +1182,7 @@ ${options.packageManager} run commitlint --edit $1
     },
   };
 
-  await fs.writeFile(
-    path.join(projectPath, 'turbo.json'),
-    JSON.stringify(turboConfig, null, 2)
-  );
+  await fs.writeFile(path.join(projectPath, 'turbo.json'), JSON.stringify(turboConfig, null, 2));
 
   // Create Docker support files
   const dockerfile = `# Multi-stage build for production

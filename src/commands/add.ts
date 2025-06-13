@@ -2,6 +2,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import prompts from 'prompts';
 import chalk from 'chalk';
+import { ProgressSpinner } from '../utils/spinner';
 
 interface AddMicrofrontendOptions {
   team?: string;
@@ -10,6 +11,7 @@ interface AddMicrofrontendOptions {
   template?: string;
   route?: string;
   port?: string;
+  spinner?: ProgressSpinner;
 }
 
 /**
@@ -23,24 +25,34 @@ export async function addMicrofrontend(
   name: string,
   options: AddMicrofrontendOptions
 ): Promise<void> {
-  const { 
+  const {
     team,
-    org = 're-shell', 
+    org = 're-shell',
     description = `${name} microfrontend for Re-Shell`,
-    port = '5173'
+    port = '5173',
+    spinner,
   } = options;
 
   // Normalize name to kebab-case for consistency
   const normalizedName = name.toLowerCase().replace(/\s+/g, '-');
-  
+
   console.log(chalk.cyan(`Adding microfrontend "${normalizedName}"...`));
 
   // Detect if we are in a Re-Shell project
-  const isInReshellProject = fs.existsSync('package.json') && 
-    (fs.existsSync('apps') || fs.existsSync('packages'));
+  const isInReshellProject =
+    fs.existsSync('package.json') && (fs.existsSync('apps') || fs.existsSync('packages'));
 
   if (!isInReshellProject) {
-    console.log(chalk.yellow('Warning: This doesn\'t appear to be a Re-Shell project. Creating standalone microfrontend.'));
+    console.log(
+      chalk.yellow(
+        "Warning: This doesn't appear to be a Re-Shell project. Creating standalone microfrontend."
+      )
+    );
+  }
+
+  // Stop spinner for interactive prompts
+  if (spinner) {
+    spinner.stop();
   }
 
   // Ask for additional information if not provided
@@ -51,25 +63,31 @@ export async function addMicrofrontend(
       message: 'Select a template:',
       choices: [
         { title: 'React', value: 'react' },
-        { title: 'React with TypeScript', value: 'react-ts' }
+        { title: 'React with TypeScript', value: 'react-ts' },
       ],
-      initial: 1 // Default to react-ts
+      initial: 1, // Default to react-ts
     },
     {
       type: options.route ? null : 'text',
       name: 'route',
       message: 'Route path for the microfrontend:',
-      initial: `/${normalizedName}`
-    }
+      initial: `/${normalizedName}`,
+    },
   ]);
 
   // Merge responses with options
   const finalOptions = {
     ...options,
     template: options.template || responses.template,
-    route: options.route || responses.route
+    route: options.route || responses.route,
   };
-  
+
+  // Restart spinner for file operations
+  if (spinner) {
+    spinner.start();
+    spinner.setText('Creating microfrontend files...');
+  }
+
   // Determine microfrontend path based on project structure
   let mfPath;
   if (isInReshellProject && fs.existsSync('apps')) {
@@ -78,9 +96,43 @@ export async function addMicrofrontend(
     mfPath = path.resolve(process.cwd(), normalizedName);
   }
 
-  // Check if directory already exists
+  // Check if directory already exists and handle it gracefully
   if (fs.existsSync(mfPath)) {
-    throw new Error(`Directory already exists: ${mfPath}`);
+    // Stop spinner for prompts
+    if (spinner) {
+      spinner.stop();
+    }
+
+    const { action } = await prompts({
+      type: 'select',
+      name: 'action',
+      message: `Directory "${normalizedName}" already exists. What would you like to do?`,
+      choices: [
+        { title: 'Overwrite existing directory', value: 'overwrite' },
+        { title: 'Cancel', value: 'cancel' },
+      ],
+      initial: 0,
+    });
+
+    if (action === 'cancel') {
+      console.log(chalk.yellow('Operation cancelled.'));
+      return;
+    }
+
+    if (action === 'overwrite') {
+      // Restart spinner for file operations
+      if (spinner) {
+        spinner.start();
+        spinner.setText('Removing existing directory...');
+      }
+      await fs.remove(mfPath);
+    }
+
+    // Restart spinner for file operations
+    if (spinner) {
+      spinner.start();
+      spinner.setText('Creating microfrontend files...');
+    }
   }
 
   // Create directory structure
@@ -99,43 +151,38 @@ export async function addMicrofrontend(
       build: 'vite build',
       preview: 'vite preview',
       lint: 'eslint src --ext ts,tsx',
-      test: 'vitest'
+      test: 'vitest',
     },
     dependencies: {
       react: '^18.2.0',
-      'react-dom': '^18.2.0'
+      'react-dom': '^18.2.0',
     },
     peerDependencies: {
-      '@re-shell/core': '^0.1.0'
+      '@re-shell/core': '^0.1.0',
     },
     devDependencies: {
-      'vite': '^4.4.0',
+      vite: '^4.4.0',
       '@vitejs/plugin-react': '^4.0.0',
-      'eslint': '^8.44.0',
-      'vitest': '^0.34.3',
-      ...(finalOptions.template === 'react-ts' ? {
-        'typescript': '^5.0.0',
-        '@types/react': '^18.2.0',
-        '@types/react-dom': '^18.2.0',
-      } : {})
+      eslint: '^8.44.0',
+      vitest: '^0.34.3',
+      ...(finalOptions.template === 'react-ts'
+        ? {
+            typescript: '^5.0.0',
+            '@types/react': '^18.2.0',
+            '@types/react-dom': '^18.2.0',
+          }
+        : {}),
     },
-    keywords: [
-      'microfrontend',
-      'react',
-      're-shell'
-    ],
+    keywords: ['microfrontend', 'react', 're-shell'],
     author: team || org,
     license: 'MIT',
     reshell: {
       type: 'microfrontend',
-      route: finalOptions.route
-    }
+      route: finalOptions.route,
+    },
   };
 
-  fs.writeFileSync(
-    path.join(mfPath, 'package.json'),
-    JSON.stringify(packageJson, null, 2)
-  );
+  fs.writeFileSync(path.join(mfPath, 'package.json'), JSON.stringify(packageJson, null, 2));
 
   // Create vite.config.ts or vite.config.js
   const fileExtension = finalOptions.template === 'react-ts' ? 'ts' : 'js';
@@ -148,8 +195,13 @@ export default defineConfig({
   plugins: [react()],
   build: {
     lib: {
-      entry: resolve(__dirname, 'src/index.${finalOptions.template === 'react-ts' ? 'tsx' : 'jsx'}'),
-      name: '${normalizedName.charAt(0).toUpperCase() + normalizedName.slice(1).replace(/-./g, x => x[1].toUpperCase())}',
+      entry: resolve(__dirname, 'src/index.${
+        finalOptions.template === 'react-ts' ? 'tsx' : 'jsx'
+      }'),
+      name: '${
+        normalizedName.charAt(0).toUpperCase() +
+        normalizedName.slice(1).replace(/-./g, x => x[1].toUpperCase())
+      }',
       formats: ['umd'],
       fileName: 'mf'
     },
@@ -193,16 +245,13 @@ export default defineConfig({
         jsx: 'react-jsx',
         strict: true,
         noImplicitAny: true,
-        strictNullChecks: true
+        strictNullChecks: true,
       },
       include: ['src'],
-      references: [{ path: './tsconfig.node.json' }]
+      references: [{ path: './tsconfig.node.json' }],
     };
 
-    fs.writeFileSync(
-      path.join(mfPath, 'tsconfig.json'),
-      JSON.stringify(tsConfig, null, 2)
-    );
+    fs.writeFileSync(path.join(mfPath, 'tsconfig.json'), JSON.stringify(tsConfig, null, 2));
 
     const tsNodeConfig = {
       compilerOptions: {
@@ -210,9 +259,9 @@ export default defineConfig({
         skipLibCheck: true,
         module: 'ESNext',
         moduleResolution: 'bundler',
-        allowSyntheticDefaultImports: true
+        allowSyntheticDefaultImports: true,
       },
-      include: [`vite.config.${fileExtension}`]
+      include: [`vite.config.${fileExtension}`],
     };
 
     fs.writeFileSync(
@@ -223,8 +272,12 @@ export default defineConfig({
 
   // Create main index file
   const indexFileExtension = finalOptions.template === 'react-ts' ? 'tsx' : 'jsx';
-  const indexContent = `${finalOptions.template === 'react-ts' ? 'import React from \'react\';\nimport { createRoot } from \'react-dom/client\';\n' : 'import { createRoot } from \'react-dom/client\';\n'}import App from './App';
-import { eventBus } from ${isInReshellProject ? '\'@re-shell/core\'' : './eventBus'};
+  const indexContent = `${
+    finalOptions.template === 'react-ts'
+      ? "import React from 'react';\nimport { createRoot } from 'react-dom/client';\n"
+      : "import { createRoot } from 'react-dom/client';\n"
+  }import App from './App';
+import { eventBus } from ${isInReshellProject ? "'@re-shell/core'" : './eventBus'};
 
 // Entry point for the microfrontend
 // This gets exposed when the script is loaded
@@ -239,10 +292,10 @@ window.${normalizedName.replace(/-./g, x => x[1].toUpperCase())} = {
     // Using React 18's createRoot API
     const root = createRoot(container);
     root.render(<App />);
-    
+
     // Notify shell that microfrontend is loaded
     eventBus.emit('microfrontend:loaded', { id: '${normalizedName}' });
-    
+
     // Store root for unmounting
     window.${normalizedName.replace(/-./g, x => x[1].toUpperCase())}.root = root;
   },
@@ -269,7 +322,11 @@ export default App;
 
   // Create app component
   const appFileExtension = finalOptions.template === 'react-ts' ? 'tsx' : 'jsx';
-  const appContent = `${finalOptions.template === 'react-ts' ? 'import React from \'react\';\n\ninterface AppProps {}\n\n' : ''}
+  const appContent = `${
+    finalOptions.template === 'react-ts'
+      ? "import React from 'react';\n\ninterface AppProps {}\n\n"
+      : ''
+  }
 function App(${finalOptions.template === 'react-ts' ? 'props: AppProps' : ''}) {
   return (
     <div className="${normalizedName}-app">
@@ -287,7 +344,11 @@ export default App;
   // If not in a Re-Shell project, create eventBus file
   if (!isInReshellProject) {
     const eventBusFileExtension = finalOptions.template === 'react-ts' ? 'ts' : 'js';
-    const eventBusContent = `${finalOptions.template === 'react-ts' ? 'type EventHandler = (data: any) => void;\n\ninterface EventBus {\n  events: Record<string, EventHandler[]>;\n  on(event: string, callback: EventHandler): void;\n  off(event: string, callback: EventHandler): void;\n  emit(event: string, data: any): void;\n}\n\n' : ''}
+    const eventBusContent = `${
+      finalOptions.template === 'react-ts'
+        ? 'type EventHandler = (data: any) => void;\n\ninterface EventBus {\n  events: Record<string, EventHandler[]>;\n  on(event: string, callback: EventHandler): void;\n  off(event: string, callback: EventHandler): void;\n  emit(event: string, data: any): void;\n}\n\n'
+        : ''
+    }
 /**
  * Simple event bus for communication between microfrontends
  * In a real implementation, you would use the eventBus from @re-shell/core
@@ -313,7 +374,10 @@ export const eventBus${finalOptions.template === 'react-ts' ? ': EventBus' : ''}
 };
 `;
 
-    fs.writeFileSync(path.join(mfPath, 'src', `eventBus.${eventBusFileExtension}`), eventBusContent);
+    fs.writeFileSync(
+      path.join(mfPath, 'src', `eventBus.${eventBusFileExtension}`),
+      eventBusContent
+    );
   }
 
   // Create HTML file for development mode
@@ -326,7 +390,9 @@ export const eventBus${finalOptions.template === 'react-ts' ? ': EventBus' : ''}
 </head>
 <body>
   <div id="root"></div>
-  <script type="module" src="/src/index.${finalOptions.template === 'react-ts' ? 'tsx' : 'jsx'}"></script>
+  <script type="module" src="/src/index.${
+    finalOptions.template === 'react-ts' ? 'tsx' : 'jsx'
+  }"></script>
 </body>
 </html>
 `;
@@ -358,7 +424,10 @@ This microfrontend can be integrated into a Re-Shell application by adding the f
 \`\`\`javascript
 const microfrontendConfig = {
   id: '${normalizedName}',
-  name: '${normalizedName.charAt(0).toUpperCase() + normalizedName.slice(1).replace(/-./g, x => x[1].toUpperCase())}',
+  name: '${
+    normalizedName.charAt(0).toUpperCase() +
+    normalizedName.slice(1).replace(/-./g, x => x[1].toUpperCase())
+  }',
   url: '/apps/${normalizedName}/dist/mf.umd.js', // Path to built bundle
   containerId: '${normalizedName}-container',
   route: '${finalOptions.route}',
@@ -405,9 +474,17 @@ dist-ssr
 
   // If part of a Re-Shell project and shell app exists, suggest shell integration
   const shellAppPath = path.resolve(process.cwd(), 'apps', 'shell');
-  if (isInReshellProject && fs.existsSync(shellAppPath) && fs.existsSync(path.join(shellAppPath, 'src', 'App.tsx'))) {
+  if (
+    isInReshellProject &&
+    fs.existsSync(shellAppPath) &&
+    fs.existsSync(path.join(shellAppPath, 'src', 'App.tsx'))
+  ) {
     console.log(chalk.cyan(`\nFound shell application at ${shellAppPath}`));
-    console.log(chalk.cyan(`Consider updating the shell application's configuration to include this microfrontend.`));
+    console.log(
+      chalk.cyan(
+        `Consider updating the shell application's configuration to include this microfrontend.`
+      )
+    );
   }
 
   console.log(chalk.green(`\nMicrofrontend "${normalizedName}" created successfully at ${mfPath}`));
