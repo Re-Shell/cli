@@ -50,6 +50,7 @@ export class ProgressSpinner {
   succeed(text?: string): this {
     if (this.isInteractive) {
       this.spinner.succeed(text);
+      this.spinner.stop(); // Ensure spinner is fully stopped
     } else {
       console.log(chalk.green('✅'), text || 'Done');
     }
@@ -61,6 +62,7 @@ export class ProgressSpinner {
   fail(text?: string): this {
     if (this.isInteractive) {
       this.spinner.fail(text);
+      this.spinner.stop(); // Ensure spinner is fully stopped
     } else {
       console.log(chalk.red('❌'), text || 'Failed');
     }

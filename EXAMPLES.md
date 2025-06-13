@@ -24,9 +24,25 @@ npm install -g @re-shell/cli
 re-shell --version
 ```
 
-### 🚀 New in v0.2.8: World-Class Init Experience
+### 🚀 New in v0.2.9: World-Class CLI Experience
 
-Re-Shell CLI v0.2.8 introduces a completely enhanced init command with templates, presets, and professional tooling:
+Re-Shell CLI v0.2.9 introduces a completely enhanced CLI with world-class reliability, performance, and professional tooling:
+
+#### Zero Terminal Hanging
+```bash
+# All commands now complete cleanly with timeout protection
+re-shell workspace list    # No more hanging issues
+re-shell submodule status  # Graceful error handling
+re-shell build             # Reliable completion
+```
+
+#### Enhanced Error Handling & Recovery
+```bash
+# Comprehensive error recovery with helpful messages
+re-shell init my-project --debug    # Enhanced debugging
+re-shell workspace list --json      # Structured error output
+re-shell build --analyze           # Build failure recovery
+```
 
 #### Template-Based Initialization
 ```bash
