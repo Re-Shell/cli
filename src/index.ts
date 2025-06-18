@@ -40,6 +40,11 @@ import { importProject, exportProject, backupProject, restoreProject } from './c
 import { analyzeProject } from './commands/analyze';
 import { generateCICDConfig, generateDeployConfig, setupEnvironments } from './commands/cicd';
 import { generateCode, generateTests, generateDocumentation } from './commands/generate';
+import { manageConfig } from './commands/config';
+import { manageEnvironment } from './commands/environment';
+import { manageMigration } from './commands/migration';
+import { validateConfiguration } from './commands/validate';
+import { manageProjectConfig } from './commands/project-config';
 
 // Get version from package.json
 const packageJsonPath = path.resolve(__dirname, '../package.json');
@@ -630,6 +635,668 @@ cicdCommand
       }, 120000); // 2 minute timeout
 
       spinner.succeed(chalk.green(`Deployment configuration for ${environment} generated!`));
+    })
+  );
+
+// Configuration management commands
+const configCommand = program.command('config').description('Manage Re-Shell configuration');
+
+configCommand
+  .command('show')
+  .description('Show current configuration')
+  .option('--global', 'Show only global configuration')
+  .option('--project', 'Show only project configuration')
+  .option('--json', 'Output as JSON')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Loading configuration...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageConfig({ ...options, list: true, spinner });
+      }, 30000); // 30 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Configuration loaded successfully!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+configCommand
+  .command('get <key>')
+  .description('Get configuration value')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (key, options) => {
+      const spinner = createSpinner(`Getting ${key}...`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageConfig({ ...options, get: key, spinner });
+      }, 15000); // 15 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Configuration value retrieved!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+configCommand
+  .command('set <key> <value>')
+  .description('Set configuration value')
+  .option('--global', 'Set in global configuration')
+  .option('--project', 'Set in project configuration')
+  .action(
+    createAsyncCommand(async (key, value, options) => {
+      const spinner = createSpinner(`Setting ${key}...`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageConfig({ ...options, set: key, value, spinner });
+      }, 15000); // 15 second timeout
+
+      spinner.succeed(chalk.green(`Configuration updated: ${key}`));
+    })
+  );
+
+configCommand
+  .command('preset <action> [name]')
+  .description('Manage configuration presets (save|load|list|delete)')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (action, name, options) => {
+      const spinner = createSpinner(`Managing preset...`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      let presetOptions: Parameters<typeof manageConfig>[0] = { ...options, spinner };
+      
+      switch (action) {
+        case 'save':
+          if (!name) throw new Error('Preset name required for save action');
+          presetOptions = { ...presetOptions, save: name };
+          break;
+        case 'load':
+          if (!name) throw new Error('Preset name required for load action');
+          presetOptions = { ...presetOptions, load: name };
+          break;
+        case 'list':
+          presetOptions = { ...presetOptions, list: true };
+          break;
+        case 'delete':
+          if (!name) throw new Error('Preset name required for delete action');
+          presetOptions = { ...presetOptions, delete: name };
+          break;
+        default:
+          throw new Error(`Unknown action: ${action}`);
+      }
+
+      await withTimeout(async () => {
+        await manageConfig(presetOptions);
+      }, 30000); // 30 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green(`Preset ${action} completed successfully!`));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+configCommand
+  .command('backup')
+  .description('Create configuration backup')
+  .action(
+    createAsyncCommand(async () => {
+      const spinner = createSpinner('Creating backup...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageConfig({ backup: true, spinner });
+      }, 30000); // 30 second timeout
+
+      spinner.succeed(chalk.green('Configuration backup created!'));
+    })
+  );
+
+configCommand
+  .command('restore <backup>')
+  .description('Restore configuration from backup')
+  .action(
+    createAsyncCommand(async (backup) => {
+      const spinner = createSpinner('Restoring configuration...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageConfig({ restore: backup, spinner });
+      }, 30000); // 30 second timeout
+
+      spinner.succeed(chalk.green('Configuration restored!'));
+    })
+  );
+
+configCommand
+  .command('interactive')
+  .description('Interactive configuration management')
+  .action(
+    createAsyncCommand(async () => {
+      await manageConfig({ interactive: true });
+    })
+  );
+
+// Environment management commands
+const envCommand = program.command('env').description('Manage environment configurations');
+
+envCommand
+  .command('list')
+  .description('List all environments')
+  .option('--json', 'Output as JSON')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Loading environments...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageEnvironment({ ...options, list: true, spinner });
+      }, 30000); // 30 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Environments loaded successfully!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+envCommand
+  .command('active')
+  .description('Show active environment')
+  .option('--json', 'Output as JSON')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Getting active environment...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageEnvironment({ ...options, active: true, spinner });
+      }, 15000); // 15 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Active environment retrieved!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+envCommand
+  .command('set <name>')
+  .description('Set active environment')
+  .action(
+    createAsyncCommand(async (name) => {
+      const spinner = createSpinner(`Setting active environment to ${name}...`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageEnvironment({ set: name, spinner });
+      }, 15000); // 15 second timeout
+
+      spinner.succeed(chalk.green(`Environment '${name}' activated!`));
+    })
+  );
+
+envCommand
+  .command('create <name>')
+  .description('Create new environment')
+  .option('--extends <env>', 'Inherit from existing environment')
+  .action(
+    createAsyncCommand(async (name, options) => {
+      const spinner = createSpinner(`Creating environment ${name}...`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageEnvironment({ ...options, create: name, spinner });
+      }, 30000); // 30 second timeout
+
+      spinner.succeed(chalk.green(`Environment '${name}' created!`));
+    })
+  );
+
+envCommand
+  .command('delete <name>')
+  .description('Delete environment')
+  .action(
+    createAsyncCommand(async (name) => {
+      const spinner = createSpinner(`Deleting environment ${name}...`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageEnvironment({ delete: name, spinner });
+      }, 15000); // 15 second timeout
+
+      spinner.succeed(chalk.green(`Environment '${name}' deleted!`));
+    })
+  );
+
+envCommand
+  .command('compare <env1> <env2>')
+  .description('Compare two environments')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (env1, env2, options) => {
+      const spinner = createSpinner(`Comparing ${env1} and ${env2}...`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageEnvironment({ ...options, compare: [env1, env2], spinner });
+      }, 30000); // 30 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Environment comparison completed!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+envCommand
+  .command('generate <name>')
+  .description('Generate .env file for environment')
+  .option('--output <file>', 'Output file path')
+  .action(
+    createAsyncCommand(async (name, options) => {
+      const spinner = createSpinner(`Generating .env file for ${name}...`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageEnvironment({ ...options, generate: name, spinner });
+      }, 15000); // 15 second timeout
+
+      spinner.succeed(chalk.green(`Environment file generated for '${name}'!`));
+    })
+  );
+
+envCommand
+  .command('interactive')
+  .description('Interactive environment management')
+  .action(
+    createAsyncCommand(async () => {
+      await manageEnvironment({ interactive: true });
+    })
+  );
+
+// Configuration migration commands
+const configMigrateCommand = program.command('config-migrate').description('Manage configuration migrations');
+
+configMigrateCommand
+  .command('auto')
+  .description('Auto-migrate all configurations')
+  .option('--json', 'Output as JSON')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Running auto-migration...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageMigration({ ...options, auto: true, spinner });
+      }, 60000); // 60 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Auto-migration completed!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+configMigrateCommand
+  .command('check')
+  .description('Check migration status')
+  .option('--json', 'Output as JSON')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Checking migration status...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageMigration({ ...options, check: true, spinner });
+      }, 30000); // 30 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Migration status checked!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+configMigrateCommand
+  .command('global')
+  .description('Migrate global configuration')
+  .option('--json', 'Output as JSON')
+  .option('--force', 'Force migration without confirmation')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Migrating global configuration...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageMigration({ ...options, global: true, spinner });
+      }, 30000); // 30 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Global configuration migrated!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+configMigrateCommand
+  .command('project')
+  .description('Migrate project configuration')
+  .option('--json', 'Output as JSON')
+  .option('--force', 'Force migration without confirmation')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Migrating project configuration...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageMigration({ ...options, project: true, spinner });
+      }, 30000); // 30 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Project configuration migrated!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+configMigrateCommand
+  .command('rollback <version>')
+  .description('Rollback to previous version')
+  .option('--global', 'Rollback global configuration')
+  .option('--project', 'Rollback project configuration')
+  .option('--json', 'Output as JSON')
+  .option('--force', 'Force rollback without confirmation')
+  .action(
+    createAsyncCommand(async (version, options) => {
+      const configType = options.global ? 'global' : 'project';
+      const spinner = createSpinner(`Rolling back ${configType} to ${version}...`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageMigration({ ...options, rollback: version, spinner });
+      }, 30000); // 30 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green(`Rollback to ${version} completed!`));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+configMigrateCommand
+  .command('history')
+  .description('Show migration history')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Loading migration history...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageMigration({ ...options, history: true, spinner });
+      }, 15000); // 15 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Migration history loaded!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+configMigrateCommand
+  .command('interactive')
+  .description('Interactive migration management')
+  .action(
+    createAsyncCommand(async () => {
+      await manageMigration({ interactive: true });
+    })
+  );
+
+// Validation commands
+const validateCommand = program.command('validate').description('Validate configurations with detailed error messages');
+
+validateCommand
+  .command('all')
+  .description('Validate all configurations')
+  .option('--warnings', 'Show warnings')
+  .option('--suggestions', 'Show suggestions')
+  .option('--fix', 'Auto-fix issues where possible')
+  .option('--json', 'Output as JSON')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Validating configurations...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await validateConfiguration({ ...options, spinner });
+      }, 30000); // 30 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Configuration validation completed!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+validateCommand
+  .command('global')
+  .description('Validate global configuration')
+  .option('--warnings', 'Show warnings')
+  .option('--suggestions', 'Show suggestions')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Validating global configuration...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await validateConfiguration({ ...options, global: true, spinner });
+      }, 15000); // 15 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Global configuration validated!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+validateCommand
+  .command('project')
+  .description('Validate project configuration')
+  .option('--warnings', 'Show warnings')
+  .option('--suggestions', 'Show suggestions')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Validating project configuration...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await validateConfiguration({ ...options, project: true, spinner });
+      }, 15000); // 15 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Project configuration validated!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+validateCommand
+  .command('file <path>')
+  .description('Validate specific configuration file')
+  .option('--warnings', 'Show warnings')
+  .option('--suggestions', 'Show suggestions')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (filePath, options) => {
+      const spinner = createSpinner(`Validating ${filePath}...`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await validateConfiguration({ ...options, file: filePath, spinner });
+      }, 15000); // 15 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green(`File validation completed: ${filePath}`));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+validateCommand
+  .command('interactive')
+  .description('Interactive configuration validation')
+  .action(
+    createAsyncCommand(async () => {
+      await validateConfiguration({ interactive: true });
+    })
+  );
+
+// Project configuration commands
+const projectConfigCommand = program.command('project-config').description('Manage project-level configuration with inheritance');
+
+projectConfigCommand
+  .command('init')
+  .description('Initialize project configuration')
+  .option('--framework <framework>', 'Default framework')
+  .option('--package-manager <pm>', 'Package manager (npm, yarn, pnpm, bun)')
+  .option('--interactive', 'Interactive initialization')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Initializing project configuration...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageProjectConfig({ ...options, init: true, spinner });
+      }, 30000); // 30 second timeout
+
+      spinner.succeed(chalk.green('Project configuration initialized!'));
+    })
+  );
+
+projectConfigCommand
+  .command('show')
+  .description('Show project configuration with inheritance')
+  .option('--json', 'Output as JSON')
+  .option('--verbose', 'Show merged configuration')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Loading project configuration...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageProjectConfig({ ...options, show: true, spinner });
+      }, 15000); // 15 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Project configuration loaded!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+projectConfigCommand
+  .command('get <key>')
+  .description('Get project configuration value')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (key, options) => {
+      const spinner = createSpinner(`Getting ${key}...`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageProjectConfig({ ...options, get: key, spinner });
+      }, 15000); // 15 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Configuration value retrieved!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+projectConfigCommand
+  .command('set <key> <value>')
+  .description('Set project configuration value')
+  .action(
+    createAsyncCommand(async (key, value, options) => {
+      const spinner = createSpinner(`Setting ${key}...`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageProjectConfig({ ...options, set: key, value, spinner });
+      }, 15000); // 15 second timeout
+
+      spinner.succeed(chalk.green(`Configuration updated: ${key}`));
+    })
+  );
+
+projectConfigCommand
+  .command('interactive')
+  .description('Interactive project configuration management')
+  .action(
+    createAsyncCommand(async () => {
+      await manageProjectConfig({ interactive: true });
     })
   );
 
