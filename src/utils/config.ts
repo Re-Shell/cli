@@ -106,6 +106,48 @@ export interface EnvironmentConfig {
   };
 }
 
+export interface WorkspaceConfig {
+  name: string;
+  type: 'app' | 'package' | 'lib' | 'tool';
+  framework?: string;
+  packageManager?: 'npm' | 'yarn' | 'pnpm' | 'bun';
+  template?: string;
+  dependencies?: string[];
+  devDependencies?: string[];
+  build?: {
+    target?: string;
+    optimize?: boolean;
+    analyze?: boolean;
+    minify?: boolean;
+    outDir?: string;
+    sourcemap?: boolean;
+  };
+  dev?: {
+    port?: number;
+    host?: string;
+    open?: boolean;
+    hmr?: boolean;
+    proxy?: Record<string, string>;
+  };
+  quality?: {
+    linting?: boolean;
+    testing?: boolean;
+    coverage?: {
+      enabled?: boolean;
+      threshold?: number;
+    };
+    security?: {
+      enabled?: boolean;
+      autoFix?: boolean;
+    };
+  };
+  deployment?: {
+    provider?: string;
+    config?: Record<string, any>;
+  };
+  environment?: Record<string, any>;
+}
+
 export interface ProjectPreset {
   name: string;
   description: string;
@@ -252,7 +294,8 @@ export const CONFIG_PATHS = {
   GLOBAL_DIR: path.join(os.homedir(), '.re-shell'),
   GLOBAL_CONFIG: path.join(os.homedir(), '.re-shell', 'config.yaml'),
   PROJECT_CONFIG: '.re-shell/config.yaml',
-  WORKSPACE_CONFIG: 're-shell.workspaces.yaml'
+  WORKSPACE_CONFIG: 're-shell.workspaces.yaml',
+  WORKSPACE_DIR_CONFIG: '.re-shell/workspace.yaml'
 };
 
 // Configuration manager class
@@ -359,7 +402,55 @@ export class ConfigManager {
     return config;
   }
 
-  // Configuration merging with inheritance
+  // Workspace configuration management
+  async loadWorkspaceConfig(workspacePath: string): Promise<WorkspaceConfig | null> {
+    const configPath = path.join(workspacePath, CONFIG_PATHS.WORKSPACE_DIR_CONFIG);
+    
+    try {
+      if (await fs.pathExists(configPath)) {
+        const content = await fs.readFile(configPath, 'utf8');
+        const config = yaml.parse(content) as WorkspaceConfig;
+        this.validateWorkspaceConfig(config);
+        return config;
+      }
+    } catch (error) {
+      throw new ValidationError(`Failed to load workspace config: ${(error as Error).message}`);
+    }
+
+    return null;
+  }
+
+  async saveWorkspaceConfig(config: WorkspaceConfig, workspacePath: string): Promise<void> {
+    try {
+      const configDir = path.join(workspacePath, '.re-shell');
+      const configPath = path.join(workspacePath, CONFIG_PATHS.WORKSPACE_DIR_CONFIG);
+      
+      await fs.ensureDir(configDir);
+      this.validateWorkspaceConfig(config);
+      const content = yaml.stringify(config);
+      await fs.writeFile(configPath, content, 'utf8');
+    } catch (error) {
+      throw new ValidationError(`Failed to save workspace config: ${(error as Error).message}`);
+    }
+  }
+
+  async createWorkspaceConfig(
+    name: string, 
+    type: 'app' | 'package' | 'lib' | 'tool',
+    options: Partial<WorkspaceConfig> = {},
+    workspacePath: string
+  ): Promise<WorkspaceConfig> {
+    const config: WorkspaceConfig = {
+      name,
+      type,
+      ...options
+    };
+
+    await this.saveWorkspaceConfig(config, workspacePath);
+    return config;
+  }
+
+  // Configuration merging with inheritance (global → project → workspace)
   async getMergedConfig(projectPath: string = process.cwd()): Promise<{
     global: GlobalConfig;
     project: ProjectConfig | null;
@@ -390,6 +481,45 @@ export class ConfigManager {
       global: globalConfig,
       project: projectConfig,
       merged: merged as Partial<ProjectConfig>
+    };
+  }
+
+  // Enhanced configuration merging including workspace config
+  async getMergedWorkspaceConfig(workspacePath: string, projectPath: string = process.cwd()): Promise<{
+    global: GlobalConfig;
+    project: ProjectConfig | null;
+    workspace: WorkspaceConfig | null;
+    merged: any;
+  }> {
+    const { global, project, merged } = await this.getMergedConfig(projectPath);
+    const workspaceConfig = await this.loadWorkspaceConfig(workspacePath);
+
+    let workspaceMerged = { ...merged };
+
+    // Apply workspace-specific config (overrides project and global)
+    if (workspaceConfig) {
+      // Merge workspace settings into the result
+      if (workspaceConfig.packageManager) workspaceMerged.packageManager = workspaceConfig.packageManager;
+      if (workspaceConfig.framework) workspaceMerged.framework = workspaceConfig.framework;
+      if (workspaceConfig.template) workspaceMerged.template = workspaceConfig.template;
+      
+      // Deep merge complex objects
+      if (workspaceConfig.build) {
+        workspaceMerged.build = this.mergeConfig(workspaceMerged.build || {}, workspaceConfig.build);
+      }
+      if (workspaceConfig.dev) {
+        workspaceMerged.dev = this.mergeConfig(workspaceMerged.dev || {}, workspaceConfig.dev);
+      }
+      if (workspaceConfig.quality) {
+        workspaceMerged.quality = this.mergeConfig(workspaceMerged.quality || {}, workspaceConfig.quality);
+      }
+    }
+
+    return {
+      global,
+      project,
+      workspace: workspaceConfig,
+      merged: workspaceMerged
     };
   }
 
@@ -457,6 +587,21 @@ export class ConfigManager {
         .map((e: any) => `${e.field}: ${e.message}`)
         .join('; ');
       throw new ValidationError(`Project configuration validation failed: ${errorMessages}`);
+    }
+  }
+
+  private validateWorkspaceConfig(config: any): void {
+    // Basic workspace config validation
+    if (!config.name || typeof config.name !== 'string') {
+      throw new ValidationError('Workspace configuration must have a valid name');
+    }
+    
+    if (!config.type || !['app', 'package', 'lib', 'tool'].includes(config.type)) {
+      throw new ValidationError('Workspace configuration must have a valid type: app, package, lib, or tool');
+    }
+    
+    if (config.packageManager && !['npm', 'yarn', 'pnpm', 'bun'].includes(config.packageManager)) {
+      throw new ValidationError('Invalid package manager specified in workspace configuration');
     }
   }
 

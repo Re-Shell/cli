@@ -45,6 +45,11 @@ import { manageEnvironment } from './commands/environment';
 import { manageMigration } from './commands/migration';
 import { validateConfiguration } from './commands/validate';
 import { manageProjectConfig } from './commands/project-config';
+import { manageWorkspaceConfig } from './commands/workspace-config';
+import { manageTemplates } from './commands/template';
+import { manageConfigDiff } from './commands/config-diff';
+import { manageBackups } from './commands/backup';
+import { manageDevMode } from './commands/dev-mode';
 
 // Get version from package.json
 const packageJsonPath = path.resolve(__dirname, '../package.json');
@@ -1300,6 +1305,525 @@ projectConfigCommand
     })
   );
 
+// Workspace configuration commands
+const workspaceConfigCommand = program.command('workspace-config').description('Manage workspace-specific configuration with cascading inheritance');
+
+workspaceConfigCommand
+  .command('init')
+  .description('Initialize workspace configuration')
+  .option('--workspace <path>', 'Workspace path', process.cwd())
+  .option('--type <type>', 'Workspace type (app, package, lib, tool)', 'app')
+  .option('--framework <framework>', 'Framework override')
+  .option('--package-manager <pm>', 'Package manager override')
+  .option('--interactive', 'Interactive initialization')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Initializing workspace configuration...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceConfig({ ...options, init: true, spinner });
+      }, 30000); // 30 second timeout
+
+      spinner.succeed(chalk.green('Workspace configuration initialized!'));
+    })
+  );
+
+workspaceConfigCommand
+  .command('show')
+  .description('Show workspace configuration with inheritance chain')
+  .option('--workspace <path>', 'Workspace path', process.cwd())
+  .option('--json', 'Output as JSON')
+  .option('--verbose', 'Show final merged configuration')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Loading workspace configuration...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceConfig({ ...options, show: true, spinner });
+      }, 15000); // 15 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Workspace configuration loaded!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+workspaceConfigCommand
+  .command('get <key>')
+  .description('Get workspace configuration value with inheritance info')
+  .option('--workspace <path>', 'Workspace path', process.cwd())
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (key, options) => {
+      const spinner = createSpinner(`Getting configuration value: ${key}`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceConfig({ ...options, get: key, spinner });
+      }, 15000); // 15 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green(`Configuration value retrieved: ${key}`));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+workspaceConfigCommand
+  .command('set <key> <value>')
+  .description('Set workspace configuration value')
+  .option('--workspace <path>', 'Workspace path', process.cwd())
+  .action(
+    createAsyncCommand(async (key, value, options) => {
+      const spinner = createSpinner(`Setting configuration: ${key} = ${value}`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceConfig({ ...options, set: key, value, spinner });
+      }, 15000); // 15 second timeout
+
+      spinner.succeed(chalk.green(`Configuration updated: ${key}`));
+    })
+  );
+
+workspaceConfigCommand
+  .command('interactive')
+  .description('Interactive workspace configuration management')
+  .option('--workspace <path>', 'Workspace path', process.cwd())
+  .action(
+    createAsyncCommand(async (options) => {
+      await manageWorkspaceConfig({ ...options, interactive: true });
+    })
+  );
+
+// Template management commands
+const templateCommand = program.command('template').description('Manage configuration templates with variable substitution');
+
+templateCommand
+  .command('list')
+  .description('List available configuration templates')
+  .option('--json', 'Output as JSON')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Loading templates...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageTemplates({ ...options, list: true, spinner });
+      }, 15000); // 15 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Templates loaded!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+templateCommand
+  .command('create')
+  .description('Create a new configuration template')
+  .option('--interactive', 'Interactive template creation')
+  .action(
+    createAsyncCommand(async (options) => {
+      await manageTemplates({ ...options, create: true });
+    })
+  );
+
+templateCommand
+  .command('show <name>')
+  .description('Show template details and variables')
+  .option('--json', 'Output as JSON')
+  .option('--verbose', 'Show template structure')
+  .action(
+    createAsyncCommand(async (name, options) => {
+      const spinner = createSpinner(`Loading template: ${name}`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageTemplates({ ...options, show: true, template: name, spinner });
+      }, 15000); // 15 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green(`Template '${name}' loaded!`));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+templateCommand
+  .command('apply <name>')
+  .description('Apply template to generate configuration')
+  .option('--variables <json>', 'Variables as JSON string')
+  .option('--output <file>', 'Output file path')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (name, options) => {
+      const spinner = createSpinner(`Applying template: ${name}`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageTemplates({ ...options, apply: true, template: name, spinner });
+      }, 30000); // 30 second timeout
+
+      spinner.succeed(chalk.green(`Template '${name}' applied successfully!`));
+    })
+  );
+
+templateCommand
+  .command('delete <name>')
+  .description('Delete a configuration template')
+  .action(
+    createAsyncCommand(async (name, options) => {
+      const spinner = createSpinner(`Deleting template: ${name}`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageTemplates({ ...options, delete: true, template: name, spinner });
+      }, 15000); // 15 second timeout
+
+      spinner.succeed(chalk.green(`Template '${name}' deleted!`));
+    })
+  );
+
+templateCommand
+  .command('interactive')
+  .description('Interactive template management')
+  .action(
+    createAsyncCommand(async (options) => {
+      await manageTemplates({ ...options, interactive: true });
+    })
+  );
+
+// Configuration diff and merge commands
+const configDiffCommand = program.command('config-diff').description('Compare and merge configurations with advanced diffing capabilities');
+
+configDiffCommand
+  .command('diff')
+  .description('Compare two configurations and show differences')
+  .option('--left <source>', 'Left configuration source (file, global, project, workspace:path)')
+  .option('--right <source>', 'Right configuration source (file, global, project, workspace:path)')
+  .option('--format <format>', 'Output format (text, html, json)', 'text')
+  .option('--output <file>', 'Output file for diff report')
+  .option('--ignore-order', 'Ignore array order in comparison')
+  .option('--ignore-paths <paths>', 'Comma-separated paths to ignore')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      if (!options.left || !options.right) {
+        console.log(chalk.red('Error: Both --left and --right sources are required'));
+        process.exit(1);
+      }
+
+      const spinner = createSpinner('Comparing configurations...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageConfigDiff({ ...options, diff: true, spinner });
+      }, 30000); // 30 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Configuration comparison completed!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+configDiffCommand
+  .command('merge')
+  .description('Merge two configurations with conflict resolution')
+  .option('--left <source>', 'Base configuration source')
+  .option('--right <source>', 'Incoming configuration source')
+  .option('--output <file>', 'Output file for merged configuration')
+  .option('--strategy <strategy>', 'Merge strategy (left, right, smart, conservative, interactive)', 'smart')
+  .option('--interactive', 'Interactive conflict resolution')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      if (!options.left || !options.right) {
+        console.log(chalk.red('Error: Both --left and --right sources are required'));
+        process.exit(1);
+      }
+
+      const spinner = createSpinner('Merging configurations...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageConfigDiff({ ...options, merge: true, spinner });
+      }, 60000); // 1 minute timeout
+
+      spinner.succeed(chalk.green('Configuration merge completed!'));
+    })
+  );
+
+configDiffCommand
+  .command('apply')
+  .description('Apply a diff patch to a configuration')
+  .option('--left <config>', 'Base configuration file')
+  .option('--right <diff>', 'Diff file (JSON format)')
+  .option('--output <file>', 'Output file for patched configuration')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      if (!options.left || !options.right) {
+        console.log(chalk.red('Error: Both --left (config) and --right (diff) are required'));
+        process.exit(1);
+      }
+
+      const spinner = createSpinner('Applying diff patch...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageConfigDiff({ ...options, apply: true, spinner });
+      }, 30000); // 30 second timeout
+
+      spinner.succeed(chalk.green('Diff patch applied successfully!'));
+    })
+  );
+
+configDiffCommand
+  .command('status')
+  .description('Show configuration status and inheritance analysis')
+  .option('--json', 'Output as JSON')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Analyzing configuration status...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageConfigDiff({ ...options, spinner });
+      }, 15000); // 15 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Configuration analysis completed!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+configDiffCommand
+  .command('interactive')
+  .description('Interactive configuration diffing and merging')
+  .action(
+    createAsyncCommand(async (options) => {
+      await manageConfigDiff({ ...options, interactive: true });
+    })
+  );
+
+// Configuration backup and restore commands
+const backupCommand = program.command('backup').description('Backup and restore configurations with versioning and rollback capabilities');
+
+backupCommand
+  .command('create')
+  .description('Create a configuration backup')
+  .option('--full', 'Create full backup (all configurations)')
+  .option('--selective', 'Create selective backup (choose components)')
+  .option('--name <name>', 'Backup name')
+  .option('--description <desc>', 'Backup description')
+  .option('--tags <tags>', 'Comma-separated tags')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Creating backup...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageBackups({ ...options, create: true, spinner });
+      }, 60000); // 1 minute timeout
+
+      spinner.succeed(chalk.green('Backup created successfully!'));
+    })
+  );
+
+backupCommand
+  .command('list')
+  .description('List all available backups')
+  .option('--json', 'Output as JSON')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Loading backups...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageBackups({ ...options, list: true, spinner });
+      }, 30000); // 30 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Backups loaded!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+backupCommand
+  .command('restore <id>')
+  .description('Restore configuration from backup')
+  .option('--force', 'Skip confirmation prompt')
+  .option('--dry-run', 'Preview restoration without making changes')
+  .option('--no-pre-backup', 'Skip creating backup before restoration')
+  .option('--merge-strategy <strategy>', 'Merge strategy (replace, merge, skip-existing)', 'replace')
+  .action(
+    createAsyncCommand(async (id, options) => {
+      const spinner = createSpinner(`Restoring from backup: ${id}`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageBackups({ ...options, restore: id, spinner });
+      }, 120000); // 2 minute timeout
+
+      if (!options.dryRun) {
+        spinner.succeed(chalk.green('Configuration restored successfully!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+backupCommand
+  .command('delete <id>')
+  .description('Delete a backup')
+  .option('--force', 'Skip confirmation prompt')
+  .action(
+    createAsyncCommand(async (id, options) => {
+      const spinner = createSpinner(`Deleting backup: ${id}`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageBackups({ ...options, delete: id, spinner });
+      }, 15000); // 15 second timeout
+
+      spinner.succeed(chalk.green('Backup deleted successfully!'));
+    })
+  );
+
+backupCommand
+  .command('export <id>')
+  .description('Export backup to file')
+  .option('--output <file>', 'Output file path')
+  .action(
+    createAsyncCommand(async (id, options) => {
+      if (!options.output) {
+        console.log(chalk.red('Error: --output file path is required'));
+        process.exit(1);
+      }
+
+      const spinner = createSpinner(`Exporting backup: ${id}`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageBackups({ ...options, export: id, spinner });
+      }, 30000); // 30 second timeout
+
+      spinner.succeed(chalk.green('Backup exported successfully!'));
+    })
+  );
+
+backupCommand
+  .command('import <file>')
+  .description('Import backup from file')
+  .action(
+    createAsyncCommand(async (file, options) => {
+      const spinner = createSpinner(`Importing backup from: ${file}`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageBackups({ ...options, import: file, spinner });
+      }, 30000); // 30 second timeout
+
+      spinner.succeed(chalk.green('Backup imported successfully!'));
+    })
+  );
+
+backupCommand
+  .command('cleanup')
+  .description('Clean up old backups')
+  .option('--keep-count <count>', 'Number of recent backups to keep', '10')
+  .option('--keep-days <days>', 'Keep backups newer than N days', '30')
+  .option('--dry-run', 'Preview cleanup without deleting')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Analyzing backups for cleanup...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageBackups({ 
+          ...options, 
+          cleanup: true, 
+          keepCount: parseInt(options.keepCount),
+          keepDays: parseInt(options.keepDays),
+          spinner 
+        });
+      }, 30000); // 30 second timeout
+
+      if (!options.dryRun) {
+        spinner.succeed(chalk.green('Backup cleanup completed!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+backupCommand
+  .command('stats')
+  .description('Show backup statistics')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Calculating backup statistics...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageBackups({ ...options, stats: true, spinner });
+      }, 15000); // 15 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Statistics calculated!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+backupCommand
+  .command('interactive')
+  .description('Interactive backup management')
+  .action(
+    createAsyncCommand(async (options) => {
+      await manageBackups({ ...options, interactive: true });
+    })
+  );
+
 // Generate commands
 const generateCommand = program.command('generate').description('Generate code, tests, and documentation');
 
@@ -1396,6 +1920,113 @@ generateCommand
       }, 180000); // 3 minute timeout
 
       spinner.succeed(chalk.green('Documentation generated!'));
+    })
+  );
+
+// Development mode commands
+const devCommand = program.command('dev').description('Development mode with configuration hot-reloading');
+
+devCommand
+  .command('start')
+  .description('Start development mode with hot-reloading')
+  .option('--verbose', 'Enable detailed change notifications')
+  .option('--debounce <ms>', 'Change detection delay in milliseconds', '500')
+  .option('--no-validation', 'Skip configuration validation on changes')
+  .option('--no-backup', 'Disable automatic backups before changes')
+  .option('--no-restore', 'Disable error recovery from backups')
+  .option('--exclude-workspaces', 'Skip workspace configuration watching')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Starting development mode...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageDevMode({ ...options, start: true, spinner });
+      }, 30000); // 30 second timeout
+
+      // Don't auto-succeed for dev mode as it stays running
+      spinner.stop();
+    })
+  );
+
+devCommand
+  .command('stop')
+  .description('Stop development mode')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Stopping development mode...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageDevMode({ ...options, stop: true, spinner });
+      }, 10000); // 10 second timeout
+
+      spinner.succeed(chalk.green('Development mode stopped!'));
+    })
+  );
+
+devCommand
+  .command('restart')
+  .description('Restart development mode')
+  .option('--verbose', 'Enable detailed change notifications')
+  .option('--debounce <ms>', 'Change detection delay in milliseconds', '500')
+  .option('--no-validation', 'Skip configuration validation on changes')
+  .option('--no-backup', 'Disable automatic backups before changes')
+  .option('--no-restore', 'Disable error recovery from backups')
+  .option('--exclude-workspaces', 'Skip workspace configuration watching')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Restarting development mode...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageDevMode({ ...options, restart: true, spinner });
+      }, 30000); // 30 second timeout
+
+      spinner.stop();
+    })
+  );
+
+devCommand
+  .command('status')
+  .description('Show development mode status')
+  .option('--json', 'Output as JSON')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Checking development mode status...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageDevMode({ ...options, status: true, spinner });
+      }, 10000); // 10 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Status checked!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+devCommand
+  .command('interactive')
+  .description('Interactive development mode management')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Loading development mode interface...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageDevMode({ ...options, interactive: true, spinner });
+      }, 60000); // 1 minute timeout
+
+      spinner.stop();
     })
   );
 
