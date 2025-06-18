@@ -8,6 +8,7 @@ import { initializeMonorepo, DEFAULT_MONOREPO_STRUCTURE } from '../utils/monorep
 import { initializeGitRepository } from '../utils/submodule';
 import { ProgressSpinner, flushOutput } from '../utils/spinner';
 import { AsyncPool } from '../utils/async-pool';
+import { configManager } from '../utils/config';
 
 interface InitOptions {
   packageManager?: 'npm' | 'yarn' | 'pnpm' | 'bun';
@@ -879,7 +880,7 @@ ${
 
 async function createAdditionalConfigs(
   projectPath: string,
-  options: { packageManager: string; git: boolean; submodules: boolean }
+  options: { packageManager: string; git: boolean; submodules: boolean; template?: string; structure?: any }
 ): Promise<void> {
   // Create .nvmrc for Node.js version
   await fs.writeFile(path.join(projectPath, '.nvmrc'), '18.17.0\n');
@@ -1401,4 +1402,30 @@ We prefer all communications to be in English.
 `;
 
   await fs.writeFile(path.join(projectPath, 'jest.config.js'), jestConfig);
+
+  // Create Re-Shell project configuration
+  const projectName = path.basename(projectPath);
+  await configManager.createProjectConfig(
+    projectName,
+    {
+      type: 'monorepo',
+      packageManager: options.packageManager as 'npm' | 'yarn' | 'pnpm' | 'bun',
+      framework: 'react-ts',
+      template: options.template || 'blank',
+      workspaces: {
+        root: '.',
+        patterns: [
+          `${options.structure?.apps || 'apps'}/*`,
+          `${options.structure?.packages || 'packages'}/*`
+        ],
+        types: ['app', 'package']
+      },
+      git: {
+        submodules: options.submodules,
+        hooks: true,
+        conventionalCommits: true
+      }
+    },
+    projectPath
+  );
 }

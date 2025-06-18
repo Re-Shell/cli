@@ -1,0 +1,20 @@
+version: 1.0.0
+packageManager: pnpm
+defaultFramework: react-ts
+defaultTemplate: blank
+presets: {}
+user: {}
+cli:
+  autoUpdate: true
+  telemetry: true
+  verbose: false
+  theme: auto
+paths:
+  templates: ~/.re-shell/templates
+  cache: ~/.re-shell/cache
+  plugins: ~/.re-shell/plugins
+plugins:
+  enabled: []
+  marketplace:
+    registry: https://registry.npmjs.org
+    autoUpdate: false
