@@ -52,6 +52,8 @@ import { manageBackups } from './commands/backup';
 import { manageDevMode } from './commands/dev-mode';
 import { manageWorkspaceDefinition } from './commands/workspace-definition';
 import { manageWorkspaceGraph } from './commands/workspace-graph';
+import { manageWorkspaceHealth } from './commands/workspace-health';
+import { manageWorkspaceState } from './commands/workspace-state';
 
 // Get version from package.json
 const packageJsonPath = path.resolve(__dirname, '../package.json');
@@ -2292,6 +2294,270 @@ workspaceGraphCommand
 
       await withTimeout(async () => {
         await manageWorkspaceGraph({ ...options, interactive: true, spinner });
+      }, 120000); // 2 minute timeout
+
+      spinner.stop();
+    })
+  );
+
+// Workspace health commands
+const workspaceHealthCommand = program.command('workspace-health').description('Validate workspace topology and perform health checks');
+
+workspaceHealthCommand
+  .command('check')
+  .description('Perform comprehensive workspace health check')
+  .option('--file <file>', 'Workspace definition file', 're-shell.workspaces.yaml')
+  .option('--category <category>', 'Check specific category (structure, dependencies, build, etc.)')
+  .option('--output <file>', 'Save health report to file')
+  .option('--detailed', 'Show detailed check information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Performing workspace health check...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceHealth({ ...options, check: true, spinner });
+      }, 120000); // 2 minute timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Health check completed!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+workspaceHealthCommand
+  .command('topology')
+  .description('Validate workspace topology and structure')
+  .option('--file <file>', 'Workspace definition file', 're-shell.workspaces.yaml')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Validating workspace topology...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceHealth({ ...options, topology: true, spinner });
+      }, 60000); // 1 minute timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Topology validation completed!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+workspaceHealthCommand
+  .command('quick')
+  .description('Quick workspace health check')
+  .option('--file <file>', 'Workspace definition file', 're-shell.workspaces.yaml')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Running quick health check...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceHealth({ ...options, quick: true, spinner });
+      }, 30000); // 30 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Quick check completed!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+workspaceHealthCommand
+  .command('watch')
+  .description('Monitor workspace health continuously')
+  .option('--file <file>', 'Workspace definition file', 're-shell.workspaces.yaml')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Starting health monitoring...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      // Note: watch command runs indefinitely, no timeout
+      await manageWorkspaceHealth({ ...options, watch: true, spinner });
+    })
+  );
+
+workspaceHealthCommand
+  .command('fix')
+  .description('Analyze and suggest fixes for health issues')
+  .option('--file <file>', 'Workspace definition file', 're-shell.workspaces.yaml')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Analyzing fixable health issues...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceHealth({ ...options, fix: true, spinner });
+      }, 60000); // 1 minute timeout
+
+      spinner.succeed(chalk.green('Fix analysis completed!'));
+    })
+  );
+
+workspaceHealthCommand
+  .command('interactive')
+  .description('Interactive workspace health management')
+  .option('--file <file>', 'Workspace definition file', 're-shell.workspaces.yaml')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Loading health management interface...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceHealth({ ...options, interactive: true, spinner });
+      }, 120000); // 2 minute timeout
+
+      spinner.stop();
+    })
+  );
+
+// Workspace state commands
+const workspaceStateCommand = program.command('workspace-state').description('Manage workspace state persistence and caching');
+
+workspaceStateCommand
+  .command('status')
+  .description('Show workspace state and cache status')
+  .option('--json', 'Output as JSON')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Loading workspace state status...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceState({ ...options, status: true, spinner });
+      }, 30000); // 30 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('State status loaded!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+workspaceStateCommand
+  .command('clear')
+  .description('Clear workspace state')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Clearing workspace state...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceState({ ...options, clear: true, spinner });
+      }, 15000); // 15 second timeout
+
+      spinner.succeed(chalk.green('Workspace state cleared!'));
+    })
+  );
+
+workspaceStateCommand
+  .command('backup')
+  .description('Backup workspace state')
+  .option('--output <file>', 'Backup file path')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Creating state backup...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceState({ ...options, backup: true, spinner });
+      }, 30000); // 30 second timeout
+
+      spinner.succeed(chalk.green('State backup created!'));
+    })
+  );
+
+workspaceStateCommand
+  .command('restore <file>')
+  .description('Restore workspace state from backup')
+  .action(
+    createAsyncCommand(async (file, options) => {
+      const spinner = createSpinner(`Restoring state from ${file}...`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceState({ ...options, restore: true, file, spinner });
+      }, 30000); // 30 second timeout
+
+      spinner.succeed(chalk.green('State restored!'));
+    })
+  );
+
+workspaceStateCommand
+  .command('cache')
+  .description('Manage workspace cache')
+  .option('--clear', 'Clear all cache')
+  .option('--pattern <pattern>', 'Invalidate cache entries matching pattern')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Managing workspace cache...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceState({ ...options, cache: true, spinner });
+      }, 30000); // 30 second timeout
+
+      if (options.clear) {
+        spinner.succeed(chalk.green('Cache cleared!'));
+      } else {
+        spinner.succeed(chalk.green('Cache operation completed!'));
+      }
+    })
+  );
+
+workspaceStateCommand
+  .command('optimize')
+  .description('Optimize workspace storage (remove expired cache entries)')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Optimizing workspace storage...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceState({ ...options, optimize: true, spinner });
+      }, 60000); // 1 minute timeout
+
+      spinner.succeed(chalk.green('Storage optimized!'));
+    })
+  );
+
+workspaceStateCommand
+  .command('interactive')
+  .description('Interactive workspace state management')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Loading state management interface...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceState({ ...options, interactive: true, spinner });
       }, 120000); // 2 minute timeout
 
       spinner.stop();
