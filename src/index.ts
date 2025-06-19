@@ -60,6 +60,7 @@ import { manageWorkspaceMigration } from './commands/workspace-migration';
 import { manageWorkspaceConflict } from './commands/workspace-conflict';
 import { manageFileWatcher } from './commands/file-watcher';
 import { manageChangeDetector } from './commands/change-detector';
+import { manageChangeImpact, analyzeWorkspaceImpact, showDependencyGraph } from './commands/change-impact';
 
 // Get version from package.json
 const packageJsonPath = path.resolve(__dirname, '../package.json');
@@ -3559,6 +3560,80 @@ changeDetectorCommand
       await withTimeout(async () => {
         await manageChangeDetector({ ...options, interactive: true, spinner });
       }, 300000); // 5 minute timeout
+
+      spinner.stop();
+    })
+  );
+
+// Change Impact Analysis command
+const changeImpactCommand = program
+  .command('change-impact')
+  .alias('impact')
+  .description('Analyze change impact across workspace dependencies');
+
+changeImpactCommand
+  .command('analyze')
+  .description('Analyze impact of file changes')
+  .option('--files <files...>', 'Specific files to analyze')
+  .option('--output <file>', 'Output file path')
+  .option('--format <format>', 'Output format (text|json|mermaid)', 'text')
+  .option('--verbose', 'Show detailed information')
+  .option('--max-depth <depth>', 'Maximum dependency depth', '10')
+  .option('--include-tests', 'Include test dependencies')
+  .option('--include-dev-deps', 'Include dev dependencies')
+  .option('--visualization', 'Generate visualization data')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Analyzing change impact...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageChangeImpact({
+          ...options,
+          maxDepth: parseInt(options.maxDepth)
+        });
+      }, 120000); // 2 minute timeout
+
+      spinner.stop();
+    })
+  );
+
+changeImpactCommand
+  .command('workspace <name>')
+  .description('Analyze impact for specific workspace')
+  .option('--verbose', 'Show detailed information')
+  .option('--output <file>', 'Output file path')
+  .option('--format <format>', 'Output format (text|json)', 'text')
+  .action(
+    createAsyncCommand(async (name, options) => {
+      const spinner = createSpinner('Analyzing workspace impact...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await analyzeWorkspaceImpact(name, options);
+      }, 60000); // 1 minute timeout
+
+      spinner.stop();
+    })
+  );
+
+changeImpactCommand
+  .command('graph')
+  .description('Show workspace dependency graph')
+  .option('--output <file>', 'Output file path')
+  .option('--format <format>', 'Output format (text|json|mermaid)', 'text')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Building dependency graph...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await showDependencyGraph(options);
+      }, 60000); // 1 minute timeout
 
       spinner.stop();
     })

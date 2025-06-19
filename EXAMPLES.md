@@ -25,9 +25,36 @@ npm install -g @re-shell/cli
 re-shell --version
 ```
 
-### 🚀 New in v0.2.9: Enterprise-Grade CLI Experience
+### 🚀 Latest in v0.4.0: Real-Time Development Infrastructure
 
-Re-Shell CLI v0.2.9 introduces a completely enhanced CLI with enterprise-grade reliability, performance, and professional tooling:
+Re-Shell CLI v0.4.0 introduces real-time development infrastructure with intelligent file watching, content-based change detection, and advanced workspace state management, building on the enterprise-grade reliability from previous versions:
+
+#### Real-Time File Watching & Change Detection
+```bash
+# Start real-time file watching for development
+re-shell file-watcher start --workspace frontend-app
+
+# Intelligent change detection with content hashing
+re-shell change-detector scan src/
+
+# Monitor specific files for changes
+re-shell change-detector check src/components/Button.tsx
+
+# View file watching statistics
+re-shell file-watcher stats
+```
+
+#### Advanced Configuration Management
+```bash
+# Global configuration with user preferences
+cat ~/.re-shell/config.yaml
+
+# Project-specific configuration inheritance
+cat .re-shell/config.yaml
+
+# Workspace definitions with dependency graphs
+cat re-shell.workspaces.yaml
+```
 
 #### Zero Terminal Hanging
 ```bash
@@ -83,6 +110,15 @@ re-shell init debug-project --debug
 
 # Skip dependency installation
 re-shell init fast-project --skip-install
+
+# Real-time development with file watching
+re-shell file-watcher start --interactive
+
+# Advanced change detection with caching
+re-shell change-detector scan --verbose
+
+# Configuration management with presets
+re-shell init my-project --preset company-standard
 ```
 
 #### Generated Tooling Suite
@@ -96,9 +132,9 @@ Every project now includes:
 - **Monorepo**: Turborepo configuration
 - **Dependencies**: Renovate auto-updates
 
-## Enterprise Features (v0.3.1)
+## Enterprise Features (v0.4.0)
 
-Re-Shell CLI v0.3.1 introduces enterprise-grade features that make it the most comprehensive monorepo and microfrontend CLI tool available.
+Re-Shell CLI v0.4.0 introduces real-time development infrastructure with advanced file watching, intelligent change detection, and workspace state management, building on the comprehensive enterprise features from v0.3.1.
 
 ### 🏥 Health Diagnostics & Analysis
 
@@ -331,6 +367,141 @@ re-shell cicd deploy production
 # - Dockerfile
 # - docker-compose.yml
 # - docker-compose.prod.yml
+```
+
+### 🔍 Real-Time File Watching & Change Detection (🆕 v0.4.0)
+
+#### Real-Time File Watching
+```bash
+# Start watching files with default configuration
+re-shell file-watcher start
+
+# Start with custom configuration
+re-shell file-watcher start --workspace frontend-app --patterns "src/**/*.{ts,tsx,js,jsx}"
+
+# Check current watching status
+re-shell file-watcher status
+
+# View detailed statistics
+re-shell file-watcher stats
+
+# Stop file watching
+re-shell file-watcher stop
+```
+
+#### Change Propagation Rules
+```bash
+# Watch with change propagation (interactive setup)
+re-shell file-watcher start --interactive
+
+# Example propagation rule configuration:
+# Source: packages/ui-components/src/**/*.tsx
+# Target: apps/*/src/components
+# Action: copy-and-transform
+# Debounce: 500ms
+```
+
+#### Intelligent Change Detection
+```bash
+# Scan for file changes with content hashing
+re-shell change-detector scan
+
+# Scan specific directory
+re-shell change-detector scan src/components
+
+# Check if specific file changed
+re-shell change-detector check src/components/Button.tsx
+
+# View change detection status and cache info
+re-shell change-detector status
+
+# Get performance statistics
+re-shell change-detector stats
+
+# Real-time change monitoring
+re-shell change-detector watch
+
+# Compare file states between scans
+re-shell change-detector compare
+
+# Clear change detection cache
+re-shell change-detector clear
+```
+
+#### Example Output - Change Detection
+```bash
+$ re-shell change-detector scan
+
+🔍 Change Detection Results
+
+📊 Summary:
+  • Total files scanned: 1,247
+  • Files changed: 8
+  • Files added: 2  
+  • Files deleted: 1
+  • Scan time: 234ms
+  • Cache hit rate: 87%
+
+📝 Changes detected:
+  + src/components/NewButton.tsx
+  + src/hooks/useNewFeature.ts
+  ~ src/components/Header.tsx
+  ~ src/utils/api.ts
+  ~ package.json
+  - src/components/OldComponent.tsx
+
+💾 Cache Statistics:
+  • Cached files: 1,085
+  • Memory usage: 2.3 MB
+  • Cache efficiency: High
+```
+
+#### Advanced Configuration Management
+```bash
+# View global configuration
+cat ~/.re-shell/config.yaml
+
+# Example global config:
+# defaultPackageManager: pnpm
+# templatePreferences:
+#   react: react-ts
+#   vue: vue-ts
+# environments:
+#   development:
+#     watchMode: true
+#     hotReload: true
+#   production:
+#     optimize: true
+
+# Project-specific configuration with inheritance
+cat .re-shell/config.yaml
+
+# Example project config:
+# extends: ~/.re-shell/config.yaml
+# workspaces:
+#   apps/*:
+#     type: application
+#     framework: auto-detect
+#   packages/*:
+#     type: library
+#     publishable: true
+```
+
+#### Workspace State Management
+```bash
+# View workspace schema and validation
+cat re-shell.workspaces.yaml
+
+# Example workspace definition:
+# version: "1.0"
+# workspaces:
+#   apps/frontend:
+#     type: react-app
+#     dependencies: ["packages/ui", "packages/utils"]
+#     port: 3000
+#   packages/ui:
+#     type: react-library
+#     exports: ["./src/index.ts"]
 ```
 
 ### 🔗 Complete Workflow Example
