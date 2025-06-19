@@ -62,6 +62,7 @@ import { manageFileWatcher } from './commands/file-watcher';
 import { manageChangeDetector } from './commands/change-detector';
 import { manageChangeImpact, analyzeWorkspaceImpact, showDependencyGraph } from './commands/change-impact';
 import { manageIncrementalBuild } from './commands/incremental-build';
+import { testPlatformCapabilities, runPlatformDiagnostics, quickPlatformCheck } from './commands/platform-test';
 
 // Get version from package.json
 const packageJsonPath = path.resolve(__dirname, '../package.json');
@@ -3746,6 +3747,70 @@ incrementalBuildCommand
       }, 15000); // 15 second timeout
 
       spinner.succeed(chalk.green('Build cache cleared!'));
+    })
+  );
+
+// Platform Test command
+const platformTestCommand = program
+  .command('platform-test')
+  .alias('ptest')
+  .description('Test cross-platform file watching capabilities');
+
+platformTestCommand
+  .command('capabilities')
+  .description('Show platform file watching capabilities')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      await testPlatformCapabilities({ capabilities: true, ...options });
+    })
+  );
+
+platformTestCommand
+  .command('test')
+  .description('Test file watching methods')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      await testPlatformCapabilities({ test: true, ...options });
+    })
+  );
+
+platformTestCommand
+  .command('diagnostics')
+  .description('Run comprehensive platform diagnostics')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      await runPlatformDiagnostics(options);
+    })
+  );
+
+platformTestCommand
+  .command('all')
+  .description('Run all platform tests and diagnostics')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      await testPlatformCapabilities({ all: true, ...options });
+    })
+  );
+
+// Add standalone platform-test command (without subcommand)
+program
+  .command('platform-test-quick')
+  .alias('pcheck')
+  .description('Quick platform file watching check')
+  .action(
+    createAsyncCommand(async () => {
+      const healthy = await quickPlatformCheck();
+      if (!healthy) {
+        process.exit(1);
+      }
     })
   );
 
