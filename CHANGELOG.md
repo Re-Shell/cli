@@ -5,6 +5,121 @@ All notable changes to the `@re-shell/cli` package will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2024-12-19
+
+### 🚀 Real-Time Development Infrastructure & Advanced Change Detection
+
+This release introduces real-time development infrastructure with intelligent file watching, content-based change detection, and workspace state management. These foundational capabilities prepare Re-Shell CLI for advanced features like live reload, incremental builds, and intelligent dependency tracking.
+
+### Added
+
+#### 🔍 Real-Time File Watching System
+- **`re-shell file-watcher start`**: Start real-time file watching with advanced configuration
+  - Cross-platform file system monitoring using chokidar
+  - Configurable watch patterns and exclusion rules
+  - Real-time change propagation with debouncing
+  - Event-driven architecture with change handlers
+  - Performance optimization with selective watching
+  - Memory-efficient long-running processes
+- **`re-shell file-watcher stop`**: Stop file watching processes gracefully
+- **`re-shell file-watcher status`**: View current watching status and active watchers
+- **`re-shell file-watcher stats`**: Detailed performance metrics and statistics
+- **Change Propagation Rules**: Define how file changes trigger actions across workspaces
+  - Configurable source-to-target mappings
+  - Event filtering and transformation
+  - Batch processing for performance
+  - Custom propagation logic
+
+#### 🧠 Intelligent Change Detection System
+- **`re-shell change-detector scan`**: Scan directory for file changes with content hashing
+  - SHA256-based content hashing for accurate change detection
+  - Binary file detection and handling optimizations
+  - Large file support with configurable size limits
+  - Metadata-only mode for performance-critical scenarios
+  - Comprehensive caching system with TTL management
+- **`re-shell change-detector status`**: View change detection status and cache information
+- **`re-shell change-detector stats`**: Performance metrics and cache statistics
+- **`re-shell change-detector check <file>`**: Check if specific file has changed
+- **`re-shell change-detector clear`**: Clear change detection cache
+- **`re-shell change-detector watch`**: Real-time change monitoring mode
+- **`re-shell change-detector compare`**: Compare file states between scans
+- **Content-Based Detection**: Advanced algorithms for detecting actual content changes
+  - Cryptographic hashing for integrity verification
+  - Configurable hashing algorithms (SHA256, MD5, etc.)
+  - Chunk-based processing for large files
+  - Binary vs text file optimization
+  - Metadata comparison for performance
+
+#### 🏗️ Workspace State Management Foundation (Tasks 13-20)
+- **Global Configuration System**: ~/.re-shell/config.yaml with schema validation and user preferences
+- **Project Configuration Management**: .re-shell/config.yaml with inheritance and cascading
+- **Configuration Presets**: Save and reuse project configurations across teams
+- **Environment-Specific Overrides**: Development, staging, and production configurations
+- **Configuration Migration System**: Automatic upgrades for version changes
+- **Workspace Schema & Validation**: re-shell.workspaces.yaml with comprehensive validation
+- **Dependency Graph Engine**: Workspace dependency tracking with cycle detection
+- **State Persistence**: Workspace configuration and dependency state tracking
+- **Configuration Templates**: Advanced templating with variable substitution
+- **Backup & Restore**: Project-level backup with incremental support
+- **Migration Tools**: Smart import/export of workspace configurations
+- **Conflict Detection**: Identify and resolve workspace dependency conflicts
+- **Hot-Reloading**: Development-time configuration updates without restart
+
+### Enhanced
+
+#### 🔧 CLI Architecture Improvements
+- **Modular Command Structure**: Each feature group organized in separate modules
+- **Type Safety**: Comprehensive TypeScript interfaces for all new systems
+- **Configuration Management**: Unified configuration system across tools
+- **Error Handling**: Graceful handling of file system and network errors
+- **Performance Monitoring**: Built-in metrics for all operations
+
+#### ⚡ Performance & Reliability
+- **Timeout Protection**: All file operations include comprehensive timeout protection
+- **Concurrent Operations**: Parallel processing for file scanning and change detection
+- **Memory Management**: Efficient memory usage for large directory scanning
+- **Error Recovery**: Graceful handling of file system errors and permission issues
+- **Cross-Platform Support**: Windows, macOS, and Linux compatibility
+
+#### 🛡️ Security & Quality
+- **File Permission Handling**: Respect file system permissions and access controls
+- **Path Validation**: Comprehensive path sanitization and validation
+- **Cache Security**: Secure cache storage with integrity verification
+- **Resource Cleanup**: Automatic cleanup of file handles and watchers
+
+### Technical Improvements
+
+#### 🏗️ Foundation for Advanced Features
+- **Change Impact Analysis**: Framework for analyzing change effects across workspaces
+- **Incremental Build Optimization**: Infrastructure for build optimization based on changes
+- **Live Reload System**: Foundation for real-time development updates
+- **Dependency Graph Integration**: Change detection integrated with workspace dependencies
+
+#### 🧪 Testing & Quality Assurance
+- **Comprehensive Testing**: Unit tests for all file watching and change detection features
+- **Error Scenario Coverage**: Testing of file system edge cases and error conditions
+- **Performance Testing**: Benchmarking of scanning and detection operations
+- **Cross-Platform Testing**: Validation across all supported operating systems
+
+#### 📊 Monitoring & Diagnostics
+- **Performance Metrics**: Built-in performance monitoring for all operations
+- **Cache Statistics**: Detailed cache hit rates and memory usage
+- **File System Health**: Monitoring of file system performance and availability
+- **Change Analytics**: Statistics on file change patterns and frequencies
+
+### Breaking Changes
+- None - All new features are additive and maintain full backward compatibility
+
+### Migration Guide
+Existing projects continue to work without changes. New file watching and change detection features are opt-in and can be adopted incrementally.
+
+### Future Foundation
+This release establishes the foundation for upcoming features:
+- **Live Development**: Real-time updates during development
+- **Incremental Builds**: Smart rebuilds based on actual changes
+- **Workspace Intelligence**: Advanced dependency tracking and optimization
+- **Performance Analytics**: Development workflow optimization insights
+
 ## [0.3.1] - 2024-12-13
 
 ### Fixed

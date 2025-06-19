@@ -1,4 +1,4 @@
-# Re-Shell CLI v0.3.1
+# Re-Shell CLI v0.4.0
 
 The most comprehensive and powerful command-line interface for creating and managing multi-framework monorepo and microfrontend applications using the Re-Shell architecture. Built with enterprise-grade reliability, zero terminal hanging, comprehensive health diagnostics, advanced analytics, and performance that rivals industry-leading CLI tools.
 
@@ -29,7 +29,11 @@ The most comprehensive and powerful command-line interface for creating and mana
 - **⚙️ Configuration Management**: Preset system for saving and reusing project configurations
 - **🧰 Professional Tooling**: ESLint, Prettier, Husky, CommitLint, and more out-of-the-box
 
-### 🚀 Enterprise Features (v0.3.1) - The Most Comprehensive CLI Tool Available
+### 🚀 Enterprise Features (v0.4.0) - Real-Time Development Infrastructure
+- **🔍 Real-Time File Watching**: Cross-platform file system monitoring with change propagation and debouncing
+- **🧠 Intelligent Change Detection**: SHA256-based content hashing with caching for accurate change detection
+- **⚙️ Advanced Configuration Management**: Global and project-level configuration with inheritance and hot-reloading
+- **🏗️ Workspace State Management**: Declarative workspace definitions with dependency graphs and validation
 - **🏥 Health Diagnostics & Auto-Fix**: 8-category comprehensive project health checks with automatic issue resolution
 - **📊 Advanced Multi-Dimensional Analysis**: Bundle size analysis, dependency insights, performance monitoring, security scanning, and vulnerability detection
 - **🔄 Intelligent Migration System**: Smart project import/export with automatic framework detection, backup/restore capabilities
@@ -702,6 +706,80 @@ Generate project documentation.
 
 **Options:**
 - `--verbose` - Show detailed information
+
+### Real-Time Development
+
+#### `re-shell file-watcher start`
+Start real-time file watching with change propagation.
+
+**Options:**
+- `--workspace <name>` - Watch specific workspace
+- `--patterns <patterns>` - File patterns to watch
+- `--interactive` - Interactive setup for propagation rules
+
+**Features:**
+- Cross-platform file system monitoring using chokidar
+- Configurable watch patterns and exclusion rules
+- Real-time change propagation with debouncing
+- Event-driven architecture with custom change handlers
+- Performance optimization with selective watching
+- Memory-efficient long-running processes
+
+#### `re-shell file-watcher stop`
+Stop file watching processes gracefully.
+
+#### `re-shell file-watcher status`
+View current watching status and active watchers.
+
+#### `re-shell file-watcher stats`
+View detailed performance metrics and statistics.
+
+**Features:**
+- Change propagation rules with source-to-target mappings
+- Event filtering and transformation capabilities
+- Batch processing for optimal performance
+- Custom propagation logic for complex workflows
+
+#### `re-shell change-detector scan [path]`
+Scan directory for file changes with intelligent content hashing.
+
+**Arguments:**
+- `path` - Directory to scan (optional, defaults to current directory)
+
+**Features:**
+- SHA256-based content hashing for accurate change detection
+- Binary file detection and handling optimizations
+- Large file support with configurable size limits
+- Metadata-only mode for performance-critical scenarios
+- Comprehensive caching system with TTL management
+
+#### `re-shell change-detector status`
+View change detection status and cache information.
+
+#### `re-shell change-detector stats`
+View performance metrics and cache statistics.
+
+#### `re-shell change-detector check <file>`
+Check if specific file has changed since last scan.
+
+**Arguments:**
+- `file` - File path to check (required)
+
+#### `re-shell change-detector clear`
+Clear change detection cache and reset state.
+
+#### `re-shell change-detector watch`
+Start real-time change monitoring mode.
+
+#### `re-shell change-detector compare`
+Compare file states between different scans.
+
+**Features:**
+- Content-based detection with cryptographic hashing
+- Configurable hashing algorithms (SHA256, MD5, etc.)
+- Chunk-based processing for large files
+- Binary vs text file optimization
+- Metadata comparison for performance
 
 ## 🏗️ Supported Frameworks
 
