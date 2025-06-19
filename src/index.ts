@@ -58,6 +58,7 @@ import { manageWorkspaceTemplate } from './commands/workspace-template';
 import { manageWorkspaceBackup } from './commands/workspace-backup';
 import { manageWorkspaceMigration } from './commands/workspace-migration';
 import { manageWorkspaceConflict } from './commands/workspace-conflict';
+import { manageFileWatcher } from './commands/file-watcher';
 
 // Get version from package.json
 const packageJsonPath = path.resolve(__dirname, '../package.json');
@@ -3222,6 +3223,163 @@ workspaceConflictCommand
 
       await withTimeout(async () => {
         await manageWorkspaceConflict({ ...options, interactive: true, spinner });
+      }, 300000); // 5 minute timeout
+
+      spinner.stop();
+    })
+  );
+
+// File watcher commands
+const fileWatcherCommand = program.command('file-watcher').description('Manage real-time file watching and change propagation');
+
+fileWatcherCommand
+  .command('start')
+  .description('Start file watcher for workspace')
+  .option('--workspace-file <file>', 'Workspace definition file', 're-shell.workspaces.yaml')
+  .option('--use-polling', 'Use polling instead of native events')
+  .option('--interval <ms>', 'Polling interval in milliseconds', '1000')
+  .option('--depth <number>', 'Maximum watch depth')
+  .option('--ignored <patterns...>', 'Patterns to ignore')
+  .option('--follow', 'Follow changes in real-time')
+  .option('--json', 'Output as JSON')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Starting file watcher...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageFileWatcher({ ...options, start: true, spinner });
+      }, 30000); // 30 second timeout
+
+      if (!options.follow) {
+        spinner.succeed(chalk.green('File watcher started!'));
+      }
+    })
+  );
+
+fileWatcherCommand
+  .command('stop')
+  .description('Stop active file watcher')
+  .option('--json', 'Output as JSON')
+  .option('--verbose', 'Show detailed statistics')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Stopping file watcher...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageFileWatcher({ ...options, stop: true, spinner });
+      }, 15000); // 15 second timeout
+
+      spinner.succeed(chalk.green('File watcher stopped!'));
+    })
+  );
+
+fileWatcherCommand
+  .command('status')
+  .description('Show file watcher status')
+  .option('--json', 'Output as JSON')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Checking watcher status...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageFileWatcher({ ...options, status: true, spinner });
+      }, 10000); // 10 second timeout
+
+      spinner.stop();
+    })
+  );
+
+fileWatcherCommand
+  .command('stats')
+  .description('Show file watcher statistics')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Gathering statistics...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageFileWatcher({ ...options, stats: true, spinner });
+      }, 10000); // 10 second timeout
+
+      spinner.stop();
+    })
+  );
+
+fileWatcherCommand
+  .command('rules')
+  .description('Show change propagation rules')
+  .option('--json', 'Output as JSON')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Loading propagation rules...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageFileWatcher({ ...options, rules: true, spinner });
+      }, 10000); // 10 second timeout
+
+      spinner.stop();
+    })
+  );
+
+fileWatcherCommand
+  .command('add-rule')
+  .description('Add change propagation rule')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Adding propagation rule...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageFileWatcher({ ...options, addRule: true, spinner });
+      }, 60000); // 60 second timeout
+
+      spinner.stop();
+    })
+  );
+
+fileWatcherCommand
+  .command('remove-rule')
+  .description('Remove change propagation rule')
+  .option('--rule-id <id>', 'Rule ID to remove')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Removing propagation rule...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageFileWatcher({ ...options, removeRule: options.ruleId, spinner });
+      }, 10000); // 10 second timeout
+
+      spinner.succeed(chalk.green('Rule removed!'));
+    })
+  );
+
+fileWatcherCommand
+  .command('interactive')
+  .description('Interactive file watcher management')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Loading file watcher interface...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageFileWatcher({ ...options, interactive: true, spinner });
       }, 300000); // 5 minute timeout
 
       spinner.stop();
