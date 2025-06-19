@@ -57,6 +57,7 @@ import { manageWorkspaceState } from './commands/workspace-state';
 import { manageWorkspaceTemplate } from './commands/workspace-template';
 import { manageWorkspaceBackup } from './commands/workspace-backup';
 import { manageWorkspaceMigration } from './commands/workspace-migration';
+import { manageWorkspaceConflict } from './commands/workspace-conflict';
 
 // Get version from package.json
 const packageJsonPath = path.resolve(__dirname, '../package.json');
@@ -3114,6 +3115,114 @@ workspaceMigrationCommand
       await withTimeout(async () => {
         await manageWorkspaceMigration({ ...options, interactive: true, spinner });
       }, 120000); // 2 minute timeout
+
+      spinner.stop();
+    })
+  );
+
+// Workspace conflict commands
+const workspaceConflictCommand = program.command('workspace-conflict').description('Detect and resolve workspace conflicts');
+
+workspaceConflictCommand
+  .command('detect')
+  .description('Detect conflicts in workspace definition')
+  .option('--workspace-file <file>', 'Workspace definition file', 're-shell.workspaces.yaml')
+  .option('--include-warnings', 'Include warning-level conflicts')
+  .option('--check-dependencies', 'Check dependency conflicts')
+  .option('--check-ports', 'Check port collisions')
+  .option('--check-paths', 'Check path collisions')
+  .option('--check-types', 'Check type mismatches')
+  .option('--group-by <type>', 'Group results by type|severity|workspace')
+  .option('--json', 'Output as JSON')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Detecting workspace conflicts...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceConflict({ ...options, detect: true, spinner });
+      }, 30000); // 30 second timeout
+
+      spinner.succeed(chalk.green('Conflict detection completed!'));
+    })
+  );
+
+workspaceConflictCommand
+  .command('resolve')
+  .description('Resolve a specific conflict')
+  .option('--workspace-file <file>', 'Workspace definition file', 're-shell.workspaces.yaml')
+  .option('--conflict-id <id>', 'Conflict ID to resolve')
+  .option('--resolution-id <id>', 'Resolution ID to apply')
+  .option('--force', 'Apply resolution without confirmation')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Resolving workspace conflict...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceConflict({ ...options, resolve: true, spinner });
+      }, 60000); // 60 second timeout
+
+      spinner.succeed(chalk.green('Conflict resolved!'));
+    })
+  );
+
+workspaceConflictCommand
+  .command('preview')
+  .description('Preview resolution changes')
+  .option('--workspace-file <file>', 'Workspace definition file', 're-shell.workspaces.yaml')
+  .option('--conflict-id <id>', 'Conflict ID to preview')
+  .option('--resolution-id <id>', 'Resolution ID to preview')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Previewing resolution...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceConflict({ ...options, preview: true, spinner });
+      }, 30000); // 30 second timeout
+
+      spinner.stop();
+    })
+  );
+
+workspaceConflictCommand
+  .command('auto-resolve')
+  .description('Automatically resolve all low-risk conflicts')
+  .option('--workspace-file <file>', 'Workspace definition file', 're-shell.workspaces.yaml')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Auto-resolving conflicts...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceConflict({ ...options, autoResolve: true, spinner });
+      }, 120000); // 2 minute timeout
+
+      spinner.succeed(chalk.green('Auto-resolution completed!'));
+    })
+  );
+
+workspaceConflictCommand
+  .command('interactive')
+  .description('Interactive conflict management')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Loading conflict management interface...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceConflict({ ...options, interactive: true, spinner });
+      }, 300000); // 5 minute timeout
 
       spinner.stop();
     })
