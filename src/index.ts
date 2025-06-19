@@ -50,6 +50,8 @@ import { manageTemplates } from './commands/template';
 import { manageConfigDiff } from './commands/config-diff';
 import { manageBackups } from './commands/backup';
 import { manageDevMode } from './commands/dev-mode';
+import { manageWorkspaceDefinition } from './commands/workspace-definition';
+import { manageWorkspaceGraph } from './commands/workspace-graph';
 
 // Get version from package.json
 const packageJsonPath = path.resolve(__dirname, '../package.json');
@@ -2025,6 +2027,272 @@ devCommand
       await withTimeout(async () => {
         await manageDevMode({ ...options, interactive: true, spinner });
       }, 60000); // 1 minute timeout
+
+      spinner.stop();
+    })
+  );
+
+// Workspace definition commands
+const workspaceDefCommand = program.command('workspace-def').description('Manage workspace definitions and schemas');
+
+workspaceDefCommand
+  .command('init')
+  .description('Initialize workspace definition file')
+  .option('--output <file>', 'Output file path', 're-shell.workspaces.yaml')
+  .option('--dry-run', 'Preview without creating file')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Initializing workspace definition...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceDefinition({ ...options, init: true, spinner });
+      }, 60000); // 1 minute timeout
+
+      spinner.succeed(chalk.green('Workspace definition initialized!'));
+    })
+  );
+
+workspaceDefCommand
+  .command('validate')
+  .description('Validate workspace definition')
+  .option('--file <file>', 'Workspace definition file', 're-shell.workspaces.yaml')
+  .option('--strict', 'Treat warnings as errors')
+  .option('--ignore-warnings', 'Ignore validation warnings')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Validating workspace definition...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceDefinition({ ...options, validate: true, spinner });
+      }, 30000); // 30 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Validation completed!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+workspaceDefCommand
+  .command('structure')
+  .description('Validate workspace structure on disk')
+  .option('--file <file>', 'Workspace definition file', 're-shell.workspaces.yaml')
+  .option('--strict', 'Treat warnings as errors')
+  .option('--ignore-warnings', 'Ignore validation warnings')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Validating workspace structure...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceDefinition({ ...options, structure: true, spinner });
+      }, 30000); // 30 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Structure validation completed!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+workspaceDefCommand
+  .command('auto-detect')
+  .description('Auto-detect workspaces based on patterns')
+  .option('--file <file>', 'Workspace definition file', 're-shell.workspaces.yaml')
+  .option('--output <file>', 'Output file (defaults to input file)')
+  .option('--merge', 'Merge with existing definition')
+  .option('--dry-run', 'Preview without making changes')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Auto-detecting workspaces...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceDefinition({ ...options, autoDetect: true, spinner });
+      }, 60000); // 1 minute timeout
+
+      spinner.succeed(chalk.green('Workspace auto-detection completed!'));
+    })
+  );
+
+workspaceDefCommand
+  .command('fix')
+  .description('Fix workspace definition issues')
+  .option('--file <file>', 'Workspace definition file', 're-shell.workspaces.yaml')
+  .option('--dry-run', 'Preview fixes without applying')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Analyzing workspace definition...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceDefinition({ ...options, fix: true, spinner });
+      }, 30000); // 30 second timeout
+
+      spinner.succeed(chalk.green('Fix analysis completed!'));
+    })
+  );
+
+workspaceDefCommand
+  .command('interactive')
+  .description('Interactive workspace definition management')
+  .option('--file <file>', 'Workspace definition file', 're-shell.workspaces.yaml')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Loading workspace definition interface...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceDefinition({ ...options, interactive: true, spinner });
+      }, 120000); // 2 minute timeout
+
+      spinner.stop();
+    })
+  );
+
+// Workspace graph commands
+const workspaceGraphCommand = program.command('workspace-graph').description('Analyze workspace dependency graphs and detect cycles');
+
+workspaceGraphCommand
+  .command('analyze')
+  .description('Comprehensive workspace dependency graph analysis')
+  .option('--file <file>', 'Workspace definition file', 're-shell.workspaces.yaml')
+  .option('--detailed', 'Show detailed analysis information')
+  .option('--json', 'Output as JSON')
+  .option('--verbose', 'Show verbose information')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Analyzing workspace dependency graph...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceGraph({ ...options, analyze: true, spinner });
+      }, 60000); // 1 minute timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Graph analysis completed!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+workspaceGraphCommand
+  .command('cycles')
+  .description('Detect and analyze dependency cycles')
+  .option('--file <file>', 'Workspace definition file', 're-shell.workspaces.yaml')
+  .option('--detailed', 'Show detailed cycle information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Detecting dependency cycles...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceGraph({ ...options, cycles: true, spinner });
+      }, 30000); // 30 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Cycle detection completed!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+workspaceGraphCommand
+  .command('order')
+  .description('Generate optimal build order')
+  .option('--file <file>', 'Workspace definition file', 're-shell.workspaces.yaml')
+  .option('--detailed', 'Show detailed build order information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Generating build order...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceGraph({ ...options, order: true, spinner });
+      }, 30000); // 30 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Build order generated!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+workspaceGraphCommand
+  .command('critical')
+  .description('Find critical path through dependency graph')
+  .option('--file <file>', 'Workspace definition file', 're-shell.workspaces.yaml')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Finding critical path...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceGraph({ ...options, critical: true, spinner });
+      }, 30000); // 30 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Critical path analysis completed!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+workspaceGraphCommand
+  .command('visualize')
+  .description('Generate graph visualization data')
+  .option('--file <file>', 'Workspace definition file', 're-shell.workspaces.yaml')
+  .option('--output <file>', 'Save visualization data to file (JSON format)')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Generating graph visualization...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceGraph({ ...options, visualize: true, spinner });
+      }, 30000); // 30 second timeout
+
+      spinner.succeed(chalk.green('Visualization generated!'));
+    })
+  );
+
+workspaceGraphCommand
+  .command('interactive')
+  .description('Interactive graph analysis interface')
+  .option('--file <file>', 'Workspace definition file', 're-shell.workspaces.yaml')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Loading graph analysis interface...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceGraph({ ...options, interactive: true, spinner });
+      }, 120000); // 2 minute timeout
 
       spinner.stop();
     })
