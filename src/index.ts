@@ -56,6 +56,7 @@ import { manageWorkspaceHealth } from './commands/workspace-health';
 import { manageWorkspaceState } from './commands/workspace-state';
 import { manageWorkspaceTemplate } from './commands/workspace-template';
 import { manageWorkspaceBackup } from './commands/workspace-backup';
+import { manageWorkspaceMigration } from './commands/workspace-migration';
 
 // Get version from package.json
 const packageJsonPath = path.resolve(__dirname, '../package.json');
@@ -2936,6 +2937,182 @@ workspaceBackupCommand
 
       await withTimeout(async () => {
         await manageWorkspaceBackup({ ...options, interactive: true, spinner });
+      }, 120000); // 2 minute timeout
+
+      spinner.stop();
+    })
+  );
+
+// Workspace migration commands
+const workspaceMigrationCommand = program.command('workspace-migration').description('Manage workspace migrations and upgrades');
+
+workspaceMigrationCommand
+  .command('check')
+  .description('Check for available workspace upgrades')
+  .option('--workspace-file <file>', 'Workspace definition file', 're-shell.workspaces.yaml')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Checking for upgrades...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceMigration({ ...options, check: true, spinner });
+      }, 30000); // 30 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Upgrade check completed!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+workspaceMigrationCommand
+  .command('plan')
+  .description('Create migration plan to target version')
+  .option('--workspace-file <file>', 'Workspace definition file', 're-shell.workspaces.yaml')
+  .option('--target-version <version>', 'Target version for migration', true)
+  .option('--json', 'Output as JSON')
+  .option('--verbose', 'Show detailed plan information')
+  .action(
+    createAsyncCommand(async (options) => {
+      if (!options.targetVersion) {
+        console.log(chalk.red('Error: --target-version is required'));
+        process.exit(1);
+      }
+
+      const spinner = createSpinner('Creating migration plan...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceMigration({ ...options, plan: true, spinner });
+      }, 30000); // 30 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Migration plan created!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+workspaceMigrationCommand
+  .command('upgrade')
+  .description('Upgrade workspace to target version')
+  .option('--workspace-file <file>', 'Workspace definition file', 're-shell.workspaces.yaml')
+  .option('--target-version <version>', 'Target version for upgrade', true)
+  .option('--force', 'Force upgrade without confirmations')
+  .option('--dry-run', 'Preview upgrade without making changes')
+  .option('--no-backup', 'Skip automatic backup creation')
+  .option('--skip-validation', 'Skip pre-migration validation')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      if (!options.targetVersion) {
+        console.log(chalk.red('Error: --target-version is required'));
+        process.exit(1);
+      }
+
+      const spinner = createSpinner('Upgrading workspace...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceMigration({ 
+          ...options, 
+          upgrade: true, 
+          backup: !options.noBackup,
+          spinner 
+        });
+      }, 300000); // 5 minute timeout
+
+      if (options.dryRun) {
+        spinner.succeed(chalk.green('Dry run completed!'));
+      } else {
+        spinner.succeed(chalk.green('Upgrade completed!'));
+      }
+    })
+  );
+
+workspaceMigrationCommand
+  .command('validate')
+  .description('Validate workspace definition')
+  .option('--workspace-file <file>', 'Workspace definition file', 're-shell.workspaces.yaml')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Validating workspace...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceMigration({ ...options, validate: true, spinner });
+      }, 30000); // 30 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Validation completed!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+workspaceMigrationCommand
+  .command('history')
+  .description('Show migration history')
+  .option('--workspace-file <file>', 'Workspace definition file', 're-shell.workspaces.yaml')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Loading migration history...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceMigration({ ...options, history: true, spinner });
+      }, 30000); // 30 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('History loaded!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+workspaceMigrationCommand
+  .command('rollback')
+  .description('Rollback last migration using backup')
+  .option('--workspace-file <file>', 'Workspace definition file', 're-shell.workspaces.yaml')
+  .option('--force', 'Force rollback without confirmation')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Rolling back migration...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceMigration({ ...options, rollback: true, spinner });
+      }, 120000); // 2 minute timeout
+
+      spinner.succeed(chalk.green('Rollback completed!'));
+    })
+  );
+
+workspaceMigrationCommand
+  .command('interactive')
+  .description('Interactive migration management')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Loading migration management interface...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceMigration({ ...options, interactive: true, spinner });
       }, 120000); // 2 minute timeout
 
       spinner.stop();
