@@ -54,6 +54,7 @@ import { manageWorkspaceDefinition } from './commands/workspace-definition';
 import { manageWorkspaceGraph } from './commands/workspace-graph';
 import { manageWorkspaceHealth } from './commands/workspace-health';
 import { manageWorkspaceState } from './commands/workspace-state';
+import { manageWorkspaceTemplate } from './commands/workspace-template';
 
 // Get version from package.json
 const packageJsonPath = path.resolve(__dirname, '../package.json');
@@ -2558,6 +2559,148 @@ workspaceStateCommand
 
       await withTimeout(async () => {
         await manageWorkspaceState({ ...options, interactive: true, spinner });
+      }, 120000); // 2 minute timeout
+
+      spinner.stop();
+    })
+  );
+
+// Workspace template commands
+const workspaceTemplateCommand = program.command('workspace-template').description('Manage workspace templates and inheritance');
+
+workspaceTemplateCommand
+  .command('list')
+  .description('List available workspace templates')
+  .option('--json', 'Output as JSON')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Loading templates...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceTemplate({ ...options, list: true, spinner });
+      }, 30000); // 30 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Templates loaded!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+workspaceTemplateCommand
+  .command('create')
+  .description('Create new workspace template')
+  .option('--name <name>', 'Template name')
+  .option('--extends <template>', 'Parent template to extend')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Creating template...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceTemplate({ ...options, create: true, spinner });
+      }, 120000); // 2 minute timeout
+
+      spinner.stop();
+    })
+  );
+
+workspaceTemplateCommand
+  .command('show <name>')
+  .description('Show template details and inheritance chain')
+  .option('--json', 'Output as JSON')
+  .option('--verbose', 'Show template content')
+  .action(
+    createAsyncCommand(async (name, options) => {
+      const spinner = createSpinner(`Loading template: ${name}`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceTemplate({ ...options, show: true, template: name, spinner });
+      }, 30000); // 30 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green(`Template '${name}' loaded!`));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+workspaceTemplateCommand
+  .command('apply <name>')
+  .description('Apply template with variable substitution')
+  .option('--variables <json>', 'Variables as JSON string')
+  .option('--vars-file <file>', 'Load variables from YAML file')
+  .option('--output <file>', 'Save result to file')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (name, options) => {
+      const spinner = createSpinner(`Applying template: ${name}`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceTemplate({ ...options, apply: true, template: name, spinner });
+      }, 60000); // 1 minute timeout
+
+      spinner.succeed(chalk.green(`Template '${name}' applied!`));
+    })
+  );
+
+workspaceTemplateCommand
+  .command('delete <name>')
+  .description('Delete workspace template')
+  .action(
+    createAsyncCommand(async (name, options) => {
+      const spinner = createSpinner(`Deleting template: ${name}`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceTemplate({ ...options, delete: true, template: name, spinner });
+      }, 15000); // 15 second timeout
+
+      spinner.succeed(chalk.green(`Template '${name}' deleted!`));
+    })
+  );
+
+workspaceTemplateCommand
+  .command('export <name>')
+  .description('Export workspace definition as template')
+  .option('--workspace-file <file>', 'Workspace definition file', 're-shell.workspaces.yaml')
+  .option('--output <file>', 'Save template to file instead of registry')
+  .action(
+    createAsyncCommand(async (name, options) => {
+      const spinner = createSpinner('Exporting workspace as template...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceTemplate({ ...options, export: true, name, spinner });
+      }, 30000); // 30 second timeout
+
+      spinner.succeed(chalk.green(`Template '${name}' exported!`));
+    })
+  );
+
+workspaceTemplateCommand
+  .command('interactive')
+  .description('Interactive template management')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Loading template management interface...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceTemplate({ ...options, interactive: true, spinner });
       }, 120000); // 2 minute timeout
 
       spinner.stop();
