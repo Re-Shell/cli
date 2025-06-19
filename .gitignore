@@ -75,3 +75,4 @@ test-output/
 **/.claude/settings.local.json
 .cursor/
 .copilot/
+test-project/
