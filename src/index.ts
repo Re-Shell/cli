@@ -55,6 +55,7 @@ import { manageWorkspaceGraph } from './commands/workspace-graph';
 import { manageWorkspaceHealth } from './commands/workspace-health';
 import { manageWorkspaceState } from './commands/workspace-state';
 import { manageWorkspaceTemplate } from './commands/workspace-template';
+import { manageWorkspaceBackup } from './commands/workspace-backup';
 
 // Get version from package.json
 const packageJsonPath = path.resolve(__dirname, '../package.json');
@@ -2701,6 +2702,240 @@ workspaceTemplateCommand
 
       await withTimeout(async () => {
         await manageWorkspaceTemplate({ ...options, interactive: true, spinner });
+      }, 120000); // 2 minute timeout
+
+      spinner.stop();
+    })
+  );
+
+// Workspace backup commands
+const workspaceBackupCommand = program.command('workspace-backup').description('Manage workspace backups and restore capabilities');
+
+workspaceBackupCommand
+  .command('create')
+  .description('Create workspace backup')
+  .option('--workspace-file <file>', 'Workspace definition file', 're-shell.workspaces.yaml')
+  .option('--name <name>', 'Backup name')
+  .option('--description <description>', 'Backup description')
+  .option('--include-state', 'Include workspace state', true)
+  .option('--include-cache', 'Include cache data')
+  .option('--include-templates', 'Include templates', true)
+  .option('--include-files', 'Include additional files')
+  .option('--file-patterns <patterns>', 'File patterns to include (comma-separated)')
+  .option('--tags <tags>', 'Backup tags (comma-separated)')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Creating workspace backup...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceBackup({ ...options, create: true, spinner });
+      }, 60000); // 1 minute timeout
+
+      spinner.succeed(chalk.green('Backup created successfully!'));
+    })
+  );
+
+workspaceBackupCommand
+  .command('list')
+  .description('List workspace backups')
+  .option('--json', 'Output as JSON')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Loading backups...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceBackup({ ...options, list: true, spinner });
+      }, 30000); // 30 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Backups loaded!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+workspaceBackupCommand
+  .command('show <id>')
+  .description('Show backup details')
+  .option('--json', 'Output as JSON')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (id, options) => {
+      const spinner = createSpinner(`Loading backup: ${id}`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceBackup({ ...options, show: true, name: id, spinner });
+      }, 30000); // 30 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green(`Backup '${id}' loaded!`));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+workspaceBackupCommand
+  .command('restore <id>')
+  .description('Restore workspace from backup')
+  .option('--force', 'Overwrite existing files')
+  .option('--selective', 'Selective restoration')
+  .option('--restore-state', 'Restore workspace state', true)
+  .option('--restore-cache', 'Restore cache data')
+  .option('--restore-templates', 'Restore templates', true)
+  .option('--restore-files', 'Restore additional files')
+  .option('--target-path <path>', 'Target directory for restoration')
+  .action(
+    createAsyncCommand(async (id, options) => {
+      const spinner = createSpinner(`Restoring backup: ${id}`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceBackup({ ...options, restore: true, name: id, spinner });
+      }, 120000); // 2 minute timeout
+
+      spinner.succeed(chalk.green('Backup restored successfully!'));
+    })
+  );
+
+workspaceBackupCommand
+  .command('delete <id>')
+  .description('Delete workspace backup')
+  .action(
+    createAsyncCommand(async (id, options) => {
+      const spinner = createSpinner(`Deleting backup: ${id}`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceBackup({ ...options, delete: true, name: id, spinner });
+      }, 15000); // 15 second timeout
+
+      spinner.succeed(chalk.green(`Backup '${id}' deleted!`));
+    })
+  );
+
+workspaceBackupCommand
+  .command('export <id>')
+  .description('Export backup to file')
+  .option('--output <file>', 'Output file path', true)
+  .action(
+    createAsyncCommand(async (id, options) => {
+      if (!options.output) {
+        console.log(chalk.red('Error: --output file path is required'));
+        process.exit(1);
+      }
+
+      const spinner = createSpinner(`Exporting backup: ${id}`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceBackup({ ...options, export: true, name: id, spinner });
+      }, 30000); // 30 second timeout
+
+      spinner.succeed(chalk.green('Backup exported successfully!'));
+    })
+  );
+
+workspaceBackupCommand
+  .command('import <file>')
+  .description('Import backup from file')
+  .action(
+    createAsyncCommand(async (file, options) => {
+      const spinner = createSpinner(`Importing backup from: ${file}`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceBackup({ ...options, import: true, file, spinner });
+      }, 30000); // 30 second timeout
+
+      spinner.succeed(chalk.green('Backup imported successfully!'));
+    })
+  );
+
+workspaceBackupCommand
+  .command('cleanup')
+  .description('Clean up old backups')
+  .option('--keep-count <count>', 'Number of recent backups to keep', '10')
+  .option('--keep-days <days>', 'Keep backups newer than N days', '30')
+  .option('--dry-run', 'Preview cleanup without deleting')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Analyzing backups for cleanup...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceBackup({ 
+          ...options, 
+          cleanup: true, 
+          keepCount: parseInt(options.keepCount),
+          keepDays: parseInt(options.keepDays),
+          spinner 
+        });
+      }, 30000); // 30 second timeout
+
+      if (!options.dryRun) {
+        spinner.succeed(chalk.green('Backup cleanup completed!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+workspaceBackupCommand
+  .command('compare <id1> <id2>')
+  .description('Compare two backups')
+  .option('--json', 'Output as JSON')
+  .option('--verbose', 'Show detailed comparison')
+  .action(
+    createAsyncCommand(async (id1, id2, options) => {
+      const spinner = createSpinner('Comparing backups...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceBackup({ 
+          ...options, 
+          compare: true, 
+          backup1: id1, 
+          backup2: id2, 
+          spinner 
+        });
+      }, 30000); // 30 second timeout
+
+      if (!options.json) {
+        spinner.succeed(chalk.green('Comparison completed!'));
+      } else {
+        spinner.stop();
+      }
+    })
+  );
+
+workspaceBackupCommand
+  .command('interactive')
+  .description('Interactive backup management')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Loading backup management interface...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageWorkspaceBackup({ ...options, interactive: true, spinner });
       }, 120000); // 2 minute timeout
 
       spinner.stop();
