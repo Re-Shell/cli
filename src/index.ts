@@ -59,6 +59,7 @@ import { manageWorkspaceBackup } from './commands/workspace-backup';
 import { manageWorkspaceMigration } from './commands/workspace-migration';
 import { manageWorkspaceConflict } from './commands/workspace-conflict';
 import { manageFileWatcher } from './commands/file-watcher';
+import { manageChangeDetector } from './commands/change-detector';
 
 // Get version from package.json
 const packageJsonPath = path.resolve(__dirname, '../package.json');
@@ -3380,6 +3381,183 @@ fileWatcherCommand
 
       await withTimeout(async () => {
         await manageFileWatcher({ ...options, interactive: true, spinner });
+      }, 300000); // 5 minute timeout
+
+      spinner.stop();
+    })
+  );
+
+// Change detector commands
+const changeDetectorCommand = program.command('change-detector').description('Intelligent change detection with content hashing');
+
+changeDetectorCommand
+  .command('scan')
+  .description('Scan for changes in workspace')
+  .option('--path <directory>', 'Directory to scan', process.cwd())
+  .option('--use-hashing', 'Use content hashing for detection', true)
+  .option('--metadata-only', 'Use metadata-only detection')
+  .option('--track-moves', 'Track file moves', true)
+  .option('--max-depth <number>', 'Maximum scan depth', '10')
+  .option('--max-file-size <bytes>', 'Maximum file size for hashing')
+  .option('--algorithm <name>', 'Hashing algorithm', 'sha256')
+  .option('--skip-binary', 'Skip binary files')
+  .option('--chunk-size <bytes>', 'Chunk size for hashing')
+  .option('--enable-cache', 'Enable cache', true)
+  .option('--cache-location <path>', 'Cache file location')
+  .option('--json', 'Output as JSON')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Scanning for changes...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageChangeDetector({ ...options, scan: true, spinner });
+      }, 60000); // 60 second timeout
+
+      spinner.succeed(chalk.green('Change scan completed!'));
+    })
+  );
+
+changeDetectorCommand
+  .command('status')
+  .description('Show change detector status')
+  .option('--path <directory>', 'Directory to check', process.cwd())
+  .option('--enable-cache', 'Enable cache', true)
+  .option('--cache-location <path>', 'Cache file location')
+  .option('--json', 'Output as JSON')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Checking detector status...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageChangeDetector({ ...options, status: true, spinner });
+      }, 15000); // 15 second timeout
+
+      spinner.stop();
+    })
+  );
+
+changeDetectorCommand
+  .command('stats')
+  .description('Show change detection statistics')
+  .option('--path <directory>', 'Directory to analyze', process.cwd())
+  .option('--enable-cache', 'Enable cache', true)
+  .option('--cache-location <path>', 'Cache file location')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Gathering statistics...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageChangeDetector({ ...options, stats: true, spinner });
+      }, 30000); // 30 second timeout
+
+      spinner.stop();
+    })
+  );
+
+changeDetectorCommand
+  .command('check')
+  .description('Check if specific file has changed')
+  .option('--path <directory>', 'Root directory', process.cwd())
+  .option('--file <path>', 'File path to check')
+  .option('--use-hashing', 'Use content hashing', true)
+  .option('--enable-cache', 'Enable cache', true)
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Checking file changes...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageChangeDetector({ ...options, check: options.file, spinner });
+      }, 15000); // 15 second timeout
+
+      spinner.stop();
+    })
+  );
+
+changeDetectorCommand
+  .command('clear')
+  .description('Clear change detection cache')
+  .option('--path <directory>', 'Root directory', process.cwd())
+  .option('--cache-location <path>', 'Cache file location')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Clearing cache...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageChangeDetector({ ...options, clear: true, spinner });
+      }, 10000); // 10 second timeout
+
+      spinner.succeed(chalk.green('Cache cleared!'));
+    })
+  );
+
+changeDetectorCommand
+  .command('watch')
+  .description('Watch for changes continuously')
+  .option('--path <directory>', 'Directory to watch', process.cwd())
+  .option('--use-hashing', 'Use content hashing', true)
+  .option('--track-moves', 'Track file moves', true)
+  .option('--enable-cache', 'Enable cache', true)
+  .option('--verbose', 'Show verbose output')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Starting change monitoring...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageChangeDetector({ ...options, watch: true, spinner });
+      }, Infinity); // No timeout for watch mode
+
+      spinner.stop();
+    })
+  );
+
+changeDetectorCommand
+  .command('compare')
+  .description('Compare changes over time')
+  .option('--path <directory>', 'Directory to compare', process.cwd())
+  .option('--use-hashing', 'Use content hashing', true)
+  .option('--track-moves', 'Track file moves', true)
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Comparing changes...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageChangeDetector({ ...options, compare: true, spinner });
+      }, 30000); // 30 second timeout
+
+      spinner.stop();
+    })
+  );
+
+changeDetectorCommand
+  .command('interactive')
+  .description('Interactive change detection management')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Loading change detection interface...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageChangeDetector({ ...options, interactive: true, spinner });
       }, 300000); // 5 minute timeout
 
       spinner.stop();
