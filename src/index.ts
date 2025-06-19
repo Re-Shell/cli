@@ -61,6 +61,7 @@ import { manageWorkspaceConflict } from './commands/workspace-conflict';
 import { manageFileWatcher } from './commands/file-watcher';
 import { manageChangeDetector } from './commands/change-detector';
 import { manageChangeImpact, analyzeWorkspaceImpact, showDependencyGraph } from './commands/change-impact';
+import { manageIncrementalBuild } from './commands/incremental-build';
 
 // Get version from package.json
 const packageJsonPath = path.resolve(__dirname, '../package.json');
@@ -3636,6 +3637,115 @@ changeImpactCommand
       }, 60000); // 1 minute timeout
 
       spinner.stop();
+    })
+  );
+
+// Incremental Build command
+const incrementalBuildCommand = program
+  .command('incremental-build')
+  .alias('ibuild')
+  .description('Intelligent incremental building with change detection');
+
+incrementalBuildCommand
+  .command('build')
+  .description('Run incremental build')
+  .option('--targets <targets...>', 'Specific targets to build')
+  .option('--changed-files <files...>', 'Specific changed files to analyze')
+  .option('--max-parallel <num>', 'Maximum parallel builds', '4')
+  .option('--no-cache', 'Disable build caching')
+  .option('--cache-location <path>', 'Build cache location')
+  .option('--clean', 'Clean build (ignore cache)')
+  .option('--dry-run', 'Show what would be built without building')
+  .option('--verbose', 'Show detailed information')
+  .option('--skip-tests', 'Skip test execution')
+  .option('--no-fail-fast', 'Continue building after failures')
+  .option('--build-timeout <ms>', 'Build timeout in milliseconds', '300000')
+  .option('--output <file>', 'Output file path')
+  .option('--format <format>', 'Output format (text|json)', 'text')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Running incremental build...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageIncrementalBuild({
+          ...options,
+          maxParallelBuilds: parseInt(options.maxParallel),
+          buildTimeout: parseInt(options.buildTimeout),
+          enableCache: options.cache !== false,
+          cleanBuild: options.clean,
+          dryRun: options.dryRun,
+          failFast: options.failFast !== false
+        });
+      }, 600000); // 10 minute timeout
+
+      spinner.stop();
+    })
+  );
+
+incrementalBuildCommand
+  .command('plan')
+  .description('Show build plan without executing')
+  .option('--changed-files <files...>', 'Specific changed files to analyze')
+  .option('--verbose', 'Show detailed information')
+  .option('--output <file>', 'Output file path')
+  .option('--format <format>', 'Output format (text|json)', 'text')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Creating build plan...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageIncrementalBuild({
+          ...options,
+          plan: true
+        });
+      }, 60000); // 1 minute timeout
+
+      spinner.stop();
+    })
+  );
+
+incrementalBuildCommand
+  .command('stats')
+  .description('Show build statistics and performance metrics')
+  .option('--output <file>', 'Output file path')
+  .option('--format <format>', 'Output format (text|json)', 'text')
+  .action(
+    createAsyncCommand(async (options) => {
+      const spinner = createSpinner('Gathering build statistics...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageIncrementalBuild({
+          ...options,
+          stats: true
+        });
+      }, 30000); // 30 second timeout
+
+      spinner.stop();
+    })
+  );
+
+incrementalBuildCommand
+  .command('clear-cache')
+  .description('Clear build cache')
+  .action(
+    createAsyncCommand(async () => {
+      const spinner = createSpinner('Clearing build cache...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await manageIncrementalBuild({
+          clearCache: true
+        });
+      }, 15000); // 15 second timeout
+
+      spinner.succeed(chalk.green('Build cache cleared!'));
     })
   );
 
