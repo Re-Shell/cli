@@ -691,14 +691,18 @@ export class PluginLifecycleManager extends EventEmitter {
     };
   }
 
-  // Create hook system
+  // Create hook system (placeholder - will be injected from main system)
   private createHookSystem(): any {
     return {
-      register: () => {},
-      unregister: () => {},
-      emit: async () => [],
-      on: () => {},
-      off: () => {}
+      register: () => 'placeholder',
+      unregister: () => false,
+      execute: async () => ({ success: true, results: [], errors: [] }),
+      executeSync: () => [],
+      onCommand: () => 'placeholder',
+      onFileChange: () => 'placeholder',
+      onWorkspaceBuild: () => 'placeholder',
+      getHooks: () => [],
+      registerCustomHook: () => 'placeholder'
     };
   }
 
