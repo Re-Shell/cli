@@ -5,13 +5,14 @@ This document provides comprehensive real-world scenarios and examples for using
 ## Table of Contents
 
 1. [Getting Started](#getting-started)
-2. [Enterprise Features (v0.3.1)](#enterprise-features-v031)
-3. [E-commerce Platform](#e-commerce-platform)
-4. [Banking Dashboard](#banking-dashboard)
-5. [SaaS Admin Panel](#saas-admin-panel)
-6. [Healthcare Portal](#healthcare-portal)
-7. [Educational Platform](#educational-platform)
-8. [Advanced Scenarios](#advanced-scenarios)
+2. [Plugin Ecosystem (v0.7.1)](#plugin-ecosystem-v071)
+3. [Enterprise Features (v0.3.1)](#enterprise-features-v031)
+4. [E-commerce Platform](#e-commerce-platform)
+5. [Banking Dashboard](#banking-dashboard)
+6. [SaaS Admin Panel](#saas-admin-panel)
+7. [Healthcare Portal](#healthcare-portal)
+8. [Educational Platform](#educational-platform)
+9. [Advanced Scenarios](#advanced-scenarios)
 
 ## Getting Started
 
@@ -140,6 +141,171 @@ Every project now includes:
 - **Documentation**: Contributing guidelines, security policies
 - **Monorepo**: Turborepo configuration
 - **Dependencies**: Renovate auto-updates
+
+## Plugin Ecosystem (v0.7.1)
+
+### Plugin Management
+
+```bash
+# Discover available plugins
+re-shell plugin discover
+
+# Search for specific plugins
+re-shell plugin search react-tools
+
+# Install a plugin
+re-shell plugin install @re-shell/react-plugin
+
+# List installed plugins
+re-shell plugin list --verbose
+
+# Show plugin information
+re-shell plugin info @re-shell/react-plugin
+
+# Enable/disable plugins
+re-shell plugin enable @re-shell/react-plugin
+re-shell plugin disable @re-shell/react-plugin
+
+# Update all plugins
+re-shell plugin update
+```
+
+### Plugin Marketplace
+
+```bash
+# Search marketplace for plugins
+re-shell plugin search testing --category development
+
+# Show plugin details from marketplace
+re-shell plugin show @re-shell/testing-tools
+
+# Install from marketplace with specific version
+re-shell plugin install-marketplace @re-shell/testing-tools@1.2.0
+
+# Show plugin reviews
+re-shell plugin reviews @re-shell/testing-tools
+
+# Browse featured plugins
+re-shell plugin featured
+
+# Browse popular plugins by category
+re-shell plugin popular development
+```
+
+### Command Extension System
+
+```bash
+# List all registered plugin commands
+re-shell plugin commands
+
+# Show command conflicts
+re-shell plugin command-conflicts
+
+# Resolve command conflicts
+re-shell plugin resolve-conflicts my-command priority
+
+# Show command registry statistics
+re-shell plugin command-stats
+
+# Register a test command (for plugin development)
+re-shell plugin register-command my-plugin '{"name":"test","description":"Test command"}'
+```
+
+### Documentation & Help
+
+```bash
+# Generate documentation for plugin commands
+re-shell plugin generate-docs --format markdown --output ./docs
+
+# Show detailed help for a command
+re-shell plugin help my-command --verbose
+
+# List all documented commands
+re-shell plugin list-docs --plugin my-plugin
+
+# Search documentation
+re-shell plugin search-docs "validation rules"
+
+# Show documentation templates
+re-shell plugin docs-templates
+```
+
+### Validation & Transformation
+
+```bash
+# List available validation rules
+re-shell plugin validation-rules --verbose
+
+# List parameter transformations
+re-shell plugin transformations --verbose
+
+# Test command validation
+re-shell plugin test-validation my-command '{"args":{"name":"test"},"options":{"verbose":true}}'
+
+# Create validation schema
+re-shell plugin create-schema my-command '{"strict":true,"arguments":{"name":{"rules":[{"type":"required"}]}}}'
+
+# Generate validation template
+re-shell plugin generate-template my-command --verbose
+```
+
+### Caching & Performance
+
+```bash
+# Show cache statistics
+re-shell plugin cache-stats --verbose
+
+# Configure cache settings
+re-shell plugin configure-cache enabled true
+re-shell plugin configure-cache defaultTTL 600000
+
+# Test cache performance
+re-shell plugin test-cache 100 --verbose
+
+# Optimize cache configuration
+re-shell plugin optimize-cache --force
+
+# Clear cache
+re-shell plugin clear-cache --force
+
+# List cached commands
+re-shell plugin list-cached --verbose
+```
+
+### Plugin Security
+
+```bash
+# Scan plugins for security issues
+re-shell plugin security-scan --all
+
+# Check security policy compliance
+re-shell plugin security-policy
+
+# Generate security report
+re-shell plugin security-report --format json
+
+# Fix security issues
+re-shell plugin security-fix @re-shell/my-plugin
+```
+
+### Plugin Development
+
+```bash
+# Validate plugin structure
+re-shell plugin validate ./my-plugin
+
+# Show plugin hooks
+re-shell plugin hooks @re-shell/my-plugin
+
+# Execute hook manually
+re-shell plugin execute-hook init '{"projectName":"test"}'
+
+# Show middleware chain for command
+re-shell plugin middleware-chain my-command
+
+# Test middleware execution
+re-shell plugin test-middleware validation '{"field":"value"}'
+```
 
 ## Enterprise Features (v0.4.0)
 
