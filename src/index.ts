@@ -121,6 +121,15 @@ import {
   showMiddlewareChain,
   createExampleMiddleware
 } from './commands/plugin-middleware';
+import {
+  listCommandConflicts,
+  showConflictStrategies,
+  resolveConflict,
+  autoResolveConflicts,
+  showConflictStats,
+  setPriorityOverride,
+  showResolutionHistory
+} from './commands/plugin-conflicts';
 
 // Get version from package.json
 const packageJsonPath = path.resolve(__dirname, '../package.json');
@@ -4399,6 +4408,88 @@ pluginCommand
   .action(
     createAsyncCommand(async (type, options) => {
       await createExampleMiddleware(type, options);
+    })
+  );
+
+// Plugin conflict resolution commands
+pluginCommand
+  .command('command-conflicts')
+  .description('List command conflicts and their resolution status')
+  .option('--type <type>', 'Filter by conflict type')
+  .option('--severity <severity>', 'Filter by conflict severity')
+  .option('--auto-resolvable', 'Show only auto-resolvable conflicts')
+  .option('--resolved', 'Show only resolved conflicts')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      await listCommandConflicts(options);
+    })
+  );
+
+pluginCommand
+  .command('conflict-strategies')
+  .description('Show available conflict resolution strategies')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      await showConflictStrategies(options);
+    })
+  );
+
+pluginCommand
+  .command('resolve-conflict <conflictId> <strategy>')
+  .description('Resolve a specific conflict using given strategy')
+  .option('--dry-run', 'Simulate resolution without applying changes')
+  .option('--confirm', 'Skip confirmation prompts')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (conflictId, strategy, options) => {
+      await resolveConflict(conflictId, strategy, options);
+    })
+  );
+
+pluginCommand
+  .command('auto-resolve')
+  .description('Automatically resolve all auto-resolvable conflicts')
+  .option('--dry-run', 'Simulate resolution without applying changes')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (options) => {
+      await autoResolveConflicts(options);
+    })
+  );
+
+pluginCommand
+  .command('conflict-stats')
+  .description('Show conflict resolution statistics')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      await showConflictStats(options);
+    })
+  );
+
+pluginCommand
+  .command('set-priority <commandId> <priority>')
+  .description('Set priority override for a command')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (commandId, priority, options) => {
+      await setPriorityOverride(commandId, priority, options);
+    })
+  );
+
+pluginCommand
+  .command('resolution-history')
+  .description('Show conflict resolution history')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      await showResolutionHistory(options);
     })
   );
 

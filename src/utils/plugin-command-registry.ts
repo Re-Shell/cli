@@ -5,6 +5,7 @@ import { Command } from 'commander';
 import { ValidationError } from './error-handler';
 import { PluginManifest, PluginRegistration } from './plugin-system';
 import { createMiddlewareChainManager, MiddlewareType } from './plugin-command-middleware';
+import { createConflictResolver, CommandConflictResolver } from './plugin-command-conflicts';
 
 // Command definition from plugin
 export interface PluginCommandDefinition {
@@ -131,6 +132,7 @@ export class PluginCommandRegistry extends EventEmitter {
   private config: CommandRegistryConfig;
   private isInitialized: boolean = false;
   private middlewareManager = createMiddlewareChainManager();
+  private conflictResolver = createConflictResolver();
 
   constructor(program: Command, config: Partial<CommandRegistryConfig> = {}) {
     super();
@@ -188,16 +190,37 @@ export class PluginCommandRegistry extends EventEmitter {
       const conflicts = this.checkForConflicts(definition);
       
       if (conflicts.length > 0 && !this.config.allowConflicts) {
-        const result: CommandRegistrationResult = {
-          success: false,
-          commandId,
-          conflicts,
-          warnings: [],
-          errors: [`Command conflicts detected: ${conflicts.join(', ')}`]
-        };
-        
-        this.emit('command-registration-failed', result);
-        return result;
+        // Try auto-resolution if enabled
+        if (this.config.conflictResolution === 'priority') {
+          try {
+            // Update conflict resolver with current commands
+            this.conflictResolver.registerCommands(Array.from(this.commands.values()));
+            await this.conflictResolver.autoResolveConflicts();
+          } catch (error) {
+            // Auto-resolution failed, report conflict
+            const result: CommandRegistrationResult = {
+              success: false,
+              commandId,
+              conflicts,
+              warnings: [],
+              errors: [`Command conflicts detected: ${conflicts.join(', ')}`]
+            };
+            
+            this.emit('command-registration-failed', result);
+            return result;
+          }
+        } else {
+          const result: CommandRegistrationResult = {
+            success: false,
+            commandId,
+            conflicts,
+            warnings: [],
+            errors: [`Command conflicts detected: ${conflicts.join(', ')}`]
+          };
+          
+          this.emit('command-registration-failed', result);
+          return result;
+        }
       }
 
       // Create Commander command
@@ -766,6 +789,16 @@ export class PluginCommandRegistry extends EventEmitter {
   // Get middleware manager
   getMiddlewareManager() {
     return this.middlewareManager;
+  }
+
+  // Get conflict resolver
+  getConflictResolver() {
+    return this.conflictResolver;
+  }
+
+  // Update conflict resolver with current commands
+  updateConflictResolver(): void {
+    this.conflictResolver.registerCommands(Array.from(this.commands.values()));
   }
 
   // Create command execution context
