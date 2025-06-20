@@ -104,6 +104,15 @@ import {
   clearMarketplaceCache,
   showMarketplaceStats
 } from './commands/plugin-marketplace';
+import {
+  listPluginCommands,
+  showCommandConflicts,
+  resolveCommandConflicts,
+  showCommandStats,
+  registerTestCommand,
+  unregisterCommand,
+  showCommandInfo
+} from './commands/plugin-command';
 
 // Get version from package.json
 const packageJsonPath = path.resolve(__dirname, '../package.json');
@@ -4236,6 +4245,86 @@ pluginCommand
   .action(
     createAsyncCommand(async () => {
       await showMarketplaceStats();
+    })
+  );
+
+// Plugin command registration commands
+pluginCommand
+  .command('commands')
+  .description('List registered plugin commands')
+  .option('--plugin <name>', 'Filter by plugin name')
+  .option('--category <category>', 'Filter by command category')
+  .option('--active', 'Show only active commands')
+  .option('--conflicts', 'Show only commands with conflicts')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      await listPluginCommands(options);
+    })
+  );
+
+pluginCommand
+  .command('command-conflicts')
+  .description('Show command registration conflicts')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      await showCommandConflicts(options);
+    })
+  );
+
+pluginCommand
+  .command('resolve-conflicts <command> <resolution>')
+  .description('Resolve command conflicts (resolution: disable, priority)')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (commandName, resolution, options) => {
+      await resolveCommandConflicts(commandName, resolution, options);
+    })
+  );
+
+pluginCommand
+  .command('command-stats')
+  .description('Show command registry statistics')
+  .option('--usage', 'Include usage statistics')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      await showCommandStats(options);
+    })
+  );
+
+pluginCommand
+  .command('register-command <plugin> <definition>')
+  .description('Register a test command from plugin (JSON definition)')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (plugin, definition, options) => {
+      await registerTestCommand(plugin, definition, options);
+    })
+  );
+
+pluginCommand
+  .command('unregister-command <commandId>')
+  .description('Unregister a plugin command')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (commandId, options) => {
+      await unregisterCommand(commandId, options);
+    })
+  );
+
+pluginCommand
+  .command('command-info <commandId>')
+  .description('Show detailed information about a command')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (commandId, options) => {
+      await showCommandInfo(commandId, options);
     })
   );
 
