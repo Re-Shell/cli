@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import { Command } from 'commander';
 import { ValidationError } from './error-handler';
 import { PluginManifest, PluginRegistration } from './plugin-system';
+import { createMiddlewareChainManager, MiddlewareType } from './plugin-command-middleware';
 
 // Command definition from plugin
 export interface PluginCommandDefinition {
@@ -129,6 +130,7 @@ export class PluginCommandRegistry extends EventEmitter {
   private program: Command;
   private config: CommandRegistryConfig;
   private isInitialized: boolean = false;
+  private middlewareManager = createMiddlewareChainManager();
 
   constructor(program: Command, config: Partial<CommandRegistryConfig> = {}) {
     super();
@@ -514,20 +516,97 @@ export class PluginCommandRegistry extends EventEmitter {
       // Create context
       const context = this.createCommandContext(plugin, definition);
 
+      let processedArgs: Record<string, any> = {};
+      let processedOptions: Record<string, any> = {};
+
       try {
         // Process arguments
-        const processedArgs = this.processArguments(definition, commandArgs);
-        const processedOptions = this.processOptions(definition, options);
+        processedArgs = this.processArguments(definition, commandArgs);
+        processedOptions = this.processOptions(definition, options);
 
         // Execute middleware chain
-        if (this.config.enableMiddleware && definition.middleware) {
-          await this.executeMiddleware(definition.middleware, processedArgs, processedOptions, context);
+        if (this.config.enableMiddleware) {
+          // Execute pre-validation middleware
+          await this.middlewareManager.executeChain(
+            MiddlewareType.PRE_VALIDATION,
+            processedArgs,
+            processedOptions,
+            context
+          );
+
+          // Execute validation middleware
+          await this.middlewareManager.executeChain(
+            MiddlewareType.VALIDATION,
+            processedArgs,
+            processedOptions,
+            context
+          );
+
+          // Execute authorization middleware
+          await this.middlewareManager.executeChain(
+            MiddlewareType.AUTHORIZATION,
+            processedArgs,
+            processedOptions,
+            context
+          );
+
+          // Execute pre-execution middleware
+          await this.middlewareManager.executeChain(
+            MiddlewareType.PRE_EXECUTION,
+            processedArgs,
+            processedOptions,
+            context
+          );
+
+          // Execute command-specific middleware
+          if (definition.middleware) {
+            for (const middleware of definition.middleware) {
+              await new Promise<void>((resolve) => {
+                middleware(processedArgs, processedOptions, context, async () => {
+                  resolve();
+                });
+              });
+            }
+          }
         }
 
         // Execute command handler
         await definition.handler(processedArgs, processedOptions, context);
 
+        // Execute post-execution middleware
+        if (this.config.enableMiddleware) {
+          await this.middlewareManager.executeChain(
+            MiddlewareType.POST_EXECUTION,
+            processedArgs,
+            processedOptions,
+            context
+          );
+
+          // Execute logging middleware
+          await this.middlewareManager.executeChain(
+            MiddlewareType.LOGGER,
+            processedArgs,
+            processedOptions,
+            context
+          );
+        }
+
       } catch (error) {
+        // Execute error handling middleware
+        if (this.config.enableMiddleware && processedArgs && processedOptions) {
+          try {
+            await this.middlewareManager.executeChain(
+              MiddlewareType.ERROR_HANDLER,
+              processedArgs,
+              processedOptions,
+              context
+            );
+          } catch (middlewareError) {
+            // Log middleware error but continue with original error
+            context.logger.error(`Error handling middleware failed: ${middlewareError instanceof Error ? middlewareError.message : String(middlewareError)}`);
+          }
+        }
+
         this.emit('command-execution-error', {
           pluginName: plugin.manifest.name,
           commandName: definition.name,
@@ -684,25 +763,9 @@ export class PluginCommandRegistry extends EventEmitter {
     }
   }
 
-  // Execute middleware chain
-  private async executeMiddleware(
-    middleware: PluginCommandMiddleware[],
-    args: Record<string, any>,
-    options: Record<string, any>,
-    context: PluginCommandContext
-  ): Promise<void> {
-    let index = 0;
-
-    const next = async (): Promise<void> => {
-      if (index >= middleware.length) {
-        return;
-      }
-
-      const currentMiddleware = middleware[index++];
-      await currentMiddleware(args, options, context, next);
-    };
-
-    await next();
+  // Get middleware manager
+  getMiddlewareManager() {
+    return this.middlewareManager;
   }
 
   // Create command execution context
