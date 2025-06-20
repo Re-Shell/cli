@@ -73,7 +73,9 @@ import {
   disablePlugin,
   updatePlugins,
   validatePlugin,
-  clearPluginCache
+  clearPluginCache,
+  showPluginStats,
+  reloadPlugin
 } from './commands/plugin';
 
 // Get version from package.json
@@ -3939,6 +3941,27 @@ pluginCommand
   .action(
     createAsyncCommand(async (options) => {
       await clearPluginCache(options);
+    })
+  );
+
+pluginCommand
+  .command('stats')
+  .description('Show plugin lifecycle statistics')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      await showPluginStats(options);
+    })
+  );
+
+pluginCommand
+  .command('reload <plugin>')
+  .description('Reload a plugin')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (plugin, options) => {
+      await reloadPlugin(plugin, options);
     })
   );
 

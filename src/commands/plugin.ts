@@ -8,6 +8,7 @@ import {
   PluginRegistration,
   createPluginRegistry 
 } from '../utils/plugin-system';
+import { PluginState, ManagedPluginRegistration } from '../utils/plugin-lifecycle';
 
 interface PluginCommandOptions {
   verbose?: boolean;
@@ -35,7 +36,7 @@ export async function managePlugins(options: PluginCommandOptions = {}): Promise
     
     spinner.stop();
 
-    const plugins = registry.getPlugins();
+    const plugins = registry.getManagedPlugins();
     
     if (json) {
       console.log(JSON.stringify(plugins.map(p => ({
@@ -45,7 +46,8 @@ export async function managePlugins(options: PluginCommandOptions = {}): Promise
         path: p.pluginPath,
         isLoaded: p.isLoaded,
         isActive: p.isActive,
-        usageCount: p.usageCount
+        usageCount: p.usageCount,
+        state: p.state
       })), null, 2));
       return;
     }
@@ -105,7 +107,7 @@ export async function discoverPlugins(options: PluginCommandOptions = {}): Promi
     
     if (result.found.length > 0) {
       console.log(chalk.green(`Found ${result.found.length} plugins:\n`));
-      displayPluginList(result.found, verbose);
+      displayDiscoveredPluginList(result.found, verbose);
     } else {
       console.log(chalk.yellow('No plugins found.'));
     }
@@ -176,7 +178,7 @@ export async function uninstallPlugin(
     const registry = createPluginRegistry();
     await registry.initialize();
 
-    const plugin = registry.getPlugin(pluginName);
+    const plugin = registry.getManagedPlugin(pluginName);
     if (!plugin) {
       throw new ValidationError(`Plugin '${pluginName}' is not installed`);
     }
@@ -189,6 +191,10 @@ export async function uninstallPlugin(
     const spinner = createSpinner(`Uninstalling plugin ${pluginName}...`);
     spinner.start();
 
+    // Unload the plugin (which includes deactivation)
+    await registry.unloadPlugin(pluginName);
+    
+    // Unregister from registry
     const success = await registry.unregisterPlugin(pluginName);
     
     if (!success) {
@@ -218,7 +224,7 @@ export async function showPluginInfo(
     const registry = createPluginRegistry();
     await registry.initialize();
 
-    const plugin = registry.getPlugin(pluginName);
+    const plugin = registry.getManagedPlugin(pluginName);
     if (!plugin) {
       throw new ValidationError(`Plugin '${pluginName}' not found`);
     }
@@ -230,7 +236,13 @@ export async function showPluginInfo(
         isLoaded: plugin.isLoaded,
         isActive: plugin.isActive,
         usageCount: plugin.usageCount,
-        lastUsed: plugin.lastUsed
+        lastUsed: plugin.lastUsed,
+        state: plugin.state,
+        dependencies: plugin.dependencies,
+        dependents: plugin.dependents,
+        performance: plugin.performance,
+        errors: plugin.errors,
+        stateHistory: plugin.stateHistory
       }, null, 2));
       return;
     }
@@ -254,8 +266,40 @@ export async function enablePlugin(
   const { verbose = false } = options;
 
   try {
-    // TODO: Implement plugin activation
-    console.log(chalk.green(`Plugin ${pluginName} enabled successfully!`));
+    const registry = createPluginRegistry();
+    await registry.initialize();
+
+    const plugin = registry.getManagedPlugin(pluginName);
+    if (!plugin) {
+      throw new ValidationError(`Plugin '${pluginName}' not found`);
+    }
+
+    const spinner = createSpinner(`Enabling plugin ${pluginName}...`);
+    spinner.start();
+
+    // Load plugin if not loaded
+    if (plugin.state === PluginState.UNLOADED) {
+      await registry.loadPlugin(pluginName);
+    }
+
+    // Initialize plugin if not initialized
+    if (plugin.state === PluginState.LOADED) {
+      await registry.initializePlugin(pluginName);
+    }
+
+    // Activate plugin if not active
+    if (plugin.state === PluginState.INITIALIZED) {
+      await registry.activatePlugin(pluginName);
+    }
+
+    spinner.succeed(chalk.green(`Plugin ${pluginName} enabled successfully!`));
+
+    if (verbose) {
+      console.log(chalk.gray(`Plugin state: ${plugin.state}`));
+      console.log(chalk.gray(`Load time: ${plugin.performance.loadDuration}ms`));
+      console.log(chalk.gray(`Init time: ${plugin.performance.initDuration}ms`));
+      console.log(chalk.gray(`Activation time: ${plugin.performance.activationDuration}ms`));
+    }
 
   } catch (error) {
     throw new ValidationError(
@@ -272,8 +316,30 @@ export async function disablePlugin(
   const { verbose = false } = options;
 
   try {
-    // TODO: Implement plugin deactivation
-    console.log(chalk.yellow(`Plugin ${pluginName} disabled successfully!`));
+    const registry = createPluginRegistry();
+    await registry.initialize();
+
+    const plugin = registry.getManagedPlugin(pluginName);
+    if (!plugin) {
+      throw new ValidationError(`Plugin '${pluginName}' not found`);
+    }
+
+    if (plugin.state !== PluginState.ACTIVE) {
+      console.log(chalk.yellow(`Plugin ${pluginName} is not active (current state: ${plugin.state})`));
+      return;
+    }
+
+    const spinner = createSpinner(`Disabling plugin ${pluginName}...`);
+    spinner.start();
+
+    await registry.deactivatePlugin(pluginName);
+
+    spinner.succeed(chalk.yellow(`Plugin ${pluginName} disabled successfully!`));
+
+    if (verbose) {
+      console.log(chalk.gray(`Plugin state: ${plugin.state}`));
+      console.log(chalk.gray(`Dependencies: ${plugin.dependents.join(', ') || 'none'}`));
+    }
 
   } catch (error) {
     throw new ValidationError(
@@ -312,8 +378,8 @@ export async function updatePlugins(options: PluginCommandOptions = {}): Promise
   }
 }
 
-// Display plugin list
-function displayPluginList(plugins: PluginRegistration[], verbose: boolean): void {
+// Display discovered plugin list (without lifecycle info)
+function displayDiscoveredPluginList(plugins: PluginRegistration[], verbose: boolean): void {
   plugins.forEach((plugin, index) => {
     const status = plugin.isActive ? chalk.green('●') : plugin.isLoaded ? chalk.yellow('●') : chalk.gray('●');
     const statusText = plugin.isActive ? 'active' : plugin.isLoaded ? 'loaded' : 'inactive';
@@ -335,8 +401,33 @@ function displayPluginList(plugins: PluginRegistration[], verbose: boolean): voi
   });
 }
 
+// Display plugin list with lifecycle info
+function displayPluginList(plugins: ManagedPluginRegistration[], verbose: boolean): void {
+  plugins.forEach((plugin, index) => {
+    const status = plugin.state === PluginState.ACTIVE ? chalk.green('●') : 
+                   plugin.state === PluginState.LOADED || plugin.state === PluginState.INITIALIZED ? chalk.yellow('●') : 
+                   chalk.gray('●');
+    const statusText = plugin.state;
+    
+    console.log(`${status} ${chalk.white(plugin.manifest.name)} ${chalk.gray(`v${plugin.manifest.version}`)}`);
+    console.log(`  ${chalk.gray(plugin.manifest.description)}`);
+    
+    if (verbose) {
+      console.log(`  ${chalk.gray(`Path: ${plugin.pluginPath}`)}`);
+      console.log(`  ${chalk.gray(`Status: ${statusText}`)}`);
+      if (plugin.usageCount > 0) {
+        console.log(`  ${chalk.gray(`Usage: ${plugin.usageCount} times`)}`);
+      }
+    }
+    
+    if (index < plugins.length - 1) {
+      console.log('');
+    }
+  });
+}
+
 // Display detailed plugin information
-function displayPluginDetails(plugin: PluginRegistration, verbose: boolean): void {
+function displayPluginDetails(plugin: ManagedPluginRegistration, verbose: boolean): void {
   const manifest = plugin.manifest;
   
   console.log(chalk.yellow('Description:'));
@@ -367,6 +458,7 @@ function displayPluginDetails(plugin: PluginRegistration, verbose: boolean): voi
   
   console.log(chalk.yellow('Installation:'));
   console.log(`  Path: ${plugin.pluginPath}`);
+  console.log(`  State: ${plugin.state}`);
   console.log(`  Status: ${plugin.isActive ? 'Active' : plugin.isLoaded ? 'Loaded' : 'Inactive'}`);
   
   if (plugin.usageCount > 0) {
@@ -375,6 +467,34 @@ function displayPluginDetails(plugin: PluginRegistration, verbose: boolean): voi
   
   if (plugin.lastUsed) {
     console.log(`  Last Used: ${new Date(plugin.lastUsed).toLocaleString()}`);
+  }
+
+  console.log(`\n${chalk.yellow('Lifecycle:')}`);
+  console.log(`  Load Time: ${plugin.performance.loadDuration}ms`);
+  console.log(`  Init Time: ${plugin.performance.initDuration}ms`);
+  console.log(`  Activation Time: ${plugin.performance.activationDuration}ms`);
+  
+  if (plugin.dependencies.length > 0) {
+    console.log(`\n${chalk.yellow('Dependencies:')}`);
+    plugin.dependencies.forEach(dep => {
+      const status = dep.resolved ? chalk.green('✓') : chalk.red('✗');
+      console.log(`  ${status} ${dep.name} (${dep.version}) ${dep.required ? '' : '(optional)'}`);
+    });
+  }
+  
+  if (plugin.dependents.length > 0) {
+    console.log(`\n${chalk.yellow('Dependents:')}`);
+    plugin.dependents.forEach(dep => {
+      console.log(`  - ${dep}`);
+    });
+  }
+  
+  if (plugin.errors.length > 0) {
+    console.log(`\n${chalk.red('Recent Errors:')}`);
+    plugin.errors.slice(-3).forEach((error, index) => {
+      console.log(`  ${index + 1}. [${error.stage}] ${error.error.message}`);
+      console.log(`     ${chalk.gray(new Date(error.timestamp).toLocaleString())}`);
+    });
   }
   
   if (verbose) {
@@ -452,6 +572,97 @@ export async function clearPluginCache(options: PluginCommandOptions = {}): Prom
   } catch (error) {
     throw new ValidationError(
       `Failed to clear plugin cache: ${error instanceof Error ? error.message : String(error)}`
+    );
+  }
+}
+
+// Show plugin lifecycle statistics
+export async function showPluginStats(options: PluginCommandOptions = {}): Promise<void> {
+  const { verbose = false, json = false } = options;
+
+  try {
+    const registry = createPluginRegistry();
+    await registry.initialize();
+
+    const stats = registry.getLifecycleStats();
+    
+    if (json) {
+      console.log(JSON.stringify(stats, null, 2));
+      return;
+    }
+
+    console.log(chalk.cyan('\n📊 Plugin Lifecycle Statistics\n'));
+    
+    console.log(chalk.yellow('Overview:'));
+    console.log(`  Total Plugins: ${stats.total}`);
+    console.log(`  Total Errors: ${stats.totalErrors}`);
+    
+    console.log(chalk.yellow('\nBy State:'));
+    Object.entries(stats.byState).forEach(([state, count]) => {
+      const stateColor = state === 'active' ? chalk.green : 
+                        state === 'loaded' || state === 'initialized' ? chalk.yellow :
+                        state === 'error' ? chalk.red : chalk.gray;
+      console.log(`  ${stateColor(state)}: ${count}`);
+    });
+    
+    console.log(chalk.yellow('\nPerformance:'));
+    console.log(`  Average Load Time: ${Math.round(stats.avgLoadTime)}ms`);
+    console.log(`  Average Init Time: ${Math.round(stats.avgInitTime)}ms`);
+    console.log(`  Average Activation Time: ${Math.round(stats.avgActivationTime)}ms`);
+
+    if (verbose) {
+      const plugins = registry.getManagedPlugins();
+      const errorPlugins = plugins.filter(p => p.errors.length > 0);
+      
+      if (errorPlugins.length > 0) {
+        console.log(chalk.red('\nPlugins with Errors:'));
+        errorPlugins.forEach(plugin => {
+          console.log(`  ${plugin.manifest.name}: ${plugin.errors.length} errors`);
+        });
+      }
+    }
+
+  } catch (error) {
+    throw new ValidationError(
+      `Failed to show plugin statistics: ${error instanceof Error ? error.message : String(error)}`
+    );
+  }
+}
+
+// Reload a plugin
+export async function reloadPlugin(
+  pluginName: string, 
+  options: PluginCommandOptions = {}
+): Promise<void> {
+  const { verbose = false } = options;
+
+  try {
+    const registry = createPluginRegistry();
+    await registry.initialize();
+
+    const plugin = registry.getManagedPlugin(pluginName);
+    if (!plugin) {
+      throw new ValidationError(`Plugin '${pluginName}' not found`);
+    }
+
+    const spinner = createSpinner(`Reloading plugin ${pluginName}...`);
+    spinner.start();
+
+    await registry.reloadPlugin(pluginName);
+
+    spinner.succeed(chalk.green(`Plugin ${pluginName} reloaded successfully!`));
+
+    if (verbose) {
+      const reloadedPlugin = registry.getManagedPlugin(pluginName);
+      if (reloadedPlugin) {
+        console.log(chalk.gray(`Plugin state: ${reloadedPlugin.state}`));
+        console.log(chalk.gray(`Load time: ${reloadedPlugin.performance.loadDuration}ms`));
+      }
+    }
+
+  } catch (error) {
+    throw new ValidationError(
+      `Failed to reload plugin: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 }
