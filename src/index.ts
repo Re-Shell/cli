@@ -139,6 +139,15 @@ import {
   configureHelpSystem,
   showDocumentationTemplates
 } from './commands/plugin-docs';
+import {
+  testCommandValidation,
+  createCommandValidationSchema,
+  listValidationRules,
+  listTransformations,
+  showCommandValidationSchema,
+  showValidationStats,
+  generateValidationTemplate
+} from './commands/plugin-validation';
 
 // Get version from package.json
 const packageJsonPath = path.resolve(__dirname, '../package.json');
@@ -4590,6 +4599,86 @@ pluginCommand
   .action(
     createAsyncCommand(async (options) => {
       await showDocumentationTemplates(options);
+    })
+  );
+
+// Plugin validation commands
+pluginCommand
+  .command('test-validation <command> <testData>')
+  .description('Test command validation with sample data (JSON format)')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .option('--dry-run', 'Simulate validation without applying changes')
+  .option('--strict', 'Enable strict validation mode')
+  .action(
+    createAsyncCommand(async (command, testData, options) => {
+      await testCommandValidation(command, testData, options);
+    })
+  );
+
+pluginCommand
+  .command('create-schema <command> <schemaDefinition>')
+  .description('Create validation schema for a command (JSON format)')
+  .option('--verbose', 'Show detailed information')
+  .option('--dry-run', 'Show what would be created without applying')
+  .action(
+    createAsyncCommand(async (command, schemaDefinition, options) => {
+      await createCommandValidationSchema(command, schemaDefinition, options);
+    })
+  );
+
+pluginCommand
+  .command('validation-rules')
+  .description('List available validation rules')
+  .option('--verbose', 'Show detailed information and examples')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      await listValidationRules(options);
+    })
+  );
+
+pluginCommand
+  .command('transformations')
+  .description('List available parameter transformations')
+  .option('--verbose', 'Show detailed information and examples')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      await listTransformations(options);
+    })
+  );
+
+pluginCommand
+  .command('show-schema <command>')
+  .description('Show validation schema for a command')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (command, options) => {
+      await showCommandValidationSchema(command, options);
+    })
+  );
+
+pluginCommand
+  .command('validation-stats')
+  .description('Show validation system statistics')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      await showValidationStats(options);
+    })
+  );
+
+pluginCommand
+  .command('generate-template <command>')
+  .description('Generate validation schema template for a command')
+  .option('--verbose', 'Show detailed information and usage examples')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (command, options) => {
+      await generateValidationTemplate(command, options);
     })
   );
 
