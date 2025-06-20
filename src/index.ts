@@ -80,6 +80,13 @@ import {
   executeHook,
   listHookTypes
 } from './commands/plugin';
+import {
+  resolveDependencies,
+  showDependencyTree,
+  checkConflicts,
+  validateVersions,
+  updateDependencies
+} from './commands/plugin-dependency';
 
 // Get version from package.json
 const packageJsonPath = path.resolve(__dirname, '../package.json');
@@ -3997,6 +4004,67 @@ pluginCommand
   .action(
     createAsyncCommand(async (options) => {
       await listHookTypes(options);
+    })
+  );
+
+pluginCommand
+  .command('resolve <plugin>')
+  .description('Resolve plugin dependencies')
+  .option('--strategy <strategy>', 'Resolution strategy (strict, loose, latest)', 'strict')
+  .option('--allow-prerelease', 'Allow prerelease versions')
+  .option('--ignore-optional', 'Ignore optional dependencies')
+  .option('--auto-install', 'Automatically install missing dependencies')
+  .option('--dry-run', 'Show what would be installed without installing')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (plugin, options) => {
+      await resolveDependencies(plugin, options);
+    })
+  );
+
+pluginCommand
+  .command('deps [plugin]')
+  .description('Show dependency tree')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (plugin, options) => {
+      await showDependencyTree(plugin, options);
+    })
+  );
+
+pluginCommand
+  .command('conflicts')
+  .description('Check for dependency conflicts')
+  .option('--strategy <strategy>', 'Resolution strategy (strict, loose, latest)', 'strict')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      await checkConflicts(options);
+    })
+  );
+
+pluginCommand
+  .command('validate-versions')
+  .description('Validate plugin versions')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      await validateVersions(options);
+    })
+  );
+
+pluginCommand
+  .command('update-deps <plugin>')
+  .description('Update plugin dependencies')
+  .option('--dry-run', 'Show what would be updated without updating')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (plugin, options) => {
+      await updateDependencies(plugin, options);
     })
   );
 
