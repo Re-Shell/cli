@@ -130,6 +130,15 @@ import {
   setPriorityOverride,
   showResolutionHistory
 } from './commands/plugin-conflicts';
+import {
+  generatePluginDocumentation,
+  showCommandHelp,
+  listDocumentedCommands,
+  searchDocumentation,
+  showDocumentationStats,
+  configureHelpSystem,
+  showDocumentationTemplates
+} from './commands/plugin-docs';
 
 // Get version from package.json
 const packageJsonPath = path.resolve(__dirname, '../package.json');
@@ -4490,6 +4499,97 @@ pluginCommand
   .action(
     createAsyncCommand(async (options) => {
       await showResolutionHistory(options);
+    })
+  );
+
+// Plugin documentation commands
+pluginCommand
+  .command('generate-docs [commands...]')
+  .description('Generate documentation for plugin commands')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .option('--format <format>', 'Documentation format (markdown, html, json, plain-text, man-page)', 'markdown')
+  .option('--output <dir>', 'Output directory for generated files')
+  .option('--template <template>', 'Documentation template to use', 'markdown')
+  .option('--include-private', 'Include private/hidden commands')
+  .option('--include-deprecated', 'Include deprecated commands')
+  .option('--no-examples', 'Exclude examples from documentation')
+  .option('--no-index', 'Skip generating documentation index')
+  .action(
+    createAsyncCommand(async (commands, options) => {
+      await generatePluginDocumentation(commands, options);
+    })
+  );
+
+pluginCommand
+  .command('help <command>')
+  .description('Show detailed help for a specific command')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .option('--mode <mode>', 'Help display mode (compact, detailed, interactive, hierarchical)', 'detailed')
+  .action(
+    createAsyncCommand(async (command, options) => {
+      await showCommandHelp(command, options);
+    })
+  );
+
+pluginCommand
+  .command('list-docs')
+  .description('List all documented commands')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .option('--plugin <plugin>', 'Filter by plugin name')
+  .option('--category <category>', 'Filter by command category')
+  .option('--complexity <complexity>', 'Filter by complexity (basic, intermediate, advanced)')
+  .action(
+    createAsyncCommand(async (options) => {
+      await listDocumentedCommands(options);
+    })
+  );
+
+pluginCommand
+  .command('search-docs <query>')
+  .description('Search documentation for commands and topics')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .option('--plugin <plugin>', 'Filter by plugin name')
+  .option('--category <category>', 'Filter by command category')
+  .option('--complexity <complexity>', 'Filter by complexity level')
+  .action(
+    createAsyncCommand(async (query, options) => {
+      await searchDocumentation(query, options);
+    })
+  );
+
+pluginCommand
+  .command('docs-stats')
+  .description('Show documentation coverage and statistics')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      await showDocumentationStats(options);
+    })
+  );
+
+pluginCommand
+  .command('configure-help <setting> <value>')
+  .description('Configure help system behavior')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (setting, value, options) => {
+      await configureHelpSystem(setting, value, options);
+    })
+  );
+
+pluginCommand
+  .command('docs-templates')
+  .description('Show available documentation templates')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      await showDocumentationTemplates(options);
     })
   );
 
