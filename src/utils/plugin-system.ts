@@ -9,6 +9,12 @@ import {
   ManagedPluginRegistration,
   createPluginLifecycleManager
 } from './plugin-lifecycle';
+import { 
+  PluginHookSystem, 
+  PluginHookAPI, 
+  HookType,
+  createHookSystem
+} from './plugin-hooks';
 
 // Plugin interface definitions
 export interface PluginManifest {
@@ -65,7 +71,7 @@ export interface PluginContext {
     cachePath: string;
   };
   logger: PluginLogger;
-  hooks: PluginHookSystem;
+  hooks: PluginHookSystemInterface;
   utils: PluginUtils;
 }
 
@@ -76,12 +82,16 @@ export interface PluginLogger {
   error(message: string, ...args: any[]): void;
 }
 
-export interface PluginHookSystem {
-  register(hookName: string, handler: Function): void;
-  unregister(hookName: string, handler: Function): void;
-  emit(hookName: string, ...args: any[]): Promise<any[]>;
-  on(hookName: string, handler: Function): void;
-  off(hookName: string, handler: Function): void;
+export interface PluginHookSystemInterface {
+  register(hookName: string, handler: Function, options?: any): string;
+  unregister(hookName: string, handlerId: string): boolean;
+  execute(hookName: string, data?: any): Promise<any>;
+  executeSync(hookName: string, data?: any): any[];
+  onCommand(command: string, handler: Function, options?: any): string;
+  onFileChange(pattern: RegExp | string, handler: Function, options?: any): string;
+  onWorkspaceBuild(workspace: string, handler: Function, options?: any): string;
+  getHooks(): any[];
+  registerCustomHook(name: string): string;
 }
 
 export interface PluginUtils {
@@ -135,6 +145,7 @@ export class PluginRegistry extends EventEmitter {
   private plugins: Map<string, PluginRegistration> = new Map();
   private discoveryCache: Map<string, PluginDiscoveryResult> = new Map();
   private lifecycleManager: PluginLifecycleManager;
+  private hookSystem: PluginHookSystem;
   private rootPath: string;
   private pluginPaths: string[];
   private isInitialized: boolean = false;
@@ -149,9 +160,21 @@ export class PluginRegistry extends EventEmitter {
       enableHotReload: process.env.NODE_ENV === 'development'
     });
     
+    this.hookSystem = createHookSystem({
+      debugMode: process.env.NODE_ENV === 'development'
+    });
+    
     // Forward lifecycle events
     this.lifecycleManager.on('state-changed', (event) => {
       this.emit('plugin-state-changed', event);
+      
+      // Emit hook events for plugin lifecycle changes
+      this.hookSystem.execute(HookType.PLUGIN_LOAD, { plugin: event.pluginName, state: event.newState });
+    });
+    
+    // Forward hook system events
+    this.hookSystem.on('hook-registered', (event) => {
+      this.emit('hook-registered', event);
     });
   }
 
@@ -770,6 +793,26 @@ export class PluginRegistry extends EventEmitter {
     return this.lifecycleManager;
   }
 
+  // Hook system methods
+  getHookSystem(): PluginHookSystem {
+    return this.hookSystem;
+  }
+
+  // Create plugin hook API for a specific plugin
+  createPluginHookAPI(pluginName: string): PluginHookAPI {
+    return this.hookSystem.createPluginScope(pluginName);
+  }
+
+  // Execute hooks
+  async executeHooks(hookType: HookType | string, data?: any): Promise<any> {
+    return await this.hookSystem.execute(hookType, data);
+  }
+
+  // Get hook statistics
+  getHookStats(): any {
+    return this.hookSystem.getStats();
+  }
+
   // Create plugin context for activation
   private createPluginContext(registration: PluginRegistration): PluginContext {
     return {
@@ -787,7 +830,7 @@ export class PluginRegistry extends EventEmitter {
         cachePath: path.join(this.rootPath, '.re-shell', 'cache', registration.manifest.name)
       },
       logger: this.createPluginLogger(registration.manifest.name),
-      hooks: this.createHookSystem(),
+      hooks: this.createPluginHookAPI(registration.manifest.name),
       utils: this.createPluginUtils()
     };
   }
@@ -808,55 +851,6 @@ export class PluginRegistry extends EventEmitter {
       },
       error: (message: string, ...args: any[]) => {
         console.error(chalk.red(`${prefix} ${message}`), ...args);
-      }
-    };
-  }
-
-  // Create hook system for plugin
-  private createHookSystem(): PluginHookSystem {
-    const hooks = new Map<string, Function[]>();
-    
-    return {
-      register: (hookName: string, handler: Function) => {
-        if (!hooks.has(hookName)) {
-          hooks.set(hookName, []);
-        }
-        hooks.get(hookName)!.push(handler);
-      },
-      
-      unregister: (hookName: string, handler: Function) => {
-        const handlers = hooks.get(hookName);
-        if (handlers) {
-          const index = handlers.indexOf(handler);
-          if (index !== -1) {
-            handlers.splice(index, 1);
-          }
-        }
-      },
-      
-      emit: async (hookName: string, ...args: any[]): Promise<any[]> => {
-        const handlers = hooks.get(hookName) || [];
-        const results = await Promise.all(
-          handlers.map(handler => Promise.resolve(handler(...args)))
-        );
-        return results;
-      },
-      
-      on: (hookName: string, handler: Function) => {
-        if (!hooks.has(hookName)) {
-          hooks.set(hookName, []);
-        }
-        hooks.get(hookName)!.push(handler);
-      },
-      
-      off: (hookName: string, handler: Function) => {
-        const handlers = hooks.get(hookName);
-        if (handlers) {
-          const index = handlers.indexOf(handler);
-          if (index !== -1) {
-            handlers.splice(index, 1);
-          }
-        }
       }
     };
   }

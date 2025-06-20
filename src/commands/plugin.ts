@@ -9,6 +9,7 @@ import {
   createPluginRegistry 
 } from '../utils/plugin-system';
 import { PluginState, ManagedPluginRegistration } from '../utils/plugin-lifecycle';
+import { HookType } from '../utils/plugin-hooks';
 
 interface PluginCommandOptions {
   verbose?: boolean;
@@ -663,6 +664,200 @@ export async function reloadPlugin(
   } catch (error) {
     throw new ValidationError(
       `Failed to reload plugin: ${error instanceof Error ? error.message : String(error)}`
+    );
+  }
+}
+
+// Show plugin hooks
+export async function showPluginHooks(
+  pluginName?: string,
+  options: PluginCommandOptions = {}
+): Promise<void> {
+  const { verbose = false, json = false } = options;
+
+  try {
+    const registry = createPluginRegistry();
+    await registry.initialize();
+
+    const hookStats = registry.getHookStats();
+    
+    if (json) {
+      if (pluginName) {
+        const hookSystem = registry.getHookSystem();
+        const pluginHooks = hookSystem.getPluginHooks(pluginName);
+        console.log(JSON.stringify(pluginHooks, null, 2));
+      } else {
+        console.log(JSON.stringify(hookStats, null, 2));
+      }
+      return;
+    }
+
+    console.log(chalk.cyan('\n🪝 Plugin Hooks Overview\n'));
+    
+    if (pluginName) {
+      const hookSystem = registry.getHookSystem();
+      const pluginHooks = hookSystem.getPluginHooks(pluginName);
+      
+      if (pluginHooks.length === 0) {
+        console.log(chalk.yellow(`No hooks registered for plugin '${pluginName}'`));
+        return;
+      }
+
+      console.log(chalk.green(`Hooks for plugin '${pluginName}' (${pluginHooks.length}):\n`));
+      
+      pluginHooks.forEach((hook: any, index: number) => {
+        console.log(`${index + 1}. ${chalk.white(hook.id)}`);
+        console.log(`   Type: ${chalk.cyan(hook.hookType || 'unknown')}`);
+        console.log(`   Priority: ${hook.priority}`);
+        if (hook.description) {
+          console.log(`   Description: ${chalk.gray(hook.description)}`);
+        }
+        if (hook.once) {
+          console.log(`   ${chalk.yellow('(one-time)')}`);
+        }
+        if (index < pluginHooks.length - 1) {
+          console.log('');
+        }
+      });
+      
+    } else {
+      console.log(chalk.yellow('Overview:'));
+      console.log(`  Total Hooks: ${hookStats.totalHooks}`);
+      console.log(`  Active Middleware: ${hookStats.middleware.length}`);
+      
+      console.log(chalk.yellow('\nBy Hook Type:'));
+      Object.entries(hookStats.hooksByType).forEach(([type, count]) => {
+        if ((count as number) > 0) {
+          console.log(`  ${chalk.cyan(type)}: ${count}`);
+        }
+      });
+      
+      console.log(chalk.yellow('\nBy Plugin:'));
+      Object.entries(hookStats.hooksByPlugin).forEach(([plugin, count]) => {
+        console.log(`  ${chalk.white(plugin)}: ${count} hooks`);
+      });
+
+      if (verbose && Object.keys(hookStats.executionStats).length > 0) {
+        console.log(chalk.yellow('\nExecution Time (total ms):'));
+        Object.entries(hookStats.executionStats).forEach(([plugin, time]) => {
+          console.log(`  ${plugin}: ${time}ms`);
+        });
+      }
+    }
+
+  } catch (error) {
+    throw new ValidationError(
+      `Failed to show plugin hooks: ${error instanceof Error ? error.message : String(error)}`
+    );
+  }
+}
+
+// Execute a hook manually
+export async function executeHook(
+  hookType: string,
+  data: string = '{}',
+  options: PluginCommandOptions = {}
+): Promise<void> {
+  const { verbose = false, json = false } = options;
+
+  try {
+    const registry = createPluginRegistry();
+    await registry.initialize();
+
+    let hookData: any;
+    try {
+      hookData = JSON.parse(data);
+    } catch (error) {
+      throw new ValidationError('Hook data must be valid JSON');
+    }
+
+    const spinner = createSpinner(`Executing hook ${hookType}...`);
+    spinner.start();
+
+    const result = await registry.executeHooks(hookType, hookData);
+    
+    spinner.stop();
+
+    if (json) {
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    console.log(chalk.cyan(`\n🪝 Hook Execution Result\n`));
+    
+    console.log(chalk.yellow('Execution:'));
+    console.log(`  Hook Type: ${chalk.cyan(hookType)}`);
+    console.log(`  Success: ${result.success ? chalk.green('✓') : chalk.red('✗')}`);
+    console.log(`  Execution Time: ${result.executionTime}ms`);
+    console.log(`  Results: ${result.results.length}`);
+    console.log(`  Errors: ${result.errors.length}`);
+    
+    if (result.aborted) {
+      console.log(`  ${chalk.yellow('⚠️  Execution was aborted')}`);
+    }
+
+    if (result.results.length > 0 && verbose) {
+      console.log(chalk.yellow('\nResults:'));
+      result.results.forEach((res: any, index: number) => {
+        console.log(`  ${index + 1}. ${chalk.white(res.pluginName)}: ${res.executionTime}ms`);
+        if (res.result !== undefined) {
+          console.log(`     Result: ${JSON.stringify(res.result)}`);
+        }
+      });
+    }
+
+    if (result.errors.length > 0) {
+      console.log(chalk.red('\nErrors:'));
+      result.errors.forEach((err: any, index: number) => {
+        console.log(`  ${index + 1}. ${chalk.red(err.pluginName)}: ${err.error.message}`);
+      });
+    }
+
+  } catch (error) {
+    throw new ValidationError(
+      `Failed to execute hook: ${error instanceof Error ? error.message : String(error)}`
+    );
+  }
+}
+
+// List available hook types
+export async function listHookTypes(options: PluginCommandOptions = {}): Promise<void> {
+  const { json = false } = options;
+
+  try {
+    const hookTypes = Object.values(HookType);
+    
+    if (json) {
+      console.log(JSON.stringify(hookTypes, null, 2));
+      return;
+    }
+
+    console.log(chalk.cyan('\n🪝 Available Hook Types\n'));
+    
+    const categories = {
+      'CLI Lifecycle': hookTypes.filter(t => t.startsWith('cli:')),
+      'Commands': hookTypes.filter(t => t.startsWith('command:')),
+      'Workspace': hookTypes.filter(t => t.startsWith('workspace:')),
+      'Files': hookTypes.filter(t => t.startsWith('file:')),
+      'Build': hookTypes.filter(t => t.startsWith('build:')),
+      'Plugins': hookTypes.filter(t => t.startsWith('plugin:')),
+      'Configuration': hookTypes.filter(t => t.startsWith('config:')),
+      'Other': hookTypes.filter(t => !t.includes(':'))
+    };
+
+    Object.entries(categories).forEach(([category, types]) => {
+      if (types.length > 0) {
+        console.log(chalk.yellow(`${category}:`));
+        types.forEach(type => {
+          console.log(`  ${chalk.cyan(type)}`);
+        });
+        console.log('');
+      }
+    });
+
+  } catch (error) {
+    throw new ValidationError(
+      `Failed to list hook types: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 }
