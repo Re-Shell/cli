@@ -3,6 +3,12 @@ import * as path from 'path';
 import { EventEmitter } from 'events';
 import chalk from 'chalk';
 import { ValidationError } from './error-handler';
+import { 
+  PluginLifecycleManager, 
+  PluginState, 
+  ManagedPluginRegistration,
+  createPluginLifecycleManager
+} from './plugin-lifecycle';
 
 // Plugin interface definitions
 export interface PluginManifest {
@@ -128,6 +134,7 @@ export interface PluginDiscoveryOptions {
 export class PluginRegistry extends EventEmitter {
   private plugins: Map<string, PluginRegistration> = new Map();
   private discoveryCache: Map<string, PluginDiscoveryResult> = new Map();
+  private lifecycleManager: PluginLifecycleManager;
   private rootPath: string;
   private pluginPaths: string[];
   private isInitialized: boolean = false;
@@ -136,6 +143,16 @@ export class PluginRegistry extends EventEmitter {
     super();
     this.rootPath = rootPath;
     this.pluginPaths = this.getDefaultPluginPaths();
+    this.lifecycleManager = createPluginLifecycleManager({
+      timeout: 30000,
+      validateSecurity: true,
+      enableHotReload: process.env.NODE_ENV === 'development'
+    });
+    
+    // Forward lifecycle events
+    this.lifecycleManager.on('state-changed', (event) => {
+      this.emit('plugin-state-changed', event);
+    });
   }
 
   // Get default plugin discovery paths
@@ -188,15 +205,19 @@ export class PluginRegistry extends EventEmitter {
     if (this.isInitialized) return;
 
     try {
+      // Initialize lifecycle manager
+      await this.lifecycleManager.initialize();
+      
       // Ensure plugin directories exist
       await this.ensurePluginDirectories();
       
       // Discover plugins
       const discoveryResult = await this.discoverPlugins();
       
-      // Register discovered plugins
+      // Register discovered plugins with both registry and lifecycle manager
       for (const plugin of discoveryResult.found) {
         this.plugins.set(plugin.manifest.name, plugin);
+        await this.lifecycleManager.registerPlugin(plugin);
       }
       
       // Report discovery results
@@ -697,6 +718,56 @@ export class PluginRegistry extends EventEmitter {
   clearCache(): void {
     this.discoveryCache.clear();
     this.emit('cache-cleared');
+  }
+
+  // Plugin lifecycle management methods
+  async loadPlugin(pluginName: string): Promise<void> {
+    return await this.lifecycleManager.loadPlugin(pluginName);
+  }
+
+  async initializePlugin(pluginName: string): Promise<void> {
+    return await this.lifecycleManager.initializePlugin(pluginName);
+  }
+
+  async activatePlugin(pluginName: string): Promise<void> {
+    return await this.lifecycleManager.activatePlugin(pluginName);
+  }
+
+  async deactivatePlugin(pluginName: string): Promise<void> {
+    return await this.lifecycleManager.deactivatePlugin(pluginName);
+  }
+
+  async unloadPlugin(pluginName: string): Promise<void> {
+    return await this.lifecycleManager.unloadPlugin(pluginName);
+  }
+
+  async reloadPlugin(pluginName: string): Promise<void> {
+    return await this.lifecycleManager.reloadPlugin(pluginName);
+  }
+
+  // Get managed plugin (with lifecycle state)
+  getManagedPlugin(name: string): ManagedPluginRegistration | undefined {
+    return this.lifecycleManager.getPlugin(name);
+  }
+
+  // Get all managed plugins
+  getManagedPlugins(): ManagedPluginRegistration[] {
+    return this.lifecycleManager.getPlugins();
+  }
+
+  // Get plugins by state
+  getPluginsByState(state: PluginState): ManagedPluginRegistration[] {
+    return this.lifecycleManager.getPluginsByState(state);
+  }
+
+  // Get lifecycle statistics
+  getLifecycleStats(): any {
+    return this.lifecycleManager.getLifecycleStats();
+  }
+
+  // Get lifecycle manager
+  getLifecycleManager(): PluginLifecycleManager {
+    return this.lifecycleManager;
   }
 
   // Create plugin context for activation
