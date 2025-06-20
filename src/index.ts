@@ -63,6 +63,18 @@ import { manageChangeDetector } from './commands/change-detector';
 import { manageChangeImpact, analyzeWorkspaceImpact, showDependencyGraph } from './commands/change-impact';
 import { manageIncrementalBuild } from './commands/incremental-build';
 import { testPlatformCapabilities, runPlatformDiagnostics, quickPlatformCheck } from './commands/platform-test';
+import { 
+  managePlugins, 
+  discoverPlugins, 
+  installPlugin, 
+  uninstallPlugin, 
+  showPluginInfo,
+  enablePlugin,
+  disablePlugin,
+  updatePlugins,
+  validatePlugin,
+  clearPluginCache
+} from './commands/plugin';
 
 // Get version from package.json
 const packageJsonPath = path.resolve(__dirname, '../package.json');
@@ -3811,6 +3823,122 @@ program
       if (!healthy) {
         process.exit(1);
       }
+    })
+  );
+
+// Plugin Management command
+const pluginCommand = program
+  .command('plugin')
+  .description('Manage CLI plugins and extensions');
+
+pluginCommand
+  .command('list')
+  .description('List installed plugins')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      await managePlugins(options);
+    })
+  );
+
+pluginCommand
+  .command('discover')
+  .description('Discover available plugins')
+  .option('--source <source>', 'Plugin source (local, npm, builtin)')
+  .option('--include-disabled', 'Include disabled plugins')
+  .option('--include-dev', 'Include development plugins')
+  .option('--timeout <ms>', 'Discovery timeout in milliseconds', '10000')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      await discoverPlugins(options);
+    })
+  );
+
+pluginCommand
+  .command('install <plugin>')
+  .description('Install a plugin')
+  .option('--global', 'Install globally')
+  .option('--force', 'Force installation')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (plugin, options) => {
+      await installPlugin(plugin, options);
+    })
+  );
+
+pluginCommand
+  .command('uninstall <plugin>')
+  .description('Uninstall a plugin')
+  .option('--force', 'Force uninstallation')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (plugin, options) => {
+      await uninstallPlugin(plugin, options);
+    })
+  );
+
+pluginCommand
+  .command('info <plugin>')
+  .description('Show plugin information')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (plugin, options) => {
+      await showPluginInfo(plugin, options);
+    })
+  );
+
+pluginCommand
+  .command('enable <plugin>')
+  .description('Enable a plugin')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (plugin, options) => {
+      await enablePlugin(plugin, options);
+    })
+  );
+
+pluginCommand
+  .command('disable <plugin>')
+  .description('Disable a plugin')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (plugin, options) => {
+      await disablePlugin(plugin, options);
+    })
+  );
+
+pluginCommand
+  .command('update')
+  .description('Update all plugins')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (options) => {
+      await updatePlugins(options);
+    })
+  );
+
+pluginCommand
+  .command('validate <path>')
+  .description('Validate a plugin')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (path, options) => {
+      await validatePlugin(path, options);
+    })
+  );
+
+pluginCommand
+  .command('clear-cache')
+  .description('Clear plugin discovery cache')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (options) => {
+      await clearPluginCache(options);
     })
   );
 
