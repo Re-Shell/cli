@@ -1,8 +1,20 @@
-# Re-Shell CLI v0.4.0
+# Re-Shell CLI v0.7.1
 
-The most comprehensive and powerful command-line interface for creating and managing multi-framework monorepo and microfrontend applications using the Re-Shell architecture. Built with enterprise-grade reliability, zero terminal hanging, comprehensive health diagnostics, advanced analytics, and performance that rivals industry-leading CLI tools.
+The most comprehensive and powerful command-line interface for creating and managing multi-framework monorepo and microfrontend applications using the Re-Shell architecture. Built with enterprise-grade reliability, zero terminal hanging, comprehensive health diagnostics, advanced analytics, and now featuring a complete **plugin ecosystem** with extensible command architecture.
 
 ## 🚀 Features
+
+### 🧩 Plugin Ecosystem (v0.7.1) **NEW**
+- **🔌 Complete Plugin Architecture**: Full lifecycle management with registration, discovery, activation, and deactivation
+- **🏪 Plugin Marketplace**: Search, install, review, and discover plugins with comprehensive metadata
+- **🛡️ Plugin Security**: Sandboxing, validation, and security scanning for safe plugin execution
+- **📦 Plugin Dependencies**: Version management, conflict resolution, and dependency tree analysis
+- **⚡ Extensible Commands**: Dynamic plugin command registration with validation and conflict resolution
+- **🔧 Command Middleware**: Pre/post execution hooks with built-in factories for common patterns
+- **📚 Auto-Documentation**: Multi-format documentation generation with templates and search
+- **✅ Command Validation**: Schema-based validation with 13 built-in rules and custom transformations
+- **💾 Command Caching**: Multi-strategy caching with performance optimization and encryption
+- **🎯 35+ New Commands**: Complete plugin management, validation, documentation, and caching tools
 
 ### 🏆 Enterprise-Grade Reliability (v0.2.9)
 - **🚫 Zero Terminal Hanging**: Comprehensive timeout protection and graceful error handling
