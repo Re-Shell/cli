@@ -113,6 +113,14 @@ import {
   unregisterCommand,
   showCommandInfo
 } from './commands/plugin-command';
+import {
+  listMiddleware,
+  showMiddlewareStats,
+  testMiddleware,
+  clearMiddlewareCache,
+  showMiddlewareChain,
+  createExampleMiddleware
+} from './commands/plugin-middleware';
 
 // Get version from package.json
 const packageJsonPath = path.resolve(__dirname, '../package.json');
@@ -4325,6 +4333,72 @@ pluginCommand
   .action(
     createAsyncCommand(async (commandId, options) => {
       await showCommandInfo(commandId, options);
+    })
+  );
+
+// Plugin middleware commands
+pluginCommand
+  .command('middleware')
+  .description('List registered command middleware')
+  .option('--type <type>', 'Filter by middleware type')
+  .option('--plugin <name>', 'Filter by plugin name')
+  .option('--active', 'Show only active middleware')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      await listMiddleware(options);
+    })
+  );
+
+pluginCommand
+  .command('middleware-stats')
+  .description('Show middleware system statistics')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      await showMiddlewareStats(options);
+    })
+  );
+
+pluginCommand
+  .command('test-middleware <type> <testData>')
+  .description('Test middleware execution with sample data (JSON)')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (type, testData, options) => {
+      await testMiddleware(type, testData, options);
+    })
+  );
+
+pluginCommand
+  .command('clear-middleware-cache')
+  .description('Clear middleware cache')
+  .action(
+    createAsyncCommand(async () => {
+      await clearMiddlewareCache();
+    })
+  );
+
+pluginCommand
+  .command('middleware-chain <command>')
+  .description('Show middleware execution chain for a command')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (commandName, options) => {
+      await showMiddlewareChain(commandName, options);
+    })
+  );
+
+pluginCommand
+  .command('middleware-example <type>')
+  .description('Show example middleware code (types: validation, authorization, rateLimit, cache, logger, transform, custom)')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (type, options) => {
+      await createExampleMiddleware(type, options);
     })
   );
 
