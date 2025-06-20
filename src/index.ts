@@ -75,7 +75,10 @@ import {
   validatePlugin,
   clearPluginCache,
   showPluginStats,
-  reloadPlugin
+  reloadPlugin,
+  showPluginHooks,
+  executeHook,
+  listHookTypes
 } from './commands/plugin';
 
 // Get version from package.json
@@ -3962,6 +3965,38 @@ pluginCommand
   .action(
     createAsyncCommand(async (plugin, options) => {
       await reloadPlugin(plugin, options);
+    })
+  );
+
+pluginCommand
+  .command('hooks [plugin]')
+  .description('Show plugin hooks')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (plugin, options) => {
+      await showPluginHooks(plugin, options);
+    })
+  );
+
+pluginCommand
+  .command('execute-hook <hook-type> [data]')
+  .description('Execute a hook manually')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (hookType, data, options) => {
+      await executeHook(hookType, data, options);
+    })
+  );
+
+pluginCommand
+  .command('hook-types')
+  .description('List available hook types')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      await listHookTypes(options);
     })
   );
 
