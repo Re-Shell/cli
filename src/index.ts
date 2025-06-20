@@ -93,6 +93,17 @@ import {
   generateSecurityReport,
   fixSecurityIssues
 } from './commands/plugin-security';
+import {
+  searchMarketplace,
+  showPluginDetails,
+  installMarketplacePlugin,
+  showPluginReviews,
+  showFeaturedPlugins,
+  showPopularPlugins,
+  showCategories,
+  clearMarketplaceCache,
+  showMarketplaceStats
+} from './commands/plugin-marketplace';
 
 // Get version from package.json
 const packageJsonPath = path.resolve(__dirname, '../package.json');
@@ -4118,6 +4129,113 @@ pluginCommand
   .action(
     createAsyncCommand(async (plugin, options) => {
       await fixSecurityIssues(plugin, options);
+    })
+  );
+
+// Plugin marketplace commands
+pluginCommand
+  .command('search [query]')
+  .description('Search plugins in marketplace')
+  .option('--category <category>', 'Filter by category')
+  .option('--featured', 'Show only featured plugins')
+  .option('--verified', 'Show only verified plugins')
+  .option('--free', 'Show only free plugins')
+  .option('--sort <field>', 'Sort by field (relevance, downloads, rating, updated, created, name)', 'relevance')
+  .option('--order <order>', 'Sort order (asc, desc)', 'desc')
+  .option('--limit <number>', 'Number of results to show', '10')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (query, options) => {
+      await searchMarketplace(query, options);
+    })
+  );
+
+pluginCommand
+  .command('show <plugin>')
+  .description('Show detailed plugin information from marketplace')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (plugin, options) => {
+      await showPluginDetails(plugin, options);
+    })
+  );
+
+pluginCommand
+  .command('install-marketplace <plugin> [version]')
+  .description('Install plugin from marketplace')
+  .option('--global', 'Install globally')
+  .option('--force', 'Force installation')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (plugin, version, options) => {
+      await installMarketplacePlugin(plugin, version, options);
+    })
+  );
+
+pluginCommand
+  .command('reviews <plugin>')
+  .description('Show plugin reviews from marketplace')
+  .option('--limit <number>', 'Number of reviews to show', '10')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (plugin, options) => {
+      await showPluginReviews(plugin, options);
+    })
+  );
+
+pluginCommand
+  .command('featured')
+  .description('Show featured plugins from marketplace')
+  .option('--limit <number>', 'Number of plugins to show', '6')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      await showFeaturedPlugins(options);
+    })
+  );
+
+pluginCommand
+  .command('popular [category]')
+  .description('Show popular plugins from marketplace')
+  .option('--limit <number>', 'Number of plugins to show', '10')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (category, options) => {
+      await showPopularPlugins(category, options);
+    })
+  );
+
+pluginCommand
+  .command('categories')
+  .description('Show available plugin categories')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      await showCategories(options);
+    })
+  );
+
+pluginCommand
+  .command('clear-cache')
+  .description('Clear marketplace cache')
+  .action(
+    createAsyncCommand(async () => {
+      await clearMarketplaceCache();
+    })
+  );
+
+pluginCommand
+  .command('marketplace-stats')
+  .description('Show marketplace statistics')
+  .action(
+    createAsyncCommand(async () => {
+      await showMarketplaceStats();
     })
   );
 
