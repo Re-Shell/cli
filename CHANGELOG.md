@@ -5,6 +5,52 @@ All notable changes to the `@re-shell/cli` package will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.1] - 2024-12-20
+
+### 🚀 Command Extension System Foundation
+
+#### Plugin Architecture
+- **Plugin Management System**: Complete plugin lifecycle with registration, discovery, activation, and deactivation
+- **Plugin Marketplace Integration**: Search, install, reviews, and categories with metadata management
+- **Plugin Security**: Sandboxing, validation, and comprehensive security scanning capabilities
+- **Plugin Dependencies**: Version management, conflict resolution, and dependency tree analysis
+
+#### Command Extension Framework  
+- **Extensible Command Registration**: Dynamic plugin command registration with validation and metadata
+- **Command Middleware System**: Pre/post execution hooks with built-in factories for common patterns
+- **Command Conflict Resolution**: Multiple strategies (priority, namespace, first/last wins, disable-all)
+- **Command Validation & Transformation**: Schema-based validation with built-in rules and parameter transformations
+- **Command Documentation**: Auto-generation with multiple formats, templates, and search capabilities
+- **Command Caching**: Multi-strategy caching with performance optimization and encryption support
+
+#### New CLI Commands (35 total)
+- **Plugin Management (14 commands)**: list, discover, install, uninstall, info, enable, disable, update, validate, clear-cache, stats, reload, hooks, execute-hook
+- **Plugin Security (4 commands)**: security-scan, security-policy, security-report, security-fix
+- **Plugin Marketplace (8 commands)**: search, show, install-marketplace, reviews, featured, popular, categories, marketplace-stats
+- **Command Registry (7 commands)**: commands, command-conflicts, resolve-conflicts, command-stats, register-command, unregister-command, command-info
+- **Command Middleware (6 commands)**: middleware, middleware-stats, test-middleware, clear-middleware-cache, middleware-chain, middleware-example
+- **Conflict Resolution (7 commands)**: command-conflicts, conflict-strategies, resolve-conflict, auto-resolve, conflict-stats, set-priority, resolution-history
+- **Documentation (7 commands)**: generate-docs, help, list-docs, search-docs, docs-stats, configure-help, docs-templates
+- **Validation (7 commands)**: test-validation, create-schema, validation-rules, transformations, show-schema, validation-stats, generate-template
+- **Caching (6 commands)**: cache-stats, configure-cache, clear-cache, test-cache, optimize-cache, list-cached
+
+#### Performance & Optimization
+- **Hybrid Caching**: Memory and disk-based caching with multiple invalidation strategies
+- **Performance Monitoring**: Detailed metrics, analysis, and optimization recommendations
+- **Command Execution Optimization**: Middleware chains and validation pipelines for enhanced performance
+
+### Features
+- Plugin ecosystem foundation for extensible CLI architecture
+- Enterprise-grade security and validation systems
+- Comprehensive documentation and help system
+- Advanced caching and performance optimization
+
+### Technical Improvements
+- Event-driven plugin architecture with hooks system
+- Multi-format documentation generation (Markdown, HTML, JSON, plain text, man pages)
+- Schema-based validation with conditional rules and transformations
+- Conflict resolution with automatic and manual strategies
+
 ## [0.4.0] - 2024-12-19
 
 ### 🚀 Real-Time Development Infrastructure & Advanced Change Detection
