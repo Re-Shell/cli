@@ -15,6 +15,11 @@ import {
   HookType,
   createHookSystem
 } from './plugin-hooks';
+import { 
+  PluginDependencyResolver,
+  createDependencyResolver,
+  ResolutionResult
+} from './plugin-dependency';
 
 // Plugin interface definitions
 export interface PluginManifest {
@@ -39,6 +44,7 @@ export interface PluginManifest {
     commands?: string[];
     permissions?: PluginPermission[];
     config?: PluginConfigSchema;
+    plugins?: Record<string, string>;
   };
 }
 
@@ -146,6 +152,7 @@ export class PluginRegistry extends EventEmitter {
   private discoveryCache: Map<string, PluginDiscoveryResult> = new Map();
   private lifecycleManager: PluginLifecycleManager;
   private hookSystem: PluginHookSystem;
+  private dependencyResolver: PluginDependencyResolver;
   private rootPath: string;
   private pluginPaths: string[];
   private isInitialized: boolean = false;
@@ -162,6 +169,13 @@ export class PluginRegistry extends EventEmitter {
     
     this.hookSystem = createHookSystem({
       debugMode: process.env.NODE_ENV === 'development'
+    });
+    
+    this.dependencyResolver = createDependencyResolver({
+      strategy: 'strict',
+      allowPrerelease: false,
+      preferStable: true,
+      maxDepth: 10
     });
     
     // Forward lifecycle events
@@ -811,6 +825,29 @@ export class PluginRegistry extends EventEmitter {
   // Get hook statistics
   getHookStats(): any {
     return this.hookSystem.getStats();
+  }
+
+  // Dependency resolver methods
+  getDependencyResolver(): PluginDependencyResolver {
+    return this.dependencyResolver;
+  }
+
+  // Resolve dependencies for a plugin
+  async resolveDependencies(pluginName: string): Promise<ResolutionResult> {
+    const plugin = this.plugins.get(pluginName);
+    if (!plugin) {
+      throw new ValidationError(`Plugin '${pluginName}' not found`);
+    }
+
+    // Register all plugins with dependency resolver
+    this.plugins.forEach(p => this.dependencyResolver.registerPlugin(p));
+
+    return await this.dependencyResolver.resolveDependencies(plugin.manifest);
+  }
+
+  // Get dependency statistics
+  getDependencyStats(): any {
+    return this.dependencyResolver.getStats();
   }
 
   // Create plugin context for activation
