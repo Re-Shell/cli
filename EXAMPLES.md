@@ -30,6 +30,7 @@ re-shell --version
 Re-Shell CLI v0.4.0 introduces real-time development infrastructure with intelligent file watching, content-based change detection, and advanced workspace state management, building on the enterprise-grade reliability from previous versions:
 
 #### Real-Time File Watching & Change Detection
+
 ```bash
 # Start real-time file watching for development
 re-shell file-watcher start --workspace frontend-app
@@ -45,6 +46,7 @@ re-shell file-watcher stats
 ```
 
 #### Advanced Configuration Management
+
 ```bash
 # Global configuration with user preferences
 cat ~/.re-shell/config.yaml
@@ -57,6 +59,7 @@ cat re-shell.workspaces.yaml
 ```
 
 #### Zero Terminal Hanging
+
 ```bash
 # All commands now complete cleanly with timeout protection
 re-shell workspace list    # No more hanging issues
@@ -65,6 +68,7 @@ re-shell build             # Reliable completion
 ```
 
 #### Enhanced Error Handling & Recovery
+
 ```bash
 # Comprehensive error recovery with helpful messages
 re-shell init my-project --debug    # Enhanced debugging
@@ -73,6 +77,7 @@ re-shell build --analyze           # Build failure recovery
 ```
 
 #### Template-Based Initialization
+
 ```bash
 # E-commerce platform with pre-configured structure
 re-shell init my-store --template ecommerce
@@ -88,6 +93,7 @@ re-shell init custom-project --template blank
 ```
 
 #### Configuration Presets
+
 ```bash
 # Save your configuration for reuse
 re-shell init first-project --template saas --package-manager pnpm
@@ -98,6 +104,7 @@ re-shell init second-project --preset company-standard
 ```
 
 #### Enhanced Features
+
 ```bash
 # Auto-detect package manager (pnpm, yarn, npm, bun)
 re-shell init auto-project
@@ -122,7 +129,9 @@ re-shell init my-project --preset company-standard
 ```
 
 #### Generated Tooling Suite
+
 Every project now includes:
+
 - **Code Quality**: ESLint, Prettier, CommitLint
 - **Git Hooks**: Husky pre-commit hooks
 - **Testing**: Jest with coverage thresholds
@@ -139,16 +148,17 @@ Re-Shell CLI v0.4.0 introduces real-time development infrastructure with advance
 ### 🏥 Health Diagnostics & Analysis
 
 #### Complete Project Health Check
+
 ```bash
 # Run comprehensive health check
 re-shell doctor
 
 # Example output:
 # 🏥 Re-Shell Health Check Results
-# 
+#
 # Summary:
 #   ✓ 12 checks passed
-#   ⚠ 2 warnings  
+#   ⚠ 2 warnings
 #   ✗ 1 errors
 #
 # ✓ package-json           Package.json structure is valid
@@ -158,6 +168,7 @@ re-shell doctor
 ```
 
 #### Auto-Fix Common Issues
+
 ```bash
 # Automatically fix issues where possible
 re-shell doctor --fix --verbose
@@ -170,6 +181,7 @@ re-shell doctor --fix --verbose
 ```
 
 #### Export Health Reports for CI/CD
+
 ```bash
 # Generate JSON report for automation
 re-shell doctor --json > health-report.json
@@ -186,6 +198,7 @@ fi
 ### 📊 Advanced Project Analysis
 
 #### Bundle Analysis
+
 ```bash
 # Analyze all workspaces
 re-shell analyze --type bundle
@@ -198,6 +211,7 @@ re-shell analyze --type bundle --output bundle-report.json
 ```
 
 #### Dependency Analysis
+
 ```bash
 # Check for outdated dependencies and security issues
 re-shell analyze --type dependencies
@@ -211,6 +225,7 @@ re-shell analyze --type dependencies
 ```
 
 #### Performance Analysis
+
 ```bash
 # Analyze build times and performance
 re-shell analyze --type performance
@@ -220,6 +235,7 @@ re-shell analyze --type performance --verbose
 ```
 
 #### Complete Analysis with Export
+
 ```bash
 # Comprehensive analysis of everything
 re-shell analyze --type all --output analysis.json --verbose
@@ -234,6 +250,7 @@ re-shell analyze --type all --output analysis.json --verbose
 ### 🔄 Migration & Project Management
 
 #### Import Existing Projects
+
 ```bash
 # Import a React project into your monorepo
 re-shell migrate import ../my-react-app
@@ -246,6 +263,7 @@ re-shell migrate import ../complex-project --dry-run --verbose
 ```
 
 #### Export Projects
+
 ```bash
 # Export current monorepo for deployment
 re-shell migrate export ../deployment-package
@@ -255,6 +273,7 @@ re-shell migrate export ../backup --force
 ```
 
 #### Backup and Restore
+
 ```bash
 # Create timestamped backup
 re-shell migrate backup
@@ -266,6 +285,7 @@ re-shell migrate restore ../backup-2024-06-13T16-30-00 ../restored-project
 ### 🤖 Code Generation
 
 #### Generate React Components
+
 ```bash
 # Generate a React component with TypeScript
 re-shell generate component UserProfile --framework react --workspace ui-components
@@ -278,6 +298,7 @@ re-shell generate component Button --framework react --export --verbose
 ```
 
 #### Generate React Hooks
+
 ```bash
 # Generate custom hook
 re-shell generate hook useUserData --workspace shared-hooks
@@ -288,6 +309,7 @@ re-shell generate hook useUserData --workspace shared-hooks
 ```
 
 #### Generate Services
+
 ```bash
 # Generate API service
 re-shell generate service UserService --workspace api-client
@@ -298,6 +320,7 @@ re-shell generate service UserService --workspace api-client
 ```
 
 #### Generate Test Suites
+
 ```bash
 # Generate complete test suite for workspace
 re-shell generate test frontend-app
@@ -309,6 +332,7 @@ re-shell generate test frontend-app
 ```
 
 #### Generate Documentation
+
 ```bash
 # Generate project documentation
 re-shell generate docs
@@ -323,6 +347,7 @@ re-shell generate docs
 ### 🚀 CI/CD Integration
 
 #### GitHub Actions (Recommended)
+
 ```bash
 # Generate basic GitHub Actions workflow
 re-shell cicd generate --provider github
@@ -337,6 +362,7 @@ re-shell cicd generate --provider github --template advanced
 ```
 
 #### GitLab CI
+
 ```bash
 # Generate GitLab CI configuration
 re-shell cicd generate --provider gitlab --template advanced
@@ -346,6 +372,7 @@ re-shell cicd generate --provider gitlab --template advanced
 ```
 
 #### Multiple Providers
+
 ```bash
 # Generate configurations for multiple providers
 re-shell cicd generate --provider github
@@ -354,6 +381,7 @@ re-shell cicd generate --provider jenkins
 ```
 
 #### Deployment Configuration
+
 ```bash
 # Generate deployment config for staging
 re-shell cicd deploy staging
@@ -372,6 +400,7 @@ re-shell cicd deploy production
 ### 🔍 Real-Time File Watching & Change Detection (🆕 v0.4.0)
 
 #### Real-Time File Watching
+
 ```bash
 # Start watching files with default configuration
 re-shell file-watcher start
@@ -390,6 +419,7 @@ re-shell file-watcher stop
 ```
 
 #### Change Propagation Rules
+
 ```bash
 # Watch with change propagation (interactive setup)
 re-shell file-watcher start --interactive
@@ -402,6 +432,7 @@ re-shell file-watcher start --interactive
 ```
 
 #### Intelligent Change Detection
+
 ```bash
 # Scan for file changes with content hashing
 re-shell change-detector scan
@@ -429,6 +460,7 @@ re-shell change-detector clear
 ```
 
 #### Example Output - Change Detection
+
 ```bash
 $ re-shell change-detector scan
 
@@ -437,7 +469,7 @@ $ re-shell change-detector scan
 📊 Summary:
   • Total files scanned: 1,247
   • Files changed: 8
-  • Files added: 2  
+  • Files added: 2
   • Files deleted: 1
   • Scan time: 234ms
   • Cache hit rate: 87%
@@ -457,6 +489,7 @@ $ re-shell change-detector scan
 ```
 
 #### Advanced Configuration Management
+
 ```bash
 # View global configuration
 cat ~/.re-shell/config.yaml
@@ -488,6 +521,7 @@ cat .re-shell/config.yaml
 ```
 
 #### Workspace State Management
+
 ```bash
 # View workspace schema and validation
 cat re-shell.workspaces.yaml
@@ -547,6 +581,7 @@ Build a complete e-commerce platform with separate microfrontends for different 
 ### 1. Initialize the Project
 
 #### Option A: Using E-commerce Template (Recommended)
+
 ```bash
 # Create with built-in e-commerce template
 re-shell init ecommerce-platform --template ecommerce
@@ -556,6 +591,7 @@ cd ecommerce-platform
 ```
 
 #### Option B: Manual Setup
+
 ```bash
 # Create the monorepo with auto-detected package manager
 re-shell init ecommerce-platform
@@ -568,6 +604,7 @@ pnpm install
 ```
 
 #### Option C: Using Saved Preset
+
 ```bash
 # If you have a company preset saved
 re-shell init ecommerce-platform --preset company-ecommerce
@@ -603,7 +640,7 @@ function App() {
 
   useEffect(() => {
     // Listen for cart events
-    const unsubscribe = eventBus.on('cart:updated', (data) => {
+    const unsubscribe = eventBus.on('cart:updated', data => {
       console.log('Cart updated:', data);
     });
 
@@ -617,25 +654,25 @@ function App() {
     return () => eventBus.off(unsubscribe);
   }, []);
 
-  const addToCart = (product) => {
-    eventBus.emit('cart:add', { 
+  const addToCart = product => {
+    eventBus.emit('cart:add', {
       payload: product,
-      source: 'product-catalog'
+      source: 'product-catalog',
     });
   };
 
-  const filteredProducts = products.filter(p => 
+  const filteredProducts = products.filter(p =>
     p.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <div style={{ padding: '20px' }}>
       <h1>Product Catalog</h1>
-      
+
       <Input
         placeholder="Search products..."
         value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
+        onChange={e => setSearchTerm(e.target.value)}
         style={{ marginBottom: '20px' }}
       />
 
@@ -647,7 +684,7 @@ function App() {
             <Badge variant={product.stock > 10 ? 'success' : 'warning'}>
               Stock: {product.stock}
             </Badge>
-            <Button 
+            <Button
               onClick={() => addToCart(product)}
               variant="primary"
               fullWidth
@@ -693,15 +730,13 @@ function App() {
 
   useEffect(() => {
     // Listen for add to cart events
-    const unsubscribe = eventBus.on('cart:add', (data) => {
+    const unsubscribe = eventBus.on('cart:add', data => {
       const product = data.payload;
       setCartItems(prev => {
         const existing = prev.find(item => item.id === product.id);
         if (existing) {
           return prev.map(item =>
-            item.id === product.id
-              ? { ...item, quantity: item.quantity + 1 }
-              : item
+            item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
           );
         }
         return [...prev, { ...product, quantity: 1 }];
@@ -712,26 +747,24 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const newTotal = cartItems.reduce((sum, item) => 
-      sum + (item.price * item.quantity), 0
-    );
+    const newTotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
     setTotal(newTotal);
-    
+
     // Emit cart updated event
-    eventBus.emit('cart:updated', { 
+    eventBus.emit('cart:updated', {
       payload: { items: cartItems, total: newTotal },
-      source: 'shopping-cart'
+      source: 'shopping-cart',
     });
   }, [cartItems]);
 
-  const removeItem = (id) => {
+  const removeItem = id => {
     setCartItems(prev => prev.filter(item => item.id !== id));
   };
 
   const checkout = () => {
     eventBus.emit('checkout:initiate', {
       payload: { items: cartItems, total },
-      source: 'shopping-cart'
+      source: 'shopping-cart',
     });
   };
 
@@ -739,7 +772,7 @@ function App() {
     <div style={{ padding: '20px' }}>
       <Card>
         <h2>Shopping Cart</h2>
-        
+
         {cartItems.length === 0 ? (
           <Alert variant="info">Your cart is empty</Alert>
         ) : (
@@ -756,8 +789,8 @@ function App() {
                     </div>
                     <div>
                       ${(item.price * item.quantity).toFixed(2)}
-                      <Button 
-                        size="small" 
+                      <Button
+                        size="small"
                         variant="danger"
                         onClick={() => removeItem(item.id)}
                         style={{ marginLeft: '10px' }}
@@ -769,14 +802,10 @@ function App() {
                 </List.Item>
               ))}
             </List>
-            
+
             <div style={{ marginTop: '20px', textAlign: 'right' }}>
               <h3>Total: ${total.toFixed(2)}</h3>
-              <Button 
-                variant="success" 
-                size="large"
-                onClick={checkout}
-              >
+              <Button variant="success" size="large" onClick={checkout}>
                 Proceed to Checkout
               </Button>
             </div>
@@ -821,6 +850,7 @@ Create a secure banking dashboard with multiple specialized microfrontends.
 ### 1. Initialize Banking Project
 
 #### Option A: Using Dashboard Template (Recommended)
+
 ```bash
 # Create with built-in dashboard template optimized for analytics
 re-shell init banking-dashboard --template dashboard
@@ -829,6 +859,7 @@ cd banking-dashboard
 ```
 
 #### Option B: Manual Setup with Auto-Detection
+
 ```bash
 # Create banking dashboard with auto-detected package manager
 re-shell init banking-dashboard
@@ -837,6 +868,7 @@ cd banking-dashboard
 ```
 
 #### Option C: Save Configuration as Preset
+
 ```bash
 # Create with custom configuration and save as preset
 re-shell init banking-dashboard --template dashboard --package-manager pnpm
@@ -894,35 +926,35 @@ function App() {
     // Simulate secure API call
     setTimeout(() => {
       setAccounts([
-        { id: 1, type: 'Checking', balance: 5420.50, status: 'active' },
-        { id: 2, type: 'Savings', balance: 12500.00, status: 'active' },
-        { id: 3, type: 'Credit', balance: -1250.00, limit: 5000, status: 'active' }
+        { id: 1, type: 'Checking', balance: 5420.5, status: 'active' },
+        { id: 2, type: 'Savings', balance: 12500.0, status: 'active' },
+        { id: 3, type: 'Credit', balance: -1250.0, limit: 5000, status: 'active' },
       ]);
       setLoading(false);
-      
+
       performance.endMeasure(perfId);
-      
+
       // Notify other microfrontends
       eventBus.emit('accounts:loaded', {
         payload: { count: 3 },
         namespace: 'banking',
-        source: 'account-overview'
+        source: 'account-overview',
       });
     }, 1000);
   }, []);
 
-  const initiateTransfer = (accountId) => {
+  const initiateTransfer = accountId => {
     eventBus.emit('transfer:initiate', {
       payload: { fromAccount: accountId },
       namespace: 'banking',
-      source: 'account-overview'
+      source: 'account-overview',
     });
   };
 
   return (
     <div style={{ padding: '20px' }}>
       <h1>Account Overview</h1>
-      
+
       {loading ? (
         <Card>
           <Progress indeterminate />
@@ -949,10 +981,7 @@ function App() {
                   <Badge variant="success">{account.status}</Badge>
                 </Table.Cell>
                 <Table.Cell>
-                  <Button 
-                    size="small"
-                    onClick={() => initiateTransfer(account.id)}
-                  >
+                  <Button size="small" onClick={() => initiateTransfer(account.id)}>
                     Transfer
                   </Button>
                 </Table.Cell>
@@ -961,7 +990,7 @@ function App() {
           </Table.Body>
         </Table>
       )}
-      
+
       <Alert variant="info" style={{ marginTop: '20px' }}>
         All transactions are encrypted and secure
       </Alert>
@@ -979,6 +1008,7 @@ Build a comprehensive admin panel for a SaaS application.
 ### 1. Initialize Admin Panel
 
 #### Option A: Using SaaS Template (Recommended)
+
 ```bash
 # Create with built-in SaaS template including auth, billing, and admin features
 re-shell init saas-admin --template saas
@@ -987,6 +1017,7 @@ cd saas-admin
 ```
 
 #### Option B: Manual Setup with Yarn
+
 ```bash
 # Create SaaS admin with specific package manager
 re-shell init saas-admin --package-manager yarn
@@ -995,6 +1026,7 @@ cd saas-admin
 ```
 
 #### Option C: CI/CD Optimized Setup
+
 ```bash
 # Non-interactive setup for automated deployment
 re-shell init saas-admin --template saas --package-manager yarn --yes --debug
@@ -1114,7 +1146,7 @@ Create microfrontends with different frameworks:
 # React microfrontend
 re-shell add react-mf --template react --team ReactTeam
 
-# Vue microfrontend  
+# Vue microfrontend
 re-shell add vue-mf --template vue --team VueTeam
 
 # Svelte microfrontend
@@ -1161,13 +1193,13 @@ performance.configure({
   thresholds: {
     loadTime: 3000,
     renderTime: 1000,
-    mountTime: 500
+    mountTime: 500,
   },
-  enableLogging: true
+  enableLogging: true,
 });
 
 // Monitor microfrontend loading
-performance.on('measure:complete', (data) => {
+performance.on('measure:complete', data => {
   if (data.duration > data.threshold) {
     console.warn(`Performance issue: ${data.name} took ${data.duration}ms`);
   }
@@ -1183,11 +1215,11 @@ import { eventBus } from '@re-shell/core';
 // Emit events
 eventBus.emit('cart:add', {
   payload: { id: 1, name: 'Product', price: 99 },
-  source: 'product-catalog'
+  source: 'product-catalog',
 });
 
 // Listen for events
-const unsubscribe = eventBus.on('cart:updated', (data) => {
+const unsubscribe = eventBus.on('cart:updated', data => {
   console.log('Cart updated:', data.payload);
 });
 
@@ -1215,13 +1247,12 @@ describe('Cross-Microfrontend Communication', () => {
     // Emit event from product catalog
     eventBus.emit('cart:add', {
       payload: { id: 1, name: 'Test Product', price: 99 },
-      source: 'product-catalog'
+      source: 'product-catalog',
     });
 
     // Verify event received in shopping cart
     await waitFor(() => {
-      const cartEvents = eventBus.getEventHistory()
-        .filter(e => e.source === 'shopping-cart');
+      const cartEvents = eventBus.getEventHistory().filter(e => e.source === 'shopping-cart');
       expect(cartEvents).toHaveLength(1);
     });
   });
@@ -1300,15 +1331,17 @@ function Shell() {
 ### Common Issues
 
 1. **Port conflicts**
+
    ```bash
    # Check if port is in use
    lsof -i :5001
-   
+
    # Use different port
    re-shell add my-app --port 5555
    ```
 
 2. **Build failures**
+
    ```bash
    # Clean and rebuild
    re-shell clean
@@ -1316,6 +1349,7 @@ function Shell() {
    ```
 
 3. **Module resolution**
+
    ```bash
    # Clear node_modules and reinstall
    rm -rf node_modules
