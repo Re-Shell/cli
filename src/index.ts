@@ -148,6 +148,14 @@ import {
   showValidationStats,
   generateValidationTemplate
 } from './commands/plugin-validation';
+import {
+  showCacheStats,
+  configureCacheSettings,
+  clearCache,
+  testCachePerformance,
+  optimizeCache,
+  listCachedCommands
+} from './commands/plugin-cache';
 
 // Get version from package.json
 const packageJsonPath = path.resolve(__dirname, '../package.json');
@@ -4679,6 +4687,75 @@ pluginCommand
   .action(
     createAsyncCommand(async (command, options) => {
       await generateValidationTemplate(command, options);
+    })
+  );
+
+// Plugin cache commands
+pluginCommand
+  .command('cache-stats')
+  .description('Show command cache statistics and performance metrics')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      await showCacheStats(options);
+    })
+  );
+
+pluginCommand
+  .command('configure-cache <setting> <value>')
+  .description('Configure cache system settings')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (setting, value, options) => {
+      await configureCacheSettings(setting, value, options);
+    })
+  );
+
+pluginCommand
+  .command('clear-cache')
+  .description('Clear command cache')
+  .option('--verbose', 'Show detailed information')
+  .option('--command <command>', 'Clear cache for specific command')
+  .option('--tags <tags>', 'Clear cache for specific tags (comma-separated)')
+  .option('--force', 'Confirm cache clearing operation')
+  .action(
+    createAsyncCommand(async (options) => {
+      await clearCache(options);
+    })
+  );
+
+pluginCommand
+  .command('test-cache <iterations>')
+  .description('Test cache performance with specified number of iterations')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (iterations, options) => {
+      await testCachePerformance(iterations, options);
+    })
+  );
+
+pluginCommand
+  .command('optimize-cache')
+  .description('Analyze and optimize cache configuration')
+  .option('--verbose', 'Show detailed information')
+  .option('--force', 'Apply optimizations automatically')
+  .action(
+    createAsyncCommand(async (options) => {
+      await optimizeCache(options);
+    })
+  );
+
+pluginCommand
+  .command('list-cached')
+  .description('List cached command results')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .option('--include-errors', 'Include failed command results')
+  .action(
+    createAsyncCommand(async (options) => {
+      await listCachedCommands(options);
     })
   );
 
