@@ -87,6 +87,12 @@ import {
   validateVersions,
   updateDependencies
 } from './commands/plugin-dependency';
+import {
+  scanPluginSecurity,
+  checkSecurityPolicy,
+  generateSecurityReport,
+  fixSecurityIssues
+} from './commands/plugin-security';
 
 // Get version from package.json
 const packageJsonPath = path.resolve(__dirname, '../package.json');
@@ -4065,6 +4071,53 @@ pluginCommand
   .action(
     createAsyncCommand(async (plugin, options) => {
       await updateDependencies(plugin, options);
+    })
+  );
+
+pluginCommand
+  .command('security-scan [plugin]')
+  .description('Scan plugins for security issues')
+  .option('--severity <level>', 'Filter by severity (low, medium, high, critical)')
+  .option('--include-warnings', 'Include security warnings')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (plugin, options) => {
+      await scanPluginSecurity(plugin, options);
+    })
+  );
+
+pluginCommand
+  .command('security-policy')
+  .description('Check security policy compliance')
+  .option('--policy <file>', 'Custom security policy file')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      await checkSecurityPolicy(options);
+    })
+  );
+
+pluginCommand
+  .command('security-report')
+  .description('Generate comprehensive security report')
+  .option('--verbose', 'Show detailed information')
+  .option('--json', 'Output as JSON')
+  .action(
+    createAsyncCommand(async (options) => {
+      await generateSecurityReport(options);
+    })
+  );
+
+pluginCommand
+  .command('security-fix [plugin]')
+  .description('Analyze and fix security issues')
+  .option('--fix', 'Apply automatic fixes')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (plugin, options) => {
+      await fixSecurityIssues(plugin, options);
     })
   );
 
