@@ -4,6 +4,11 @@ import { EventEmitter } from 'events';
 import chalk from 'chalk';
 import { ValidationError } from './error-handler';
 import { 
+  createSecurityValidator, 
+  SecurityLevel, 
+  getDefaultSecurityPolicy 
+} from './plugin-security';
+import { 
   Plugin, 
   PluginRegistration, 
   PluginContext, 
@@ -470,25 +475,34 @@ export class PluginLifecycleManager extends EventEmitter {
 
   // Validate plugin security
   private async validatePluginSecurity(registration: ManagedPluginRegistration): Promise<void> {
-    // Check permissions
-    for (const permission of registration.permissions) {
-      if (this.config.blockedPermissions?.some(blocked => 
-        blocked.type === permission.type && 
-        blocked.resource === permission.resource
-      )) {
-        throw new ValidationError(`Plugin requests blocked permission: ${permission.type}:${permission.resource}`);
-      }
-    }
-
-    // Validate file access
-    const pluginDir = registration.pluginPath;
     try {
-      const stats = await fs.stat(pluginDir);
-      if (!stats.isDirectory()) {
-        throw new ValidationError('Plugin path is not a directory');
+      const securityValidator = createSecurityValidator(getDefaultSecurityPolicy());
+      const securityResult = await securityValidator.scanPlugin(registration);
+
+      // Check if plugin is blocked
+      if (securityResult.securityLevel === SecurityLevel.BLOCKED || !securityResult.approved) {
+        const criticalViolations = securityResult.violations.filter(v => v.severity === 'critical' || v.blocked);
+        if (criticalViolations.length > 0) {
+          const violationDescriptions = criticalViolations.map(v => v.description).join(', ');
+          throw new ValidationError(`Plugin blocked due to security violations: ${violationDescriptions}`);
+        }
       }
+
+      // Store security result in registration for later use
+      (registration as any).securityResult = securityResult;
+
+      // Emit security validation event
+      this.emit('security-validated', {
+        pluginName: registration.manifest.name,
+        securityLevel: securityResult.securityLevel,
+        violations: securityResult.violations.length,
+        approved: securityResult.approved
+      });
+
     } catch (error) {
-      throw new ValidationError(`Cannot access plugin directory: ${pluginDir}`);
+      throw new ValidationError(
+        `Security validation failed for plugin '${registration.manifest.name}': ${error instanceof Error ? error.message : String(error)}`
+      );
     }
   }
 
