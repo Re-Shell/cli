@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 
+// Start performance tracking
+import { mark, isVersionRequest, getFromCache, setCache } from './startup-optimizer';
+mark('startup-begin');
+
 // Ensure immediate output for better terminal experience
 process.env.FORCE_COLOR = '1'; // Enable colors in terminal
 if (process.stdout.isTTY) {
@@ -9,161 +13,115 @@ if (process.stderr.isTTY) {
   process.stderr.setEncoding('utf8');
 }
 
+mark('env-setup-done');
+
+// Fast path for version requests
+if (isVersionRequest()) {
+  mark('version-fast-path');
+  const chalk = require('chalk');
+  console.log(chalk.cyan(`
+██████╗ ███████╗           ███████╗██╗  ██╗███████╗██╗     ██╗
+██╔══██╗██╔════╝           ██╔════╝██║  ██║██╔════╝██║     ██║
+██████╔╝█████╗  ████████╗  ███████╗███████║█████╗  ██║     ██║
+██╔══██╗██╔══╝  ╚═══════╝  ╚════██║██╔══██║██╔══╝  ██║     ██║
+██║  ██║███████╗           ███████║██║  ██║███████╗███████╗███████╗
+╚═╝  ╚═╝╚══════╝           ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝
+                                v0.7.1
+`));
+  console.log('0.7.1');
+  process.exit(0);
+}
+
+mark('version-check-done');
+
 // Enhanced error handling and signal management
 import { setupStreamErrorHandlers, processManager } from './utils/error-handler';
 
+// Core imports only
 import { Command } from 'commander';
-import * as fs from 'fs-extra';
 import * as path from 'path';
 import chalk from 'chalk';
-import { createSpinner, flushOutput } from './utils/spinner';
-import { createProject } from './commands/create';
-import { addMicrofrontend } from './commands/add';
-import { removeMicrofrontend } from './commands/remove';
-import { listMicrofrontends } from './commands/list';
-import { buildMicrofrontend } from './commands/build';
-import { serveMicrofrontend } from './commands/serve';
-import { initMonorepo } from './commands/init';
-import { listWorkspaces, updateWorkspaces, generateWorkspaceGraph } from './commands/workspace';
-import {
-  addGitSubmodule,
-  removeGitSubmodule,
-  updateGitSubmodules,
-  showSubmoduleStatus,
-  initSubmodules,
-  manageSubmodules,
-} from './commands/submodule';
-import { checkForUpdates, runUpdateCommand } from './utils/checkUpdate';
-import { createAsyncCommand, handleError, withTimeout } from './utils/error-handler';
-import { runDoctorCheck } from './commands/doctor';
-import { importProject, exportProject, backupProject, restoreProject } from './commands/migrate';
-import { analyzeProject } from './commands/analyze';
-import { generateCICDConfig, generateDeployConfig, setupEnvironments } from './commands/cicd';
-import { generateCode, generateTests, generateDocumentation } from './commands/generate';
-import { manageConfig } from './commands/config';
-import { manageEnvironment } from './commands/environment';
-import { manageMigration } from './commands/migration';
-import { validateConfiguration } from './commands/validate';
-import { manageProjectConfig } from './commands/project-config';
-import { manageWorkspaceConfig } from './commands/workspace-config';
-import { manageTemplates } from './commands/template';
-import { manageConfigDiff } from './commands/config-diff';
-import { manageBackups } from './commands/backup';
-import { manageDevMode } from './commands/dev-mode';
-import { manageWorkspaceDefinition } from './commands/workspace-definition';
-import { manageWorkspaceGraph } from './commands/workspace-graph';
-import { manageWorkspaceHealth } from './commands/workspace-health';
-import { manageWorkspaceState } from './commands/workspace-state';
-import { manageWorkspaceTemplate } from './commands/workspace-template';
-import { manageWorkspaceBackup } from './commands/workspace-backup';
-import { manageWorkspaceMigration } from './commands/workspace-migration';
-import { manageWorkspaceConflict } from './commands/workspace-conflict';
-import { manageFileWatcher } from './commands/file-watcher';
-import { manageChangeDetector } from './commands/change-detector';
-import { manageChangeImpact, analyzeWorkspaceImpact, showDependencyGraph } from './commands/change-impact';
-import { manageIncrementalBuild } from './commands/incremental-build';
-import { testPlatformCapabilities, runPlatformDiagnostics, quickPlatformCheck } from './commands/platform-test';
-import { 
-  managePlugins, 
-  discoverPlugins, 
-  installPlugin, 
-  uninstallPlugin, 
-  showPluginInfo,
-  enablePlugin,
-  disablePlugin,
-  updatePlugins,
-  validatePlugin,
-  clearPluginCache,
-  showPluginStats,
-  reloadPlugin,
-  showPluginHooks,
-  executeHook,
-  listHookTypes
-} from './commands/plugin';
-import {
-  resolveDependencies,
-  showDependencyTree,
-  checkConflicts,
-  validateVersions,
-  updateDependencies
-} from './commands/plugin-dependency';
-import {
-  scanPluginSecurity,
-  checkSecurityPolicy,
-  generateSecurityReport,
-  fixSecurityIssues
-} from './commands/plugin-security';
-import {
-  searchMarketplace,
-  showPluginDetails,
-  installMarketplacePlugin,
-  showPluginReviews,
-  showFeaturedPlugins,
-  showPopularPlugins,
-  showCategories,
-  clearMarketplaceCache,
-  showMarketplaceStats
-} from './commands/plugin-marketplace';
-import {
-  listPluginCommands,
-  showCommandConflicts,
-  resolveCommandConflicts,
-  showCommandStats,
-  registerTestCommand,
-  unregisterCommand,
-  showCommandInfo
-} from './commands/plugin-command';
-import {
-  listMiddleware,
-  showMiddlewareStats,
-  testMiddleware,
-  clearMiddlewareCache,
-  showMiddlewareChain,
-  createExampleMiddleware
-} from './commands/plugin-middleware';
-import {
-  listCommandConflicts,
-  showConflictStrategies,
-  resolveConflict,
-  autoResolveConflicts,
-  showConflictStats,
-  setPriorityOverride,
-  showResolutionHistory
-} from './commands/plugin-conflicts';
-import {
-  generatePluginDocumentation,
-  showCommandHelp,
-  listDocumentedCommands,
-  searchDocumentation,
-  showDocumentationStats,
-  configureHelpSystem,
-  showDocumentationTemplates
-} from './commands/plugin-docs';
-import {
-  testCommandValidation,
-  createCommandValidationSchema,
-  listValidationRules,
-  listTransformations,
-  showCommandValidationSchema,
-  showValidationStats,
-  generateValidationTemplate
-} from './commands/plugin-validation';
-import {
-  showCacheStats,
-  configureCacheSettings,
-  clearCache,
-  testCachePerformance,
-  optimizeCache,
-  listCachedCommands
-} from './commands/plugin-cache';
 
-// Get version from package.json
-const packageJsonPath = path.resolve(__dirname, '../package.json');
-const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-const version = packageJson.version;
+mark('core-imports-done');
 
-// ASCII art banner for CLI
-const banner = `
+// Defer heavy imports until needed (simplified)
+const lazyImports = {
+  spinner: () => import('./utils/spinner'),
+  errorHandler: () => import('./utils/error-handler'),
+  // Commands - loaded on demand
+  create: () => import('./commands/create'),
+  add: () => import('./commands/add'),
+  remove: () => import('./commands/remove'),
+  list: () => import('./commands/list'),
+  build: () => import('./commands/build'),
+  serve: () => import('./commands/serve'),
+  init: () => import('./commands/init'),
+  workspace: () => import('./commands/workspace'),
+  submodule: () => import('./commands/submodule'),
+  doctor: () => import('./commands/doctor'),
+  migrate: () => import('./commands/migrate'),
+  analyze: () => import('./commands/analyze'),
+  cicd: () => import('./commands/cicd'),
+  generate: () => import('./commands/generate'),
+  config: () => import('./commands/config'),
+  environment: () => import('./commands/environment'),
+  migration: () => import('./commands/migration'),
+  validate: () => import('./commands/validate'),
+  projectConfig: () => import('./commands/project-config'),
+  workspaceConfig: () => import('./commands/workspace-config'),
+  template: () => import('./commands/template'),
+  configDiff: () => import('./commands/config-diff'),
+  backup: () => import('./commands/backup'),
+  devMode: () => import('./commands/dev-mode'),
+  workspaceDefinition: () => import('./commands/workspace-definition'),
+  workspaceGraph: () => import('./commands/workspace-graph'),
+  workspaceHealth: () => import('./commands/workspace-health'),
+  workspaceState: () => import('./commands/workspace-state'),
+  workspaceTemplate: () => import('./commands/workspace-template'),
+  workspaceBackup: () => import('./commands/workspace-backup'),
+  workspaceMigration: () => import('./commands/workspace-migration'),
+  workspaceConflict: () => import('./commands/workspace-conflict'),
+  fileWatcher: () => import('./commands/file-watcher'),
+  changeDetector: () => import('./commands/change-detector'),
+  changeImpact: () => import('./commands/change-impact'),
+  incrementalBuild: () => import('./commands/incremental-build'),
+  platformTest: () => import('./commands/platform-test'),
+  plugin: () => import('./commands/plugin'),
+  pluginDependency: () => import('./commands/plugin-dependency'),
+  pluginMarketplace: () => import('./commands/plugin-marketplace'),
+  pluginSecurity: () => import('./commands/plugin-security'),
+  pluginCommand: () => import('./commands/plugin-command'),
+  pluginMiddleware: () => import('./commands/plugin-middleware'),
+  pluginConflicts: () => import('./commands/plugin-conflicts'),
+  pluginDocs: () => import('./commands/plugin-docs'),
+  pluginValidation: () => import('./commands/plugin-validation'),
+  pluginCache: () => import('./commands/plugin-cache'),
+  // Utils - loaded on demand
+  checkUpdate: () => import('./utils/checkUpdate')
+};
+
+// Get version from package.json (cached)
+let version = '0.7.1'; // fallback
+const packageVersion = getFromCache('package-version');
+if (packageVersion) {
+  version = packageVersion;
+} else {
+  try {
+    const fs = require('fs');
+    const packageJsonPath = path.resolve(__dirname, '../package.json');
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+    version = packageJson.version;
+    setCache('package-version', version);
+  } catch {
+    // Use fallback
+  }
+}
+
+mark('version-resolved');
+
+// Lazy banner generation
+const getBanner = () => {
+  return chalk.cyan(`
 ██████╗ ███████╗           ███████╗██╗  ██╗███████╗██╗     ██╗
 ██╔══██╗██╔════╝           ██╔════╝██║  ██║██╔════╝██║     ██║
 ██████╔╝█████╗  ████████╗  ███████╗███████║█████╗  ██║     ██║
@@ -171,25 +129,39 @@ const banner = `
 ██║  ██║███████╗           ███████║██║  ██║███████╗███████╗███████╗
 ╚═╝  ╚═╝╚══════╝           ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝
                                 v${version}
-`;
+`);
+};
 
 const program = new Command();
+mark('program-created');
 
-// Check for updates in the background (non-blocking)
-if (
-  !process.argv.includes('update') &&
-  !process.argv.includes('--version') &&
-  !process.argv.includes('-V')
-) {
-  checkForUpdates(version);
-}
+// Defer update check to avoid blocking startup
+const checkUpdate = () => {
+  setTimeout(async () => {
+    if (
+      !process.argv.includes('update') &&
+      !process.argv.includes('--version') &&
+      !process.argv.includes('-V')
+    ) {
+      try {
+        const { checkForUpdates } = await lazyImports.checkUpdate();
+        checkForUpdates(version);
+      } catch {
+        // Ignore update check errors
+      }
+    }
+  }, 100);
+};
+
+checkUpdate();
+mark('update-check-deferred');
 
 // Display banner for main command
 if (
   process.argv.length <= 2 ||
   (process.argv.length === 3 && ['-h', '--help', '-V', '--version'].includes(process.argv[2]))
 ) {
-  console.log(chalk.cyan(banner));
+  console.log(getBanner());
 }
 
 program
