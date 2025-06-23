@@ -282,6 +282,50 @@ const getFeatureTests = (templateName) => {
         test: (content) => content.includes('Context') && content.includes('Next'),
         critical: true
       }
+    ],
+    'Hapi.js': [
+      {
+        name: 'Hapi Framework',
+        description: 'Uses Hapi.js framework',
+        test: (content) => content.includes("'hapi'") && content.includes('@hapi/hapi'),
+        critical: true
+      },
+      {
+        name: 'Built-in Validation',
+        description: 'Includes built-in Joi validation',
+        test: (content) => content.includes('@hapi/joi') && content.includes('Joi.object'),
+        critical: true
+      },
+      {
+        name: 'Plugin Architecture',
+        description: 'Includes plugin architecture',
+        test: (content) => content.includes('server.register') && content.includes('plugin'),
+        critical: true
+      },
+      {
+        name: 'Caching System',
+        description: 'Includes Redis caching system',
+        test: (content) => content.includes('@hapi/catbox-redis') && content.includes('server.cache'),
+        critical: true
+      },
+      {
+        name: 'Security Features',
+        description: 'Includes comprehensive security features',
+        test: (content) => content.includes('@hapi/jwt') && content.includes('@hapi/basic'),
+        critical: true
+      },
+      {
+        name: 'Rate Limiting',
+        description: 'Includes rate limiting functionality',
+        test: (content) => content.includes('hapi-rate-limit') && content.includes('RateLimit'),
+        critical: true
+      },
+      {
+        name: 'Swagger Documentation',
+        description: 'Includes auto-generated API documentation',
+        test: (content) => content.includes('hapi-swagger') && content.includes('HapiSwagger'),
+        critical: true
+      }
     ]
   };
 
@@ -307,7 +351,8 @@ const templates = [
   { name: 'Express.js', file: 'express-ts.ts' },
   { name: 'Fastify', file: 'fastify-ts.ts' },
   { name: 'NestJS', file: 'nestjs-ts.ts' },
-  { name: 'Koa.js', file: 'koa-ts.ts' }
+  { name: 'Koa.js', file: 'koa-ts.ts' },
+  { name: 'Hapi.js', file: 'hapi-ts.ts' }
 ];
 
 templates.forEach(template => {
