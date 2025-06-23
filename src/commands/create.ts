@@ -4,9 +4,9 @@ import prompts from 'prompts';
 import chalk from 'chalk';
 import { getFrameworkChoices, getFrameworkConfig, validateFramework } from '../utils/framework';
 import { findMonorepoRoot } from '../utils/monorepo';
-import { ReactTemplate } from '../templates/react';
-import { VueTemplate } from '../templates/vue';
-import { SvelteTemplate } from '../templates/svelte';
+import { ReactTemplate } from '../templates/frontend/react';
+import { VueTemplate } from '../templates/frontend/vue';
+import { SvelteTemplate } from '../templates/frontend/svelte';
 import { BaseTemplate, TemplateContext } from '../templates/index';
 import { ProgressSpinner, flushOutput } from '../utils/spinner';
 
