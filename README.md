@@ -4,7 +4,8 @@ The most comprehensive and powerful command-line interface for creating and mana
 
 ## 🚀 Features
 
-### 🎉 Phase 0 Complete: Core Infrastructure (v0.8.0) **NEW**
+### 🎉 Core Infrastructure (v0.8.0) **NEW**
+
 - **📚 Complete Documentation System**: Interactive API docs, troubleshooting guides, video tutorials
 - **🧪 Comprehensive Testing Infrastructure**: >95% coverage, cross-platform testing, performance benchmarking
 - **🔍 Quality Assurance Suite**: Code quality analysis, security scanning, performance profiling
@@ -15,6 +16,7 @@ The most comprehensive and powerful command-line interface for creating and mana
 - **💾 Enterprise Caching**: Multi-level cache management with invalidation strategies
 
 ### 🎯 Project Setup Enhancement (v0.7.3)
+
 - **🔀 Git Integration**: Automated repository initialization with GitFlow, branch management, and hooks
 - **💻 IDE Configuration**: Generate configs for VSCode, IntelliJ, Vim, Sublime, and Atom with language-specific settings
 - **📚 Documentation Generator**: Automated README, API docs, examples, and changelogs in multiple formats
@@ -23,6 +25,7 @@ The most comprehensive and powerful command-line interface for creating and mana
 - **📝 Intelligent Content**: Context-aware documentation and configuration based on project analysis
 
 ### ⚡ Performance & Resource Management (v0.7.2)
+
 - **🚀 85% Startup Improvement**: Reduced from ~285ms to ~35ms with fast-path optimization
 - **🧠 Intelligent Memory Monitoring**: Real-time tracking with trend analysis and leak detection
 - **🔄 Resource Analytics**: Comprehensive reporting with performance insights and recommendations
@@ -33,6 +36,7 @@ The most comprehensive and powerful command-line interface for creating and mana
 - **🔧 Developer Profiling Tools**: Startup analysis, bottleneck identification, and optimization guidance
 
 ### 🧩 Plugin Ecosystem (v0.7.1)
+
 - **🔌 Complete Plugin Architecture**: Full lifecycle management with registration, discovery, activation, and deactivation
 - **🏪 Plugin Marketplace**: Search, install, review, and discover plugins with comprehensive metadata
 - **🛡️ Plugin Security**: Sandboxing, validation, and security scanning for safe plugin execution
@@ -45,6 +49,7 @@ The most comprehensive and powerful command-line interface for creating and mana
 - **🎯 35+ New Commands**: Complete plugin management, validation, documentation, and caching tools
 
 ### 🏆 Enterprise-Grade Reliability (v0.2.9)
+
 - **🚫 Zero Terminal Hanging**: Comprehensive timeout protection and graceful error handling
 - **🛡️ Enterprise-Grade Error Recovery**: Advanced error handling with actionable error messages
 - **⚡ Performance Optimized**: Parallel async operations with 3x faster initialization
@@ -54,6 +59,7 @@ The most comprehensive and powerful command-line interface for creating and mana
 - **💾 Memory Management**: Proper resource cleanup and leak prevention
 
 ### 🎯 Core Features
+
 - **🎯 Multi-Framework Support**: React, Vue, Svelte with TypeScript-first approach
 - **📦 Advanced Monorepo**: Workspace management with pnpm/yarn/npm/bun support and dependency graphs
 - **🔧 Git Submodule Integration**: Full lifecycle management with documentation auto-generation
@@ -70,6 +76,7 @@ The most comprehensive and powerful command-line interface for creating and mana
 - **🧰 Professional Tooling**: ESLint, Prettier, Husky, CommitLint, and more out-of-the-box
 
 ### 🚀 Enterprise Features (v0.4.0) - Real-Time Development Infrastructure
+
 - **🔍 Real-Time File Watching**: Cross-platform file system monitoring with change propagation and debouncing
 - **🧠 Intelligent Change Detection**: SHA256-based content hashing with caching for accurate change detection
 - **⚙️ Advanced Configuration Management**: Global and project-level configuration with inheritance and hot-reloading
@@ -92,7 +99,7 @@ Install the CLI globally using your preferred package manager:
 # Using npm
 npm install -g @re-shell/cli
 
-# Using yarn  
+# Using yarn
 yarn global add @re-shell/cli
 
 # Using pnpm
@@ -109,6 +116,7 @@ cd my-monorepo
 ```
 
 This creates a complete monorepo with:
+
 - **5 workspace types**: `apps/`, `packages/`, `libs/`, `tools/`, `docs/`
 - **Git repository** with submodule support
 - **Package manager** configuration (pnpm/yarn/npm/bun)
@@ -145,7 +153,7 @@ re-shell generate docs --verbose
 # Create a shared library
 re-shell create ui-components --framework react-ts --type lib
 
-# Create a Vue application  
+# Create a Vue application
 re-shell create admin-panel --framework vue-ts --type app --port 3001
 
 # Create a Svelte microfrontend
@@ -183,8 +191,9 @@ re-shell migrate backup --verbose
 For comprehensive examples including real-world scenarios, framework-specific setups, enterprise patterns, and advanced workflows, see our **[Examples Guide](EXAMPLES.md)**.
 
 The examples cover:
+
 - 🏪 **E-commerce Platform** - Multi-team, multi-framework setup
-- 🏢 **Enterprise Dashboard** - Complex microfrontend architecture  
+- 🏢 **Enterprise Dashboard** - Complex microfrontend architecture
 - 🔧 **Workspace Management** - Dependency management and visualization
 - 🔗 **Git Submodules** - External dependency integration
 - 🏗️ **Framework-Specific** - React, Vue, Svelte examples
@@ -199,12 +208,15 @@ The examples cover:
 ### Core Commands
 
 #### `re-shell init <name>`
+
 Initialize a new monorepo workspace.
 
 **Arguments:**
+
 - `name` - Name of the monorepo (required)
 
 **Options:**
+
 - `--package-manager <pm>` - Package manager to use (npm|yarn|pnpm|bun) [default: auto-detected]
 - `--template <template>` - Template to use (blank|ecommerce|dashboard|saas) [default: blank]
 - `--preset <name>` - Use saved configuration preset
@@ -216,6 +228,7 @@ Initialize a new monorepo workspace.
 - `-y, --yes` - Skip interactive prompts and use defaults (ideal for CI/CD)
 
 **Enhanced Features:**
+
 - **🎨 Template System**: Choose from pre-built templates (e-commerce, dashboard, SaaS)
 - **🔍 Auto-Detection**: Automatically detects package manager and system requirements
 - **⚙️ Preset Management**: Save and reuse project configurations
@@ -230,6 +243,7 @@ Initialize a new monorepo workspace.
 - **💻 IDE Integration**: VS Code workspace with recommended extensions
 
 **Examples:**
+
 ```bash
 # Interactive mode with template selection
 re-shell init my-project
@@ -254,9 +268,11 @@ re-shell init my-project --template ecommerce --force --yes
 ```
 
 #### `re-shell update`
+
 Check for and perform Re-Shell CLI updates.
 
 **Features:**
+
 - **Auto-detection**: Checks npm registry for latest version
 - **Package Manager Detection**: Automatically detects npm, yarn, or pnpm
 - **Interactive Updates**: Prompts for confirmation before updating
@@ -266,11 +282,13 @@ Check for and perform Re-Shell CLI updates.
 - **Update Instructions**: Provides manual update commands if auto-update fails
 
 **Auto-Update Behavior:**
+
 - All CLI commands automatically check for updates (except `update` and `--version`)
 - Updates are cached for 24 hours to avoid performance impact
 - Non-interactive environments skip update prompts
 
 **Example:**
+
 ```bash
 # Check and update CLI
 re-shell update
@@ -279,17 +297,20 @@ re-shell update
 npm install -g @re-shell/cli@latest
 # or
 pnpm add -g @re-shell/cli@latest
-# or  
+# or
 yarn global add @re-shell/cli@latest
 ```
 
 #### `re-shell create <name>`
+
 Create a new workspace (app, package, lib, or tool).
 
 **Arguments:**
+
 - `name` - Name of the project/workspace (required)
 
 **Options:**
+
 - `--framework <framework>` - Framework (react|react-ts|vue|vue-ts|svelte|svelte-ts)
 - `--type <type>` - Workspace type (app|package|lib|tool) - monorepo only
 - `--port <port>` - Development server port [default: 5173]
@@ -301,6 +322,7 @@ Create a new workspace (app, package, lib, or tool).
 - `--package-manager <pm>` - Package manager (npm|yarn|pnpm) [default: pnpm]
 
 **Features:**
+
 - Auto-detects monorepo vs standalone project
 - Supports 6 framework templates (React, Vue, Svelte with JS/TS variants)
 - Interactive framework selection
@@ -311,6 +333,7 @@ Create a new workspace (app, package, lib, or tool).
 - Includes sample components and tests
 
 **Examples:**
+
 ```bash
 # Interactive creation
 re-shell create my-app
@@ -326,12 +349,15 @@ re-shell create helpers --type package
 ```
 
 #### `re-shell add <name>`
+
 Add a new microfrontend to existing project.
 
 **Arguments:**
+
 - `name` - Name of the microfrontend (required)
 
 **Options:**
+
 - `--team <team>` - Team name
 - `--org <organization>` - Organization name [default: re-shell]
 - `--description <description>` - Microfrontend description
@@ -340,6 +366,7 @@ Add a new microfrontend to existing project.
 - `--port <port>` - Dev server port [default: 5173]
 
 **Features:**
+
 - Creates microfrontend in apps/ directory
 - Generates Vite configuration for module federation
 - Sets up entry point with mount/unmount lifecycle
@@ -352,15 +379,19 @@ Add a new microfrontend to existing project.
 - Includes sample App component
 
 #### `re-shell remove <name>`
+
 Remove a microfrontend from project.
 
 **Arguments:**
+
 - `name` - Name of the microfrontend to remove (required)
 
 **Options:**
+
 - `--force` - Force removal without confirmation
 
 **Features:**
+
 - Interactive confirmation prompt (bypassed with --force)
 - Validates microfrontend existence
 - Checks for references in shell application
@@ -369,12 +400,15 @@ Remove a microfrontend from project.
 - Suggests files to check for references
 
 #### `re-shell list`
+
 List all microfrontends in current project.
 
 **Options:**
+
 - `--json` - Output as JSON format
 
 **Features:**
+
 - Displays comprehensive microfrontend information (name, version, team, route, path)
 - Automatically excludes shell application
 - Formatted table output (default)
@@ -384,16 +418,20 @@ List all microfrontends in current project.
 - Color-coded output for better readability
 
 #### `re-shell build [name]`
+
 Build microfrontends for deployment.
 
 **Arguments:**
+
 - `name` - Specific microfrontend to build (optional - builds all if omitted)
 
 **Options:**
+
 - `--production` - Build for production environment
 - `--analyze` - Analyze bundle size
 
 **Features:**
+
 - Sets NODE_ENV based on production flag
 - Auto-detects package manager (pnpm > yarn > npm)
 - Supports bundle size analysis
@@ -404,17 +442,21 @@ Build microfrontends for deployment.
 - Shows success/failure status
 
 #### `re-shell serve [name]`
+
 Start development server(s).
 
 **Arguments:**
+
 - `name` - Specific microfrontend to serve (optional - serves all if omitted)
 
 **Options:**
+
 - `--port <port>` - Port to serve on [default: 3000]
 - `--host <host>` - Host to serve on [default: localhost]
 - `--open` - Open in browser automatically
 
 **Features:**
+
 - Serves individual or all applications
 - Auto-detects package manager
 - Keeps process running (Ctrl+C to stop)
@@ -427,14 +469,17 @@ Start development server(s).
 ### Workspace Management
 
 #### `re-shell workspace list`
+
 List all workspaces in the monorepo.
 
 **Options:**
+
 - `--json` - Output as JSON
 - `--type <type>` - Filter by type (app|package|lib|tool)
 - `--framework <framework>` - Filter by framework
 
 **Features:**
+
 - Groups workspaces by type
 - Shows framework badges with colors (React: Blue, Vue: Green, Svelte: Orange, Node: Green)
 - Displays version information
@@ -443,15 +488,18 @@ List all workspaces in the monorepo.
 - Formatted table or JSON output
 
 #### `re-shell workspace update`
+
 Update workspace dependencies.
 
 **Options:**
+
 - `--workspace <name>` - Update specific workspace
 - `--dependency <name>` - Update specific dependency
 - `--version <version>` - Target version for dependency
 - `--dev` - Update dev dependency
 
 **Features:**
+
 - Updates dependencies across workspaces
 - Can target specific workspace
 - Supports specific dependency updates
@@ -462,13 +510,16 @@ Update workspace dependencies.
 - Updates lock files appropriately
 
 #### `re-shell workspace graph`
+
 Generate workspace dependency graph.
 
 **Options:**
+
 - `--output <file>` - Output file path
 - `--format <format>` - Output format (text|json|mermaid) [default: text]
 
 **Features:**
+
 - Analyzes workspace interdependencies
 - Multiple output formats (Text: Human-readable tree, JSON: Machine-readable data, Mermaid: Diagram syntax)
 - Different node shapes by type (Apps: Rectangles, Packages: Rounded rectangles, Libraries: Hexagons, Tools: Trapezoids)
@@ -478,16 +529,20 @@ Generate workspace dependency graph.
 ### Submodule Management
 
 #### `re-shell submodule add <url>`
+
 Add a new Git submodule.
 
 **Arguments:**
+
 - `url` - Repository URL (required)
 
 **Options:**
+
 - `--path <path>` - Submodule path
 - `--branch <branch>` - Branch to track [default: main]
 
 **Features:**
+
 - Interactive prompts for missing options
 - Auto-generates path from repository URL
 - Validates Git repository existence
@@ -496,15 +551,19 @@ Add a new Git submodule.
 - Shows success confirmation
 
 #### `re-shell submodule remove <path>`
+
 Remove a Git submodule.
 
 **Arguments:**
+
 - `path` - Submodule path (required)
 
 **Options:**
+
 - `--force` - Force removal without confirmation
 
 **Features:**
+
 - Validates submodule existence
 - Interactive confirmation prompt
 - Properly deinitializes submodule
@@ -513,12 +572,15 @@ Remove a Git submodule.
 - Cleans up directories
 
 #### `re-shell submodule update`
+
 Update Git submodules.
 
 **Options:**
+
 - `--path <path>` - Update specific submodule
 
 **Features:**
+
 - Updates all or specific submodule
 - Recursive update support
 - Remote tracking updates
@@ -527,18 +589,22 @@ Update Git submodules.
 - Handles update errors
 
 #### `re-shell submodule status`
+
 Show Git submodule status.
 
 **Features:**
+
 - Detailed status for each submodule (path, URL, branch, current commit, working directory status)
 - Color-coded status indicators (✓ Clean (green), ⚡ Modified (yellow), ✗ Untracked (red), ↑ Ahead (blue), ↓ Behind (magenta))
 - Summary statistics
 - No submodules message
 
 #### `re-shell submodule init`
+
 Initialize Git submodules.
 
 **Features:**
+
 - Initializes submodules for new clones
 - Runs update after initialization
 - Recursive initialization
@@ -546,9 +612,11 @@ Initialize Git submodules.
 - Error handling
 
 #### `re-shell submodule manage`
+
 Interactive submodule management.
 
 **Features:**
+
 - Interactive menu system
 - All submodule operations in one place
 - Dynamic submodule selection
@@ -559,14 +627,17 @@ Interactive submodule management.
 ### Health & Analysis
 
 #### `re-shell doctor`
+
 Diagnose project health and identify issues.
 
 **Options:**
+
 - `--fix` - Automatically fix issues where possible
 - `--verbose` - Show detailed information
 - `--json` - Output results as JSON
 
 **Features:**
+
 - **Comprehensive Health Checks**: Validates monorepo structure, dependencies, security, workspace configuration, git setup, build configuration, performance, and file system health
 - **Auto-Fix Capabilities**: Automatically resolves common issues like missing .gitignore, security vulnerabilities, and configuration problems
 - **Detailed Reporting**: Provides actionable suggestions for each issue found
@@ -574,6 +645,7 @@ Diagnose project health and identify issues.
 - **Multi-Format Output**: Human-readable reports or JSON for programmatic use
 
 **Examples:**
+
 ```bash
 # Basic health check
 re-shell doctor
@@ -586,9 +658,11 @@ re-shell doctor --json > health-report.json
 ```
 
 #### `re-shell analyze`
+
 Analyze bundle size, dependencies, and performance.
 
 **Options:**
+
 - `--workspace <name>` - Analyze specific workspace
 - `--type <type>` - Analysis type (bundle|dependencies|performance|security|all) [default: all]
 - `--output <file>` - Save results to file
@@ -596,6 +670,7 @@ Analyze bundle size, dependencies, and performance.
 - `--json` - Output results as JSON
 
 **Features:**
+
 - **Bundle Analysis**: Bundle size, gzipped size, asset breakdown, chunk analysis, and tree-shaking insights
 - **Dependency Analysis**: Total dependencies, outdated packages, duplicates, vulnerabilities, and license information
 - **Performance Analysis**: Build times, bundle sizes, load time estimates, and optimization suggestions
@@ -604,6 +679,7 @@ Analyze bundle size, dependencies, and performance.
 - **Export Results**: Save analysis to JSON for further processing
 
 **Examples:**
+
 ```bash
 # Analyze everything
 re-shell analyze
@@ -618,18 +694,22 @@ re-shell analyze --type all --output analysis.json
 ### Migration & Backup
 
 #### `re-shell migrate import <source>`
+
 Import existing project into Re-Shell monorepo.
 
 **Arguments:**
+
 - `source` - Path to existing project (required)
 
 **Options:**
+
 - `--dry-run` - Show what would be imported without making changes
 - `--verbose` - Show detailed information
 - `--backup` - Create backup before import
 - `--force` - Overwrite existing files
 
 **Features:**
+
 - **Smart Analysis**: Automatically detects project type, framework, package manager, and tooling
 - **Monorepo Integration**: Imports standalone projects as workspaces or full monorepos
 - **Configuration Migration**: Updates package.json, workspace configuration, and build scripts
@@ -637,44 +717,55 @@ Import existing project into Re-Shell monorepo.
 - **Multi-Framework Support**: Handles React, Vue, Svelte, Angular, and vanilla JavaScript projects
 
 #### `re-shell migrate export <target>`
+
 Export Re-Shell project to external location.
 
 **Arguments:**
+
 - `target` - Target export location (required)
 
 **Options:**
+
 - `--force` - Overwrite target directory if it exists
 - `--verbose` - Show detailed information
 
 #### `re-shell migrate backup`
+
 Create backup of current project.
 
 **Options:**
+
 - `--verbose` - Show detailed information
 
 #### `re-shell migrate restore <backup> <target>`
+
 Restore project from backup.
 
 **Arguments:**
+
 - `backup` - Path to backup (required)
 - `target` - Target restore location (required)
 
 **Options:**
+
 - `--force` - Overwrite target directory if it exists
 - `--verbose` - Show detailed information
 
 ### CI/CD Integration
 
 #### `re-shell cicd generate`
+
 Generate CI/CD configuration files.
 
 **Options:**
+
 - `--provider <provider>` - CI/CD provider (github|gitlab|jenkins|circleci|azure) [default: github]
 - `--template <template>` - Configuration template (basic|advanced|custom) [default: basic]
 - `--force` - Overwrite existing configuration
 - `--verbose` - Show detailed information
 
 **Features:**
+
 - **Multi-Provider Support**: Supports GitHub Actions, GitLab CI, Jenkins, CircleCI, and Azure Pipelines
 - **Template System**: Basic and advanced templates with best practices
 - **Monorepo Optimization**: Parallel builds, change detection, and dependency caching
@@ -683,81 +774,102 @@ Generate CI/CD configuration files.
 - **Deploy Automation**: Environment-specific deployment configurations
 
 #### `re-shell cicd deploy <environment>`
+
 Generate deployment configuration for environment.
 
 **Arguments:**
+
 - `environment` - Target environment (required)
 
 **Options:**
+
 - `--verbose` - Show detailed information
 
 ### Code Generation
 
 #### `re-shell generate component <name>`
+
 Generate a new component.
 
 **Arguments:**
+
 - `name` - Component name (required)
 
 **Options:**
+
 - `--framework <framework>` - Framework (react|vue|svelte|angular) [default: react]
 - `--workspace <workspace>` - Target workspace
 - `--export` - Add to index exports
 - `--verbose` - Show detailed information
 
 **Features:**
+
 - **Multi-Framework Support**: React, Vue, Svelte templates with TypeScript support
 - **Complete Generation**: Component file, styles, tests, and type definitions
 - **Export Management**: Automatic index.ts updates for easy importing
 - **Best Practices**: Follows framework conventions and industry standards
 
 #### `re-shell generate hook <name>`
+
 Generate a React hook.
 
 **Arguments:**
+
 - `name` - Hook name (required)
 
 **Options:**
+
 - `--workspace <workspace>` - Target workspace
 - `--export` - Add to index exports
 - `--verbose` - Show detailed information
 
 #### `re-shell generate service <name>`
+
 Generate a service class.
 
 **Arguments:**
+
 - `name` - Service name (required)
 
 **Options:**
+
 - `--workspace <workspace>` - Target workspace
 - `--verbose` - Show detailed information
 
 #### `re-shell generate test <workspace>`
+
 Generate test suite for workspace.
 
 **Arguments:**
+
 - `workspace` - Target workspace (required)
 
 **Options:**
+
 - `--verbose` - Show detailed information
 
 #### `re-shell generate docs`
+
 Generate project documentation.
 
 **Options:**
+
 - `--verbose` - Show detailed information
 
 ### Real-Time Development
 
 #### `re-shell file-watcher start`
+
 Start real-time file watching with change propagation.
 
 **Options:**
+
 - `--workspace <name>` - Watch specific workspace
 - `--patterns <patterns>` - File patterns to watch
 - `--interactive` - Interactive setup for propagation rules
 
 **Features:**
+
 - Cross-platform file system monitoring using chokidar
 - Configurable watch patterns and exclusion rules
 - Real-time change propagation with debouncing
@@ -766,27 +878,34 @@ Start real-time file watching with change propagation.
 - Memory-efficient long-running processes
 
 #### `re-shell file-watcher stop`
+
 Stop file watching processes gracefully.
 
 #### `re-shell file-watcher status`
+
 View current watching status and active watchers.
 
 #### `re-shell file-watcher stats`
+
 View detailed performance metrics and statistics.
 
 **Features:**
+
 - Change propagation rules with source-to-target mappings
 - Event filtering and transformation capabilities
 - Batch processing for optimal performance
 - Custom propagation logic for complex workflows
 
 #### `re-shell change-detector scan [path]`
+
 Scan directory for file changes with intelligent content hashing.
 
 **Arguments:**
+
 - `path` - Directory to scan (optional, defaults to current directory)
 
 **Features:**
+
 - SHA256-based content hashing for accurate change detection
 - Binary file detection and handling optimizations
 - Large file support with configurable size limits
@@ -794,27 +913,35 @@ Scan directory for file changes with intelligent content hashing.
 - Comprehensive caching system with TTL management
 
 #### `re-shell change-detector status`
+
 View change detection status and cache information.
 
 #### `re-shell change-detector stats`
+
 View performance metrics and cache statistics.
 
 #### `re-shell change-detector check <file>`
+
 Check if specific file has changed since last scan.
 
 **Arguments:**
+
 - `file` - File path to check (required)
 
 #### `re-shell change-detector clear`
+
 Clear change detection cache and reset state.
 
 #### `re-shell change-detector watch`
+
 Start real-time change monitoring mode.
 
 #### `re-shell change-detector compare`
+
 Compare file states between different scans.
 
 **Features:**
+
 - Content-based detection with cryptographic hashing
 - Configurable hashing algorithms (SHA256, MD5, etc.)
 - Chunk-based processing for large files
@@ -823,18 +950,19 @@ Compare file states between different scans.
 
 ## 🏗️ Supported Frameworks
 
-| Framework | Template Name | TypeScript | Build Tool |
-|-----------|---------------|------------|------------|
-| React | `react` | ❌ | Vite |
-| React + TS | `react-ts` | ✅ | Vite |
-| Vue 3 | `vue` | ❌ | Vite |
-| Vue 3 + TS | `vue-ts` | ✅ | Vite |
-| Svelte | `svelte` | ❌ | Vite |
-| Svelte + TS | `svelte-ts` | ✅ | Vite |
+| Framework   | Template Name | TypeScript | Build Tool |
+| ----------- | ------------- | ---------- | ---------- |
+| React       | `react`       | ❌         | Vite       |
+| React + TS  | `react-ts`    | ✅         | Vite       |
+| Vue 3       | `vue`         | ❌         | Vite       |
+| Vue 3 + TS  | `vue-ts`      | ✅         | Vite       |
+| Svelte      | `svelte`      | ❌         | Vite       |
+| Svelte + TS | `svelte-ts`   | ✅         | Vite       |
 
 ### Framework-Specific Features
 
 **React (JavaScript & TypeScript)**
+
 - Vite configuration with module federation setup
 - Hot module replacement
 - JSX/TSX support
@@ -842,6 +970,7 @@ Compare file states between different scans.
 - Type definitions and strict mode support
 
 **Vue 3 (JavaScript & TypeScript)**
+
 - Composition API support
 - Single File Components
 - Vue Router ready
@@ -849,6 +978,7 @@ Compare file states between different scans.
 - TypeScript support with type-safe components (TS variant)
 
 **Svelte (JavaScript & TypeScript)**
+
 - SvelteKit ready
 - Component compilation
 - Reactive statements
@@ -884,28 +1014,36 @@ my-monorepo/
 ## 🔧 Workspace Types
 
 ### Apps (`--type app`)
+
 Full applications with routing, development servers, and build configurations.
+
 - Includes development server setup
 - Route configuration for microfrontends
 - Production build optimization
 - Hot module replacement
 
 ### Packages (`--type package`)
+
 Shared packages that can be published to npm.
+
 - Library build configuration
 - TypeScript declarations
 - Export configurations
 - Version management
 
 ### Libraries (`--type lib`)
+
 Internal shared libraries for the monorepo.
+
 - Internal dependency management
 - Shared utilities and components
 - Type definitions
 - Documentation
 
 ### Tools (`--type tool`)
+
 Build tools, scripts, and development utilities.
+
 - Custom build scripts
 - Development tools
 - CI/CD utilities
@@ -916,6 +1054,7 @@ Build tools, scripts, and development utilities.
 Re-Shell CLI provides comprehensive Git submodule support:
 
 ### Features
+
 - **Easy Management**: Simple commands for adding, removing, and updating submodules
 - **Status Tracking**: Visual status indicators for submodule states
 - **Documentation**: Auto-generated submodule documentation
@@ -923,6 +1062,7 @@ Re-Shell CLI provides comprehensive Git submodule support:
 - **Interactive Mode**: User-friendly submodule management interface
 
 ### Workflow
+
 ```bash
 # Add a submodule
 re-shell submodule add https://github.com/user/repo.git apps/external-app
@@ -940,18 +1080,21 @@ re-shell submodule manage
 ## 📦 Package Manager Support
 
 - **pnpm (recommended default)**
+
   - Workspace support
   - Efficient disk usage
   - Strict dependencies
   - Auto-detected when available
 
 - **bun (experimental)**
+
   - Ultra-fast package installation
   - Built-in bundler
   - JavaScript runtime
   - Emerging ecosystem
 
 - **yarn**
+
   - Workspace protocol
   - Plug'n'Play support
   - Berry compatibility
@@ -986,6 +1129,7 @@ FROM node:18-alpine AS base
 ## 📊 Workspace Management
 
 ### Dependency Visualization
+
 ```bash
 # Text-based dependency graph
 re-shell workspace graph
@@ -998,6 +1142,7 @@ re-shell workspace graph --format json --output deps.json
 ```
 
 ### Bulk Operations
+
 ```bash
 # Update all workspaces
 re-shell workspace update
@@ -1011,11 +1156,13 @@ re-shell workspace update --dependency react --version ^18.3.0
 ### Available Templates
 
 #### Blank Template (`blank`)
+
 - **Description**: Clean monorepo structure without pre-configured applications
 - **Best for**: Custom setups, learning, and experimentation
 - **Includes**: Basic workspace structure, development tooling
 
 #### E-commerce Template (`ecommerce`)
+
 - **Description**: Multi-team e-commerce platform setup
 - **Applications**: Shell app, product catalog, checkout flow
 - **Packages**: Shared UI components, cart state management
@@ -1023,6 +1170,7 @@ re-shell workspace update --dependency react --version ^18.3.0
 - **Technologies**: React/Vue/Svelte, state management, payment integration
 
 #### Dashboard Template (`dashboard`)
+
 - **Description**: Analytics and reporting platform
 - **Applications**: Shell app, analytics module, user management
 - **Packages**: Chart components, data processing utilities
@@ -1030,6 +1178,7 @@ re-shell workspace update --dependency react --version ^18.3.0
 - **Technologies**: Data visualization, user management, reporting
 
 #### SaaS Template (`saas`)
+
 - **Description**: Software-as-a-Service platform
 - **Applications**: Shell app, authentication, billing, admin panel
 - **Packages**: Auth utilities, payment integration
@@ -1059,6 +1208,7 @@ re-shell workspace update --dependency react --version ^18.3.0
 ## 📄 Generated Configurations
 
 ### Project Files
+
 - `package.json` with scripts and dependencies
 - `tsconfig.json` for TypeScript projects
 - `vite.config.ts/js` with module federation
@@ -1067,6 +1217,7 @@ re-shell workspace update --dependency react --version ^18.3.0
 - `turbo.json` for monorepo optimization
 
 ### Code Quality & Standards
+
 - `.prettierrc` and `.prettierignore` for formatting
 - `.eslintrc.json` with React/TypeScript rules
 - `commitlint.config.js` for conventional commits
@@ -1074,6 +1225,7 @@ re-shell workspace update --dependency react --version ^18.3.0
 - `.husky/` directory with Git hooks
 
 ### Development Environment
+
 - `.editorconfig` for consistent coding
 - `.nvmrc` for Node version management
 - `.vscode/settings.json` for IDE optimization
@@ -1081,18 +1233,21 @@ re-shell workspace update --dependency react --version ^18.3.0
 - `.env` and `.env.example` for environment variables
 
 ### Testing & Quality
+
 - `jest.config.js` with coverage thresholds
 - Test directory structure
 - Coverage configuration
 - CI/CD integration
 
 ### Documentation & Governance
+
 - `CONTRIBUTING.md` with development guidelines
 - `SECURITY.md` for security policies
 - `README.md` with getting started guide
 - Template-specific documentation
 
 ### Build & Deploy
+
 - `Dockerfile` with multi-stage builds
 - `docker-compose.yml` for local development
 - `.dockerignore` for optimized builds
@@ -1109,6 +1264,7 @@ If you're upgrading from Re-Shell CLI v0.1.x:
 4. **Framework Selection**: Use `--framework` instead of `--template`
 
 ### Migration Example
+
 ```bash
 # Old (v0.1.x)
 re-shell create my-project
@@ -1127,27 +1283,32 @@ re-shell create my-feature --framework react-ts --type app
 The init command has been completely transformed into a comprehensive development experience, rivaling and exceeding industry-leading CLI tools.
 
 #### 🎨 New Template System
+
 - **Built-in Templates**: Choose from professional templates (e-commerce, dashboard, SaaS)
 - **Smart Scaffolding**: Template-specific directory structures and dependencies
 - **Getting Started Guides**: Auto-generated documentation for each template
 
 #### ⚙️ Configuration Presets
+
 - **Save Configurations**: Save your preferred settings as named presets
 - **Reuse Presets**: Use `--preset` flag to apply saved configurations
 - **Team Consistency**: Share presets across team members
 
 #### 🔍 Enhanced Auto-Detection
+
 - **Package Manager Detection**: Automatically detects npm, yarn, pnpm, or bun
 - **System Requirements**: Validates Node.js version and available tools
 - **Smart Defaults**: Context-aware defaults based on your environment
 
 #### 🔐 Security & Quality First
+
 - **Vulnerability Scanning**: Automatic dependency vulnerability assessment
 - **Security Policies**: Generated SECURITY.md and security best practices
 - **Git Hooks**: Pre-commit hooks for code quality enforcement
 - **Conventional Commits**: CommitLint setup for standardized commit messages
 
 #### 🧰 Professional Tooling Suite
+
 - **Code Quality**: ESLint, Prettier, and comprehensive rules out-of-the-box
 - **Testing**: Jest configuration with coverage thresholds
 - **Build Optimization**: Turborepo configuration for monorepo performance
@@ -1155,23 +1316,27 @@ The init command has been completely transformed into a comprehensive developmen
 - **Documentation**: Auto-generated CONTRIBUTING.md and project guidelines
 
 #### 🐳 Production-Ready Infrastructure
+
 - **Docker**: Multi-stage builds with package manager optimization
 - **Docker Compose**: Local development environment setup
 - **Dependency Management**: Renovate configuration for automated updates
 - **VS Code Integration**: Workspace settings and extension recommendations
 
 #### 📊 Enhanced Package Manager Support
+
 - **Bun Support**: Added experimental support for Bun package manager
 - **Auto-Detection**: Intelligently selects the best available package manager
 - **Lockfile Support**: Proper handling for all package manager lockfiles
 
 #### 🎯 Developer Experience Improvements
+
 - **Interactive Flows**: Enhanced prompts with better validation
 - **Progress Tracking**: Real-time progress indicators for all operations
 - **Debug Mode**: `--debug` flag for troubleshooting
 - **Error Handling**: Comprehensive error messages with remediation steps
 
 #### 🏗️ Infrastructure as Code
+
 - **Renovate**: Automated dependency updates with sensible defaults
 - **Quality Gates**: 80% code coverage thresholds
 - **Monorepo Optimization**: Advanced Turborepo pipeline configuration
@@ -1180,22 +1345,26 @@ The init command has been completely transformed into a comprehensive developmen
 ### 📈 Comparison with Industry Leaders
 
 The enhanced init command now matches or exceeds features found in:
+
 - **create-next-app**: Template selection, package manager detection
 - **Vue CLI**: Preset system, interactive configuration
 - **Nx**: Monorepo optimization, workspace management
 - **create-t3-app**: Type safety, modern tooling stack
 
 ### 🔧 Breaking Changes
+
 - Package manager detection may select different defaults
 - New configuration files are generated (can be customized)
 - Template system replaces some hardcoded behaviors
 
 ### 📦 Migration Guide
+
 Existing projects are not affected. New projects created with v0.2.8 will include all new features automatically.
 
 ## What's New in v0.2.5
 
 ### 🐛 Critical Bug Fixes
+
 - **✅ FIXED: Terminal Output Buffering**: Completely resolved the issue where CLI commands would hang with "Creating..." text
 - **✅ FIXED: Non-TTY Environment Hanging**: Resolved hanging issues in environments where `process.stdout.isTTY` is undefined
 - **✅ IMPROVED: Interactive Prompts**: Fixed prompts appearing even when using `--yes/-y` flag
@@ -1204,11 +1373,13 @@ Existing projects are not affected. New projects created with v0.2.8 will includ
 - **✅ IMPROVED: Environment Detection**: Better detection of CI environments and non-interactive terminals
 
 ### 🚀 New Features
+
 - **📋 Step-by-Step Progress**: Detailed progress updates for each initialization step
 - **⚡ Enhanced Terminal Compatibility**: Better support for various terminal emulators and environments
 - **🔧 Improved Error Handling**: More robust error handling during initialization process
 
 ### 🔧 Technical Improvements
+
 - Enhanced output flushing mechanisms for immediate terminal feedback
 - Better spinner state management and cleanup
 - Improved prompts conditional logic for non-interactive mode
@@ -1219,6 +1390,7 @@ Existing projects are not affected. New projects created with v0.2.8 will includ
 ## What's New in v0.2.4
 
 ### Bug Fixes
+
 - **✅ Fixed Terminal Output Buffering**: Resolved issue where CLI commands would hang with "Creating..." text until Enter was pressed
 - **✅ Improved Spinner Behavior**: Enhanced spinner and progress indicators for better terminal compatibility
 - **✅ Better Terminal Detection**: Added fallback behavior for non-interactive terminals (CI environments, etc.)
@@ -1226,6 +1398,7 @@ Existing projects are not affected. New projects created with v0.2.8 will includ
 - **✅ Enhanced Progress Updates**: Spinner now properly updates during each step of the initialization process
 
 ### Improvements
+
 - Enhanced terminal experience across different environments
 - Better support for various terminal emulators and shell environments
 - Improved progress indication with step-by-step updates
@@ -1234,12 +1407,14 @@ Existing projects are not affected. New projects created with v0.2.8 will includ
 ## What's New in v0.2.3
 
 ### New Features
+
 - **Automatic Update Notifications**: CLI now checks for updates and notifies you when a new version is available
 - **Update Command**: New `re-shell update` command to check for and install updates
 - **Framework Option**: Added `--framework` option to `create` command for better clarity (backward compatible with `--template`)
 - **Version Caching**: Update checks are cached for 24 hours to avoid excessive network requests
 
 ### Improvements
+
 - Better command option handling and backward compatibility
 - Enhanced user experience with non-intrusive update notifications
 
@@ -1253,6 +1428,7 @@ Existing projects are not affected. New projects created with v0.2.8 will includ
 ## What's New in v0.2.1
 
 ### Bug Fixes and Improvements
+
 - Fixed version mismatch in package.json
 - Updated documentation to match actual CLI functionality
 - Removed deprecated options that were not implemented
@@ -1263,6 +1439,7 @@ Existing projects are not affected. New projects created with v0.2.8 will includ
 ## What's New in v0.2.0
 
 ### New Features
+
 - **Enhanced Command Structure**: Improved command organization and help messages
 - **Build Command**: New command for building microfrontends with production mode and bundle analysis
 - **Serve Command**: New command for starting development servers with customizable ports and hosts
@@ -1272,6 +1449,7 @@ Existing projects are not affected. New projects created with v0.2.8 will includ
 - **Performance Optimizations**: Faster builds and more efficient resource usage
 
 ### Breaking Changes
+
 - The `create-mf` command has been renamed to `add` for consistency
 - Configuration format has been updated for better extensibility
 
@@ -1290,8 +1468,8 @@ const microfrontends = [
     url: '/apps/my-microfrontend/dist/mf.umd.js',
     containerId: 'my-microfrontend-container',
     route: '/my-feature',
-    team: 'My Team'
-  }
+    team: 'My Team',
+  },
   // ... other microfrontends
 ];
 ```
