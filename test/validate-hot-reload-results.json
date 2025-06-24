@@ -1,0 +1,114 @@
+{
+  "timestamp": "2025-06-24T06:36:39.958Z",
+  "version": "0.13.0",
+  "hotReloadTest": {
+    "templateName": "Express.js",
+    "templateFile": "express-ts.ts",
+    "exists": true,
+    "features": {
+      "TSX Dependency": {
+        "passed": true,
+        "description": "Template includes tsx for ultra-fast TypeScript compilation",
+        "critical": true
+      },
+      "Nodemon Dependency": {
+        "passed": true,
+        "description": "Template includes nodemon for file watching",
+        "critical": true
+      },
+      "Standard Dev Script": {
+        "passed": true,
+        "description": "Template includes standard dev script with nodemon",
+        "critical": true
+      },
+      "TSX Dev Script": {
+        "passed": true,
+        "description": "Template includes tsx-based dev script",
+        "critical": true
+      },
+      "Fast Dev Script": {
+        "passed": true,
+        "description": "Template includes fast dev script option",
+        "critical": true
+      },
+      "Debug Dev Script": {
+        "passed": true,
+        "description": "Template includes debugging dev script",
+        "critical": true
+      },
+      "Nodemon Configuration": {
+        "passed": true,
+        "description": "Template includes nodemon configuration file",
+        "critical": true
+      },
+      "File Extensions Watching": {
+        "passed": true,
+        "description": "Nodemon watches TypeScript, JavaScript, and JSON files",
+        "critical": true
+      },
+      "Environment Watching": {
+        "passed": true,
+        "description": "Nodemon watches environment file changes",
+        "critical": true
+      },
+      "Test File Ignore": {
+        "passed": true,
+        "description": "Nodemon ignores test files for performance",
+        "critical": true
+      },
+      "Transpile Only Option": {
+        "passed": true,
+        "description": "Uses transpile-only mode for faster compilation",
+        "critical": true
+      },
+      "Development Environment": {
+        "passed": true,
+        "description": "Sets development environment for nodemon",
+        "critical": true
+      },
+      "Debug Log Level": {
+        "passed": true,
+        "description": "Configures debug logging for development",
+        "critical": true
+      },
+      "Restart Delay": {
+        "passed": true,
+        "description": "Includes restart delay to prevent rapid restarts",
+        "critical": true
+      },
+      "Verbose Output": {
+        "passed": true,
+        "description": "Enables verbose nodemon output",
+        "critical": false
+      },
+      "Manual Restart": {
+        "passed": true,
+        "description": "Supports manual restart with rs command",
+        "critical": false
+      },
+      "Color Output": {
+        "passed": true,
+        "description": "Enables colored output in development",
+        "critical": false
+      },
+      "Hot-Reload Documentation": {
+        "passed": true,
+        "description": "Includes comprehensive hot-reload documentation",
+        "critical": true
+      },
+      "Environment Variables Doc": {
+        "passed": true,
+        "description": "Documents development environment variables",
+        "critical": true
+      },
+      "Multiple Dev Options": {
+        "passed": true,
+        "description": "Documents multiple development server options",
+        "critical": true
+      }
+    },
+    "featureCount": 20,
+    "passedFeatures": 20,
+    "failedFeatures": 0
+  }
+}

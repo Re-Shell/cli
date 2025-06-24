@@ -1,0 +1,144 @@
+{
+  "timestamp": "2025-06-24T06:32:03.821Z",
+  "version": "0.13.0",
+  "mongooseIntegrationTest": {
+    "templateName": "Express.js",
+    "templateFile": "express-ts.ts",
+    "exists": true,
+    "features": {
+      "Mongoose Core Dependency": {
+        "passed": true,
+        "description": "Template includes Mongoose core dependency",
+        "critical": true
+      },
+      "Validator Package": {
+        "passed": true,
+        "description": "Template includes validator package for data validation",
+        "critical": true
+      },
+      "Slugify Package": {
+        "passed": true,
+        "description": "Template includes slugify package for URL generation",
+        "critical": true
+      },
+      "BCrypt Integration": {
+        "passed": true,
+        "description": "Template includes bcrypt for password hashing",
+        "critical": true
+      },
+      "Database Configuration": {
+        "passed": true,
+        "description": "Template includes MongoDB database configuration",
+        "critical": true
+      },
+      "User Model": {
+        "passed": true,
+        "description": "Template includes User model definition",
+        "critical": true
+      },
+      "Post Model": {
+        "passed": true,
+        "description": "Template includes Post model definition",
+        "critical": true
+      },
+      "User Role Enum": {
+        "passed": true,
+        "description": "Includes role-based access control",
+        "critical": true
+      },
+      "Post Status Enum": {
+        "passed": true,
+        "description": "Includes post status management",
+        "critical": true
+      },
+      "Schema Validation": {
+        "passed": true,
+        "description": "Models include comprehensive validation",
+        "critical": true
+      },
+      "Password Hashing Middleware": {
+        "passed": true,
+        "description": "Includes automatic password hashing",
+        "critical": true
+      },
+      "Schema Indexes": {
+        "passed": true,
+        "description": "Models include performance indexes",
+        "critical": true
+      },
+      "Instance Methods": {
+        "passed": true,
+        "description": "Models include useful instance methods",
+        "critical": true
+      },
+      "Static Methods": {
+        "passed": true,
+        "description": "Models include static query methods",
+        "critical": true
+      },
+      "Connection Management": {
+        "passed": true,
+        "description": "Template includes connection management",
+        "critical": true
+      },
+      "Health Check Integration": {
+        "passed": true,
+        "description": "Template includes database health checks",
+        "critical": true
+      },
+      "Environment Configuration": {
+        "passed": true,
+        "description": "Template includes MongoDB environment configuration",
+        "critical": true
+      },
+      "Database Seeding": {
+        "passed": true,
+        "description": "Template includes database seeding functionality",
+        "critical": true
+      },
+      "User Service": {
+        "passed": true,
+        "description": "Template includes user service implementation",
+        "critical": true
+      },
+      "Mongoose Scripts": {
+        "passed": true,
+        "description": "Template includes Mongoose management scripts",
+        "critical": true
+      },
+      "Data Aggregation": {
+        "passed": true,
+        "description": "Models include aggregation capabilities",
+        "critical": true
+      },
+      "Text Search": {
+        "passed": true,
+        "description": "Template includes full-text search functionality",
+        "critical": true
+      },
+      "Security Features": {
+        "passed": true,
+        "description": "Template includes security features like account locking",
+        "critical": true
+      },
+      "Mongoose Documentation": {
+        "passed": true,
+        "description": "Template includes Mongoose documentation",
+        "critical": false
+      },
+      "ORM Comparison": {
+        "passed": true,
+        "description": "Template explains database integration choices",
+        "critical": false
+      },
+      "Production Configuration": {
+        "passed": true,
+        "description": "Template includes production-safe configuration",
+        "critical": true
+      }
+    },
+    "featureCount": 26,
+    "passedFeatures": 26,
+    "failedFeatures": 0
+  }
+}
