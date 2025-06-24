@@ -39,6 +39,9 @@ export const koaTypeScriptTemplate: BackendTemplate = {
     'dotenv': '^16.3.1',
     'winston': '^3.11.0',
     'ioredis': '^5.3.2'
+      '@prisma/client': '^5.8.1',
+      'bcrypt': '^5.1.1',
+      'uuid': '^9.0.1',
   },
   devDependencies: {
     '@types/node': '^20.10.5',
@@ -64,6 +67,9 @@ export const koaTypeScriptTemplate: BackendTemplate = {
     '@typescript-eslint/parser': '^6.15.0',
     '@typescript-eslint/eslint-plugin': '^6.15.0',
     'prettier': '^3.1.1'
+      'prisma': '^5.8.1',
+      '@types/bcrypt': '^5.0.2',
+      '@types/uuid': '^9.0.7',
   },
   files: {
     'package.json': {
@@ -1181,6 +1187,7 @@ A modern Koa.js API server with TypeScript, async/await patterns, middleware com
 - 🐳 **Production Ready** - Docker configuration and deployment setup
 - 📦 **Clean Architecture** - Well-organized project structure
 
+- **🗄️ Database Integration**: Prisma ORM with PostgreSQL, MySQL, SQLite support
 ## Quick Start
 
 1. **Install dependencies:**
@@ -1939,5 +1946,9 @@ describe('Authentication Endpoints', () => {
     'echo "   2. Start Redis: docker run -d -p 6379:6379 redis:7-alpine"',
     'echo "   3. Run \'npm run dev\' to start development"',
     'echo "   4. Visit http://localhost:3000/api/health for health check"'
-  ]
+      'npx prisma generate',
+    'echo "📋 Database setup:"',
+    'echo "1. Set DATABASE_URL in .env"',
+    'echo "2. Run: npm run db:push"',
+    'echo "3. Run: npm run db:seed"',]
 };
