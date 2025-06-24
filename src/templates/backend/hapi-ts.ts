@@ -25,7 +25,9 @@ export const hapiTypeScriptTemplate: BackendTemplate = {
     'winston': '^3.11.0',
     'dotenv': '^16.4.5',
     'helmet': '^7.1.0',
-    'cors': '^2.8.5'
+    'cors': '^2.8.5',
+    'uuid': '^9.0.1',
+    '@prisma/client': '^5.8.1'
   },
   devDependencies: {
     '@types/hapi__hapi': '^20.0.13',
@@ -43,11 +45,14 @@ export const hapiTypeScriptTemplate: BackendTemplate = {
     '@types/redis': '^4.0.11',
     'typescript': '^5.3.3',
     'ts-node': '^10.9.2',
+    'tsx': '^4.7.0',
     'nodemon': '^3.0.2',
     '@types/lab': '^18.1.4',
     '@hapi/lab': '^25.2.0',
     '@hapi/code': '^9.0.3',
-    'rimraf': '^5.0.5'
+    'rimraf': '^5.0.5',
+    'prisma': '^5.8.1',
+    '@types/uuid': '^9.0.7'
   },
   files: {
     'package.json': `{
@@ -62,8 +67,15 @@ export const hapiTypeScriptTemplate: BackendTemplate = {
     "test": "lab -v --reporter console --output stdout --coverage --threshold 80",
     "test:watch": "lab -v --reporter console --output stdout --watch",
     "lint": "tsc --noEmit",
-    "clean": "rimraf dist"
-  },
+    "clean": "rimraf dist",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:migrate:reset": "prisma migrate reset",
+    "db:studio": "prisma studio",
+    "db:seed": "tsx prisma/seed.ts"
+      },
   "keywords": ["hapi", "typescript", "api", "validation", "caching", "security"],
   "author": "{{author}}",
   "license": "MIT"
@@ -315,6 +327,7 @@ export const registerPlugins = async (server: Hapi.Server): Promise<void> => {
     'src/config/routes.ts': `import Hapi from '@hapi/hapi';
 import { authRoutes } from '../routes/auth';
 import { userRoutes } from '../routes/users';
+import { postRoutes } from '../routes/posts';
 import { healthRoutes } from '../routes/health';
 
 export const setupRoutes = (server: Hapi.Server): void => {
@@ -326,6 +339,9 @@ export const setupRoutes = (server: Hapi.Server): void => {
   
   // User routes (requires auth)
   server.route(userRoutes);
+  
+  // Post routes (requires auth)
+  server.route(postRoutes);
 };`,
     'src/config/cache.ts': `import Hapi from '@hapi/hapi';
 import { loadEnvironment } from './environment';
@@ -359,12 +375,13 @@ export const setupCache = async (server: Hapi.Server): Promise<void> => {
 };`,
     'src/auth/strategies.ts': `import Hapi from '@hapi/hapi';
 import Boom from '@hapi/boom';
+import { Role } from '@prisma/client';
 import { UserService } from '../services/userService';
 
 export interface JWTPayload {
   id: string;
   email: string;
-  role: string;
+  role: Role;
   iat: number;
   exp: number;
 }
@@ -388,7 +405,7 @@ export const validateUser = async (
         id: user.id,
         email: user.email,
         role: user.role,
-        scope: [user.role] // For role-based access control
+        scope: [user.role.toLowerCase()] // For role-based access control
       }
     };
   } catch (error) {
@@ -396,11 +413,12 @@ export const validateUser = async (
   }
 };
 
-export const requireRole = (role: string) => {
+export const requireRole = (role: Role | string) => {
   return (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
     const { credentials } = request.auth;
+    const requiredRole = typeof role === 'string' ? role.toLowerCase() : role.toLowerCase();
     
-    if (!credentials?.scope?.includes(role)) {
+    if (!credentials?.scope?.includes(requiredRole)) {
       throw Boom.forbidden('Insufficient permissions');
     }
     
@@ -635,6 +653,202 @@ export const userRoutes: Hapi.ServerRoute[] = [
       }
     },
     handler: userController.deleteUser
+  }
+];`,
+    'src/routes/posts.ts': `import Hapi from '@hapi/hapi';
+import Joi from '@hapi/joi';
+import { PostController } from '../controllers/postController';
+import { requireRole } from '../auth/strategies';
+
+const postController = new PostController();
+
+export const postRoutes: Hapi.ServerRoute[] = [
+  {
+    method: 'GET',
+    path: '/posts',
+    options: {
+      auth: false,
+      description: 'Get published posts',
+      notes: 'Retrieve a list of published posts with pagination',
+      tags: ['api', 'posts'],
+      validate: {
+        query: Joi.object({
+          page: Joi.number().min(1).default(1),
+          limit: Joi.number().min(1).max(50).default(10),
+          search: Joi.string().optional(),
+          author: Joi.string().optional()
+        })
+      },
+      response: {
+        schema: Joi.object({
+          posts: Joi.array().items(
+            Joi.object({
+              id: Joi.string().required(),
+              title: Joi.string().required(),
+              excerpt: Joi.string().allow(null),
+              slug: Joi.string().required(),
+              status: Joi.string().required(),
+              publishedAt: Joi.date().allow(null),
+              createdAt: Joi.date().required(),
+              author: Joi.object({
+                id: Joi.string().required(),
+                name: Joi.string().required(),
+                email: Joi.string().email().required()
+              }).required()
+            })
+          ).required(),
+          pagination: Joi.object({
+            page: Joi.number().required(),
+            limit: Joi.number().required(),
+            total: Joi.number().required(),
+            pages: Joi.number().required()
+          }).required()
+        })
+      }
+    },
+    handler: postController.getPosts
+  },
+  {
+    method: 'GET',
+    path: '/posts/{slug}',
+    options: {
+      auth: false,
+      description: 'Get post by slug',
+      notes: 'Retrieve a specific published post by its slug',
+      tags: ['api', 'posts'],
+      validate: {
+        params: Joi.object({
+          slug: Joi.string().required()
+        })
+      },
+      response: {
+        schema: Joi.object({
+          id: Joi.string().required(),
+          title: Joi.string().required(),
+          content: Joi.string().allow(null),
+          excerpt: Joi.string().allow(null),
+          slug: Joi.string().required(),
+          status: Joi.string().required(),
+          publishedAt: Joi.date().allow(null),
+          createdAt: Joi.date().required(),
+          updatedAt: Joi.date().required(),
+          author: Joi.object({
+            id: Joi.string().required(),
+            name: Joi.string().required(),
+            email: Joi.string().email().required()
+          }).required()
+        })
+      }
+    },
+    handler: postController.getPostBySlug
+  },
+  {
+    method: 'GET',
+    path: '/posts/my',
+    options: {
+      description: 'Get current user posts',
+      notes: 'Retrieve posts created by the authenticated user',
+      tags: ['api', 'posts'],
+      validate: {
+        query: Joi.object({
+          page: Joi.number().min(1).default(1),
+          limit: Joi.number().min(1).max(50).default(10),
+          status: Joi.string().valid('DRAFT', 'PUBLISHED', 'ARCHIVED').optional()
+        })
+      }
+    },
+    handler: postController.getMyPosts
+  },
+  {
+    method: 'POST',
+    path: '/posts',
+    options: {
+      description: 'Create a new post',
+      notes: 'Create a new post (authenticated users only)',
+      tags: ['api', 'posts'],
+      validate: {
+        payload: Joi.object({
+          title: Joi.string().required(),
+          content: Joi.string().optional(),
+          excerpt: Joi.string().optional(),
+          status: Joi.string().valid('DRAFT', 'PUBLISHED').default('DRAFT')
+        })
+      },
+      response: {
+        schema: Joi.object({
+          id: Joi.string().required(),
+          title: Joi.string().required(),
+          content: Joi.string().allow(null),
+          excerpt: Joi.string().allow(null),
+          slug: Joi.string().required(),
+          status: Joi.string().required(),
+          publishedAt: Joi.date().allow(null),
+          createdAt: Joi.date().required(),
+          updatedAt: Joi.date().required()
+        })
+      }
+    },
+    handler: postController.createPost
+  },
+  {
+    method: 'PUT',
+    path: '/posts/{id}',
+    options: {
+      description: 'Update a post',
+      notes: 'Update a post (author or admin only)',
+      tags: ['api', 'posts'],
+      validate: {
+        params: Joi.object({
+          id: Joi.string().required()
+        }),
+        payload: Joi.object({
+          title: Joi.string().optional(),
+          content: Joi.string().optional(),
+          excerpt: Joi.string().optional(),
+          status: Joi.string().valid('DRAFT', 'PUBLISHED', 'ARCHIVED').optional()
+        })
+      }
+    },
+    handler: postController.updatePost
+  },
+  {
+    method: 'DELETE',
+    path: '/posts/{id}',
+    options: {
+      description: 'Delete a post',
+      notes: 'Delete a post (author or admin only)',
+      tags: ['api', 'posts'],
+      validate: {
+        params: Joi.object({
+          id: Joi.string().required()
+        })
+      },
+      response: {
+        schema: Joi.object({
+          message: Joi.string().required()
+        })
+      }
+    },
+    handler: postController.deletePost
+  },
+  {
+    method: 'GET',
+    path: '/admin/posts',
+    options: {
+      description: 'Get all posts (admin)',
+      notes: 'Retrieve all posts including drafts (admin only)',
+      tags: ['api', 'posts', 'admin'],
+      pre: [{ method: requireRole('admin') }],
+      validate: {
+        query: Joi.object({
+          page: Joi.number().min(1).default(1),
+          limit: Joi.number().min(1).max(100).default(20),
+          status: Joi.string().valid('DRAFT', 'PUBLISHED', 'ARCHIVED').optional(),
+          author: Joi.string().optional()
+        })
+      }
+    },
+    handler: postController.getAllPosts
   }
 ];`,
     'src/routes/health.ts': `import Hapi from '@hapi/hapi';
@@ -875,6 +1089,153 @@ export class UserController {
     }
   };
 }`,
+    'src/controllers/postController.ts': `import Hapi from '@hapi/hapi';
+import Boom from '@hapi/boom';
+import { PostService } from '../services/postService';
+import { logger } from '../utils/logger';
+
+export class PostController {
+  private postService: PostService;
+
+  constructor() {
+    this.postService = new PostService();
+  }
+
+  getPosts = async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
+    try {
+      const { page, limit, search, author } = request.query as {
+        page: number;
+        limit: number;
+        search?: string;
+        author?: string;
+      };
+
+      const result = await this.postService.getPublishedPosts(page, limit, search, author);
+      return h.response(result).code(200);
+    } catch (error) {
+      logger.error('Get posts error:', error);
+      throw Boom.badImplementation('Failed to retrieve posts');
+    }
+  };
+
+  getPostBySlug = async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
+    try {
+      const { slug } = request.params as { slug: string };
+      const post = await this.postService.getPostBySlug(slug);
+
+      if (!post) {
+        throw Boom.notFound('Post not found');
+      }
+
+      return h.response(post).code(200);
+    } catch (error) {
+      logger.error('Get post by slug error:', error);
+      throw error;
+    }
+  };
+
+  getMyPosts = async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
+    try {
+      const { credentials } = request.auth;
+      const { page, limit, status } = request.query as {
+        page: number;
+        limit: number;
+        status?: string;
+      };
+
+      const result = await this.postService.getUserPosts(credentials.id, page, limit, status);
+      return h.response(result).code(200);
+    } catch (error) {
+      logger.error('Get my posts error:', error);
+      throw Boom.badImplementation('Failed to retrieve your posts');
+    }
+  };
+
+  createPost = async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
+    try {
+      const { credentials } = request.auth;
+      const postData = request.payload as {
+        title: string;
+        content?: string;
+        excerpt?: string;
+        status?: string;
+      };
+
+      const post = await this.postService.createPost(credentials.id, postData);
+
+      logger.info(\`Post created: \${post.title} by \${credentials.email}\`);
+      return h.response(post).code(201);
+    } catch (error) {
+      logger.error('Create post error:', error);
+      throw Boom.badImplementation('Failed to create post');
+    }
+  };
+
+  updatePost = async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
+    try {
+      const { credentials } = request.auth;
+      const { id } = request.params as { id: string };
+      const updates = request.payload as {
+        title?: string;
+        content?: string;
+        excerpt?: string;
+        status?: string;
+      };
+
+      const post = await this.postService.updatePost(id, credentials.id, credentials.role, updates);
+
+      logger.info(\`Post updated: \${id} by \${credentials.email}\`);
+      return h.response(post).code(200);
+    } catch (error) {
+      logger.error('Update post error:', error);
+      if (error.message.includes('not found')) {
+        throw Boom.notFound('Post not found');
+      }
+      if (error.message.includes('permission')) {
+        throw Boom.forbidden('Insufficient permissions');
+      }
+      throw Boom.badImplementation('Failed to update post');
+    }
+  };
+
+  deletePost = async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
+    try {
+      const { credentials } = request.auth;
+      const { id } = request.params as { id: string };
+
+      await this.postService.deletePost(id, credentials.id, credentials.role);
+
+      logger.info(\`Post deleted: \${id} by \${credentials.email}\`);
+      return h.response({ message: 'Post deleted successfully' }).code(200);
+    } catch (error) {
+      logger.error('Delete post error:', error);
+      if (error.message.includes('not found')) {
+        throw Boom.notFound('Post not found');
+      }
+      if (error.message.includes('permission')) {
+        throw Boom.forbidden('Insufficient permissions');
+      }
+      throw Boom.badImplementation('Failed to delete post');
+    }
+  };
+
+  getAllPosts = async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
+    try {
+      const { page, limit, status, author } = request.query as {
+        page: number;
+        limit: number;
+        status?: string;
+        author?: string;
+      };
+
+      const result = await this.postService.getAllPosts(page, limit, status, author);
+      return h.response(result).code(200);
+    } catch (error) {
+      logger.error('Get all posts error:', error);
+      throw Boom.badImplementation('Failed to retrieve all posts');
+    }
+  };
+}`,
     'src/controllers/healthController.ts': `import Hapi from '@hapi/hapi';
 import { HealthService } from '../services/healthService';
 
@@ -907,6 +1268,7 @@ export class HealthController {
 }`,
     'src/services/authService.ts': `import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { Role } from '@prisma/client';
 import { UserService } from './userService';
 import { loadEnvironment } from '../config/environment';
 
@@ -915,7 +1277,7 @@ export interface LoginResult {
   user: {
     id: string;
     email: string;
-    role: string;
+    role: Role;
   };
 }
 
@@ -967,7 +1329,7 @@ export class AuthService {
       email,
       password: hashedPassword,
       name,
-      role: 'user'
+      role: Role.USER
     });
 
     return {
@@ -996,7 +1358,7 @@ export class AuthService {
     console.log(\`User \${userId} logged out\`);
   }
 
-  private generateToken(id: string, email: string, role: string): string {
+  private generateToken(id: string, email: string, role: Role): string {
     return jwt.sign(
       { id, email, role },
       this.env.JWT_SECRET,
@@ -1004,23 +1366,14 @@ export class AuthService {
     );
   }
 }`,
-    'src/services/userService.ts': `import { v4 as uuidv4 } from 'uuid';
-
-export interface User {
-  id: string;
-  email: string;
-  password: string;
-  name: string;
-  role: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
+    'src/services/userService.ts': `import { User, Role, Prisma } from '@prisma/client';
+import { prisma } from '../lib/prisma';
 
 export interface CreateUserData {
   email: string;
   password: string;
   name: string;
-  role: string;
+  role: Role;
 }
 
 export interface UpdateUserData {
@@ -1038,105 +1391,662 @@ export interface PaginatedUsers {
   };
 }
 
-// In-memory storage for demo purposes
-// Replace with actual database implementation
-const users: User[] = [
-  {
-    id: '1',
-    email: 'admin@example.com',
-    password: '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/KjB0Y8B0Y8B0Y8B0Y',
-    name: 'Admin User',
-    role: 'admin',
-    createdAt: new Date(),
-    updatedAt: new Date()
-  }
-];
+export interface UserWithProfile extends Omit<User, 'password'> {
+  profile?: {
+    id: string;
+    bio: string | null;
+    avatar: string | null;
+    website: string | null;
+    location: string | null;
+    birthday: Date | null;
+    phone: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+  } | null;
+}
 
 export class UserService {
-  async findById(id: string): Promise<Omit<User, 'password'> | null> {
-    const user = users.find(u => u.id === id);
-    if (!user) return null;
-    
-    const { password, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+  async findById(id: string, includeProfile = false): Promise<UserWithProfile | null> {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id },
+        include: {
+          profile: includeProfile
+        }
+      });
+
+      if (!user) return null;
+
+      const { password, ...userWithoutPassword } = user;
+      return userWithoutPassword;
+    } catch (error) {
+      throw new Error(\`Failed to find user by ID: \${error.message}\`);
+    }
   }
 
-  async findByEmail(email: string): Promise<User | null> {
-    return users.find(u => u.email === email) || null;
+  async findByEmail(email: string, includeProfile = false): Promise<User | null> {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { email },
+        include: {
+          profile: includeProfile
+        }
+      });
+
+      return user;
+    } catch (error) {
+      throw new Error(\`Failed to find user by email: \${error.message}\`);
+    }
   }
 
   async createUser(userData: CreateUserData): Promise<Omit<User, 'password'>> {
-    const user: User = {
-      id: uuidv4(),
-      ...userData,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
+    try {
+      const user = await prisma.user.create({
+        data: userData
+      });
 
-    users.push(user);
-    
-    const { password, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+      const { password, ...userWithoutPassword } = user;
+      return userWithoutPassword;
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          throw new Error('User with this email already exists');
+        }
+      }
+      throw new Error(\`Failed to create user: \${error.message}\`);
+    }
   }
 
   async updateUser(id: string, updates: UpdateUserData): Promise<Omit<User, 'password'>> {
-    const userIndex = users.findIndex(u => u.id === id);
-    
-    if (userIndex === -1) {
-      throw new Error('User not found');
+    try {
+      const user = await prisma.user.update({
+        where: { id },
+        data: updates
+      });
+
+      const { password, ...userWithoutPassword } = user;
+      return userWithoutPassword;
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new Error('User not found');
+        }
+        if (error.code === 'P2002') {
+          throw new Error('Email already taken by another user');
+        }
+      }
+      throw new Error(\`Failed to update user: \${error.message}\`);
     }
-
-    users[userIndex] = {
-      ...users[userIndex],
-      ...updates,
-      updatedAt: new Date()
-    };
-
-    const { password, ...userWithoutPassword } = users[userIndex];
-    return userWithoutPassword;
   }
 
   async deleteUser(id: string): Promise<void> {
-    const userIndex = users.findIndex(u => u.id === id);
-    
-    if (userIndex === -1) {
-      throw new Error('User not found');
+    try {
+      await prisma.user.delete({
+        where: { id }
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new Error('User not found');
+        }
+      }
+      throw new Error(\`Failed to delete user: \${error.message}\`);
     }
-
-    users.splice(userIndex, 1);
   }
 
   async getUsers(page: number = 1, limit: number = 10, search?: string): Promise<PaginatedUsers> {
-    let filteredUsers = users;
+    try {
+      const skip = (page - 1) * limit;
+      
+      const where: Prisma.UserWhereInput = search
+        ? {
+            OR: [
+              { name: { contains: search, mode: 'insensitive' } },
+              { email: { contains: search, mode: 'insensitive' } }
+            ]
+          }
+        : {};
 
-    if (search) {
-      filteredUsers = users.filter(u => 
-        u.name.toLowerCase().includes(search.toLowerCase()) ||
-        u.email.toLowerCase().includes(search.toLowerCase())
-      );
+      const [users, total] = await Promise.all([
+        prisma.user.findMany({
+          where,
+          skip,
+          take: limit,
+          orderBy: { createdAt: 'desc' },
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            role: true,
+            createdAt: true,
+            updatedAt: true
+          }
+        }),
+        prisma.user.count({ where })
+      ]);
+
+      const pages = Math.ceil(total / limit);
+
+      return {
+        users,
+        pagination: {
+          page,
+          limit,
+          total,
+          pages
+        }
+      };
+    } catch (error) {
+      throw new Error(\`Failed to get users: \${error.message}\`);
     }
+  }
 
-    const total = filteredUsers.length;
-    const pages = Math.ceil(total / limit);
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
+  async getUserStats(): Promise<{
+    total: number;
+    byRole: Record<Role, number>;
+    recentCount: number;
+  }> {
+    try {
+      const [total, usersByRole, recentCount] = await Promise.all([
+        prisma.user.count(),
+        prisma.user.groupBy({
+          by: ['role'],
+          _count: { role: true }
+        }),
+        prisma.user.count({
+          where: {
+            createdAt: {
+              gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // Last 7 days
+            }
+          }
+        })
+      ]);
 
-    const paginatedUsers = filteredUsers
-      .slice(startIndex, endIndex)
-      .map(({ password, ...user }) => user);
+      const byRole = usersByRole.reduce((acc, item) => {
+        acc[item.role] = item._count.role;
+        return acc;
+      }, {} as Record<Role, number>);
 
-    return {
-      users: paginatedUsers,
-      pagination: {
-        page,
-        limit,
+      // Ensure all roles are represented
+      Object.values(Role).forEach(role => {
+        if (!(role in byRole)) {
+          byRole[role] = 0;
+        }
+      });
+
+      return {
         total,
-        pages
+        byRole,
+        recentCount
+      };
+    } catch (error) {
+      throw new Error(\`Failed to get user stats: \${error.message}\`);
+    }
+  }
+
+  async createUserProfile(userId: string, profileData: {
+    bio?: string;
+    avatar?: string;
+    website?: string;
+    location?: string;
+    birthday?: Date;
+    phone?: string;
+  }): Promise<UserWithProfile> {
+    try {
+      const user = await prisma.user.update({
+        where: { id: userId },
+        data: {
+          profile: {
+            create: profileData
+          }
+        },
+        include: {
+          profile: true
+        }
+      });
+
+      const { password, ...userWithoutPassword } = user;
+      return userWithoutPassword;
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new Error('User not found');
+        }
+        if (error.code === 'P2002') {
+          throw new Error('User already has a profile');
+        }
       }
-    };
+      throw new Error(\`Failed to create user profile: \${error.message}\`);
+    }
+  }
+
+  async updateUserProfile(userId: string, profileData: {
+    bio?: string;
+    avatar?: string;
+    website?: string;
+    location?: string;
+    birthday?: Date;
+    phone?: string;
+  }): Promise<UserWithProfile> {
+    try {
+      const user = await prisma.user.update({
+        where: { id: userId },
+        data: {
+          profile: {
+            upsert: {
+              create: profileData,
+              update: profileData
+            }
+          }
+        },
+        include: {
+          profile: true
+        }
+      });
+
+      const { password, ...userWithoutPassword } = user;
+      return userWithoutPassword;
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new Error('User not found');
+        }
+      }
+      throw new Error(\`Failed to update user profile: \${error.message}\`);
+    }
   }
 }`,
-    'src/services/healthService.ts': `export interface HealthStatus {
+    'src/services/postService.ts': `import { Post, PostStatus, Role, Prisma } from '@prisma/client';
+import { prisma } from '../lib/prisma';
+
+export interface CreatePostData {
+  title: string;
+  content?: string;
+  excerpt?: string;
+  status?: PostStatus;
+}
+
+export interface UpdatePostData {
+  title?: string;
+  content?: string;
+  excerpt?: string;
+  status?: PostStatus;
+}
+
+export interface PaginatedPosts {
+  posts: (Post & {
+    author: {
+      id: string;
+      name: string;
+      email: string;
+    };
+  })[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+}
+
+export class PostService {
+  private generateSlug(title: string): string {
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9 -]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .trim();
+  }
+
+  private async ensureUniqueSlug(baseSlug: string, excludeId?: string): Promise<string> {
+    let slug = baseSlug;
+    let counter = 1;
+
+    while (true) {
+      const existing = await prisma.post.findFirst({
+        where: {
+          slug,
+          id: excludeId ? { not: excludeId } : undefined
+        }
+      });
+
+      if (!existing) {
+        return slug;
+      }
+
+      slug = \`\${baseSlug}-\${counter}\`;
+      counter++;
+    }
+  }
+
+  async getPublishedPosts(
+    page: number = 1, 
+    limit: number = 10, 
+    search?: string, 
+    authorId?: string
+  ): Promise<PaginatedPosts> {
+    try {
+      const skip = (page - 1) * limit;
+      
+      const where: Prisma.PostWhereInput = {
+        status: PostStatus.PUBLISHED,
+        ...(search && {
+          OR: [
+            { title: { contains: search, mode: 'insensitive' } },
+            { content: { contains: search, mode: 'insensitive' } },
+            { excerpt: { contains: search, mode: 'insensitive' } }
+          ]
+        }),
+        ...(authorId && { authorId })
+      };
+
+      const [posts, total] = await Promise.all([
+        prisma.post.findMany({
+          where,
+          skip,
+          take: limit,
+          orderBy: { publishedAt: 'desc' },
+          include: {
+            author: {
+              select: {
+                id: true,
+                name: true,
+                email: true
+              }
+            }
+          }
+        }),
+        prisma.post.count({ where })
+      ]);
+
+      const pages = Math.ceil(total / limit);
+
+      return {
+        posts,
+        pagination: {
+          page,
+          limit,
+          total,
+          pages
+        }
+      };
+    } catch (error) {
+      throw new Error(\`Failed to get published posts: \${error.message}\`);
+    }
+  }
+
+  async getPostBySlug(slug: string): Promise<(Post & {
+    author: {
+      id: string;
+      name: string;
+      email: string;
+    };
+  }) | null> {
+    try {
+      const post = await prisma.post.findUnique({
+        where: { 
+          slug,
+          status: PostStatus.PUBLISHED
+        },
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+              email: true
+            }
+          }
+        }
+      });
+
+      return post;
+    } catch (error) {
+      throw new Error(\`Failed to get post by slug: \${error.message}\`);
+    }
+  }
+
+  async getUserPosts(
+    userId: string, 
+    page: number = 1, 
+    limit: number = 10, 
+    status?: string
+  ): Promise<PaginatedPosts> {
+    try {
+      const skip = (page - 1) * limit;
+      
+      const where: Prisma.PostWhereInput = {
+        authorId: userId,
+        ...(status && { status: status as PostStatus })
+      };
+
+      const [posts, total] = await Promise.all([
+        prisma.post.findMany({
+          where,
+          skip,
+          take: limit,
+          orderBy: { createdAt: 'desc' },
+          include: {
+            author: {
+              select: {
+                id: true,
+                name: true,
+                email: true
+              }
+            }
+          }
+        }),
+        prisma.post.count({ where })
+      ]);
+
+      const pages = Math.ceil(total / limit);
+
+      return {
+        posts,
+        pagination: {
+          page,
+          limit,
+          total,
+          pages
+        }
+      };
+    } catch (error) {
+      throw new Error(\`Failed to get user posts: \${error.message}\`);
+    }
+  }
+
+  async createPost(userId: string, postData: CreatePostData): Promise<Post> {
+    try {
+      const baseSlug = this.generateSlug(postData.title);
+      const slug = await this.ensureUniqueSlug(baseSlug);
+
+      const post = await prisma.post.create({
+        data: {
+          ...postData,
+          slug,
+          authorId: userId,
+          status: postData.status || PostStatus.DRAFT,
+          publishedAt: postData.status === PostStatus.PUBLISHED ? new Date() : null
+        }
+      });
+
+      return post;
+    } catch (error) {
+      throw new Error(\`Failed to create post: \${error.message}\`);
+    }
+  }
+
+  async updatePost(
+    postId: string, 
+    userId: string, 
+    userRole: Role, 
+    updates: UpdatePostData
+  ): Promise<Post> {
+    try {
+      // Check if post exists and user has permission
+      const existingPost = await prisma.post.findUnique({
+        where: { id: postId }
+      });
+
+      if (!existingPost) {
+        throw new Error('Post not found');
+      }
+
+      // Check permissions: author can edit their own posts, admin can edit any post
+      if (existingPost.authorId !== userId && userRole !== Role.ADMIN) {
+        throw new Error('Insufficient permissions to update this post');
+      }
+
+      // If title is being updated, regenerate slug
+      let slug = existingPost.slug;
+      if (updates.title && updates.title !== existingPost.title) {
+        const baseSlug = this.generateSlug(updates.title);
+        slug = await this.ensureUniqueSlug(baseSlug, postId);
+      }
+
+      // Set publishedAt when publishing
+      let publishedAt = existingPost.publishedAt;
+      if (updates.status === PostStatus.PUBLISHED && existingPost.status !== PostStatus.PUBLISHED) {
+        publishedAt = new Date();
+      } else if (updates.status !== PostStatus.PUBLISHED) {
+        publishedAt = null;
+      }
+
+      const post = await prisma.post.update({
+        where: { id: postId },
+        data: {
+          ...updates,
+          slug,
+          publishedAt
+        }
+      });
+
+      return post;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async deletePost(postId: string, userId: string, userRole: Role): Promise<void> {
+    try {
+      // Check if post exists and user has permission
+      const existingPost = await prisma.post.findUnique({
+        where: { id: postId }
+      });
+
+      if (!existingPost) {
+        throw new Error('Post not found');
+      }
+
+      // Check permissions: author can delete their own posts, admin can delete any post
+      if (existingPost.authorId !== userId && userRole !== Role.ADMIN) {
+        throw new Error('Insufficient permissions to delete this post');
+      }
+
+      await prisma.post.delete({
+        where: { id: postId }
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getAllPosts(
+    page: number = 1, 
+    limit: number = 20, 
+    status?: string, 
+    authorId?: string
+  ): Promise<PaginatedPosts> {
+    try {
+      const skip = (page - 1) * limit;
+      
+      const where: Prisma.PostWhereInput = {
+        ...(status && { status: status as PostStatus }),
+        ...(authorId && { authorId })
+      };
+
+      const [posts, total] = await Promise.all([
+        prisma.post.findMany({
+          where,
+          skip,
+          take: limit,
+          orderBy: { createdAt: 'desc' },
+          include: {
+            author: {
+              select: {
+                id: true,
+                name: true,
+                email: true
+              }
+            }
+          }
+        }),
+        prisma.post.count({ where })
+      ]);
+
+      const pages = Math.ceil(total / limit);
+
+      return {
+        posts,
+        pagination: {
+          page,
+          limit,
+          total,
+          pages
+        }
+      };
+    } catch (error) {
+      throw new Error(\`Failed to get all posts: \${error.message}\`);
+    }
+  }
+
+  async getPostStats(): Promise<{
+    total: number;
+    byStatus: Record<PostStatus, number>;
+    recentCount: number;
+  }> {
+    try {
+      const [total, postsByStatus, recentCount] = await Promise.all([
+        prisma.post.count(),
+        prisma.post.groupBy({
+          by: ['status'],
+          _count: { status: true }
+        }),
+        prisma.post.count({
+          where: {
+            createdAt: {
+              gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // Last 7 days
+            }
+          }
+        })
+      ]);
+
+      const byStatus = postsByStatus.reduce((acc, item) => {
+        acc[item.status] = item._count.status;
+        return acc;
+      }, {} as Record<PostStatus, number>);
+
+      // Ensure all statuses are represented
+      Object.values(PostStatus).forEach(status => {
+        if (!(status in byStatus)) {
+          byStatus[status] = 0;
+        }
+      });
+
+      return {
+        total,
+        byStatus,
+        recentCount
+      };
+    } catch (error) {
+      throw new Error(\`Failed to get post stats: \${error.message}\`);
+    }
+  }
+}`,
+    'src/services/healthService.ts': `import { checkDatabaseConnection } from '../lib/prisma';
+import { logger } from '../utils/logger';
+
+export interface HealthStatus {
   status: string;
   timestamp: Date;
   uptime?: number;
@@ -1173,6 +2083,7 @@ export class HealthService {
       
       return dbStatus.status === 'ok' && cacheStatus.status === 'ok';
     } catch (error) {
+      logger.error('Readiness check failed:', error);
       return false;
     }
   }
@@ -1185,12 +2096,15 @@ export class HealthService {
   private async checkDatabase(): Promise<{ status: string; latency?: number }> {
     try {
       const start = Date.now();
-      // Simulate database check
-      await new Promise(resolve => setTimeout(resolve, 10));
+      const isConnected = await checkDatabaseConnection();
       const latency = Date.now() - start;
       
-      return { status: 'ok', latency };
+      return { 
+        status: isConnected ? 'ok' : 'error', 
+        latency: isConnected ? latency : undefined 
+      };
     } catch (error) {
+      logger.error('Database health check failed:', error);
       return { status: 'error' };
     }
   }
@@ -1198,12 +2112,14 @@ export class HealthService {
   private async checkCache(): Promise<{ status: string; latency?: number }> {
     try {
       const start = Date.now();
-      // Simulate cache check
+      // TODO: Implement actual Redis health check
+      // For now, we'll simulate a cache check
       await new Promise(resolve => setTimeout(resolve, 5));
       const latency = Date.now() - start;
       
       return { status: 'ok', latency };
     } catch (error) {
+      logger.error('Cache health check failed:', error);
       return { status: 'error' };
     }
   }
@@ -1249,6 +2165,343 @@ export const gracefulShutdown = (): void => {
   
   process.exit(0);
 };`,
+    'prisma/schema.prisma': `// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+  MODERATOR
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  profile Profile?
+  posts   Post[]
+  
+  @@map("users")
+}
+
+model Profile {
+  id        String   @id @default(cuid())
+  bio       String?
+  avatar    String?
+  website   String?
+  location  String?
+  birthday  DateTime?
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("profiles")
+}
+
+model Post {
+  id          String     @id @default(cuid())
+  title       String
+  content     String?
+  excerpt     String?
+  slug        String     @unique
+  status      PostStatus @default(DRAFT)
+  publishedAt DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Relations
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@map("posts")
+}`,
+    'prisma/seed.ts': `import { PrismaClient, Role, PostStatus } from '@prisma/client';
+import bcrypt from 'bcrypt';
+
+const prisma = new PrismaClient();
+
+async function main() {
+  console.log('🌱 Starting database seeding...');
+
+  // Clean existing data
+  await prisma.post.deleteMany();
+  await prisma.profile.deleteMany();
+  await prisma.user.deleteMany();
+
+  console.log('🧹 Cleaned existing data');
+
+  // Create users with hashed passwords
+  const adminPassword = await bcrypt.hash('admin123', 12);
+  const userPassword = await bcrypt.hash('user123', 12);
+  const moderatorPassword = await bcrypt.hash('moderator123', 12);
+
+  // Create admin user
+  const adminUser = await prisma.user.create({
+    data: {
+      email: 'admin@example.com',
+      password: adminPassword,
+      name: 'Admin User',
+      role: Role.ADMIN,
+      profile: {
+        create: {
+          bio: 'System administrator with full access to all features.',
+          website: 'https://admin.example.com',
+          location: 'San Francisco, CA',
+          phone: '+1-555-0100'
+        }
+      }
+    },
+    include: {
+      profile: true
+    }
+  });
+
+  // Create regular user
+  const regularUser = await prisma.user.create({
+    data: {
+      email: 'user@example.com',
+      password: userPassword,
+      name: 'John Doe',
+      role: Role.USER,
+      profile: {
+        create: {
+          bio: 'Software developer passionate about building great products.',
+          website: 'https://johndoe.dev',
+          location: 'New York, NY',
+          birthday: new Date('1990-05-15'),
+          phone: '+1-555-0200'
+        }
+      }
+    },
+    include: {
+      profile: true
+    }
+  });
+
+  // Create moderator user
+  const moderatorUser = await prisma.user.create({
+    data: {
+      email: 'moderator@example.com',
+      password: moderatorPassword,
+      name: 'Jane Smith',
+      role: Role.MODERATOR,
+      profile: {
+        create: {
+          bio: 'Community moderator helping maintain a positive environment.',
+          website: 'https://janesmith.com',
+          location: 'Austin, TX',
+          birthday: new Date('1988-12-03'),
+          phone: '+1-555-0300'
+        }
+      }
+    },
+    include: {
+      profile: true
+    }
+  });
+
+  console.log('👥 Created users:', {
+    admin: adminUser.email,
+    user: regularUser.email,
+    moderator: moderatorUser.email
+  });
+
+  // Create sample posts
+  const posts = await Promise.all([
+    prisma.post.create({
+      data: {
+        title: 'Welcome to Our API',
+        content: 'This is the first post in our system. Welcome to our Hapi.js TypeScript API with Prisma ORM integration!',
+        excerpt: 'Welcome post introducing our new API system.',
+        slug: 'welcome-to-our-api',
+        status: PostStatus.PUBLISHED,
+        publishedAt: new Date(),
+        authorId: adminUser.id
+      }
+    }),
+    prisma.post.create({
+      data: {
+        title: 'Getting Started with Prisma',
+        content: 'Prisma is a next-generation Node.js and TypeScript ORM that provides a type-safe database client, automated migrations, and powerful query capabilities.',
+        excerpt: 'Learn how to get started with Prisma ORM in your projects.',
+        slug: 'getting-started-with-prisma',
+        status: PostStatus.PUBLISHED,
+        publishedAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
+        authorId: regularUser.id
+      }
+    }),
+    prisma.post.create({
+      data: {
+        title: 'Building Scalable APIs with Hapi.js',
+        content: 'Hapi.js is a powerful Node.js framework for building applications and services. It provides a comprehensive set of features for building robust APIs.',
+        excerpt: 'Explore the benefits of using Hapi.js for API development.',
+        slug: 'building-scalable-apis-with-hapi',
+        status: PostStatus.PUBLISHED,
+        publishedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
+        authorId: moderatorUser.id
+      }
+    }),
+    prisma.post.create({
+      data: {
+        title: 'Draft Post: Future Features',
+        content: 'This is a draft post about upcoming features. It will be published later.',
+        excerpt: 'Preview of upcoming features and improvements.',
+        slug: 'draft-post-future-features',
+        status: PostStatus.DRAFT,
+        authorId: adminUser.id
+      }
+    }),
+    prisma.post.create({
+      data: {
+        title: 'TypeScript Best Practices',
+        content: 'TypeScript brings static typing to JavaScript, enabling better tooling, error detection, and code maintainability. Here are some best practices for TypeScript development.',
+        excerpt: 'Essential TypeScript best practices for better code quality.',
+        slug: 'typescript-best-practices',
+        status: PostStatus.PUBLISHED,
+        publishedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+        authorId: regularUser.id
+      }
+    })
+  ]);
+
+  console.log('📝 Created posts:', posts.map(post => ({ title: post.title, status: post.status })));
+
+  // Display summary
+  const userCount = await prisma.user.count();
+  const profileCount = await prisma.profile.count();
+  const postCount = await prisma.post.count();
+  const publishedPostCount = await prisma.post.count({ where: { status: PostStatus.PUBLISHED } });
+
+  console.log('✅ Database seeding completed successfully!');
+  console.log('📊 Summary:');
+  console.log(\`   Users: \${userCount}\`);
+  console.log(\`   Profiles: \${profileCount}\`);
+  console.log(\`   Posts: \${postCount} (\${publishedPostCount} published)\`);
+
+  console.log('\\n🔑 Test Credentials:');
+  console.log('   Admin: admin@example.com / admin123');
+  console.log('   User: user@example.com / user123');
+  console.log('   Moderator: moderator@example.com / moderator123');
+}
+
+main()
+  .catch((e) => {
+    console.error('❌ Seeding failed:', e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });`,
+    'src/lib/prisma.ts': `import { PrismaClient } from '@prisma/client';
+import { logger } from '../utils/logger';
+
+declare global {
+  // eslint-disable-next-line no-var
+  var __prisma: PrismaClient | undefined;
+}
+
+// Prevent multiple instances during development
+const prisma = globalThis.__prisma || new PrismaClient({
+  log: [
+    { level: 'query', emit: 'event' },
+    { level: 'error', emit: 'event' },
+    { level: 'info', emit: 'event' },
+    { level: 'warn', emit: 'event' },
+  ],
+});
+
+// Log database queries in development
+if (process.env.NODE_ENV === 'development') {
+  prisma.$on('query', (e) => {
+    logger.debug('Prisma Query:', {
+      query: e.query,
+      params: e.params,
+      duration: \`\${e.duration}ms\`
+    });
+  });
+}
+
+// Log database errors
+prisma.$on('error', (e) => {
+  logger.error('Prisma Error:', e);
+});
+
+// Log database info
+prisma.$on('info', (e) => {
+  logger.info('Prisma Info:', e.message);
+});
+
+// Log database warnings
+prisma.$on('warn', (e) => {
+  logger.warn('Prisma Warning:', e.message);
+});
+
+if (process.env.NODE_ENV === 'development') {
+  globalThis.__prisma = prisma;
+}
+
+// Graceful shutdown
+process.on('beforeExit', async () => {
+  await prisma.$disconnect();
+});
+
+export { prisma };
+
+// Health check function
+export const checkDatabaseConnection = async (): Promise<boolean> => {
+  try {
+    await prisma.$queryRaw\`SELECT 1\`;
+    return true;
+  } catch (error) {
+    logger.error('Database connection check failed:', error);
+    return false;
+  }
+};
+
+// Database connection with retries
+export const connectWithRetry = async (maxRetries = 5, delay = 1000): Promise<void> => {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      await prisma.$connect();
+      logger.info('Database connected successfully');
+      return;
+    } catch (error) {
+      logger.error(\`Database connection attempt \${i + 1} failed:\`, error);
+      
+      if (i === maxRetries - 1) {
+        throw new Error(\`Failed to connect to database after \${maxRetries} attempts\`);
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, delay));
+      delay *= 2; // Exponential backoff
+    }
+  }
+};`,
     '.env.example': `NODE_ENV=development
 PORT=3000
 HOST=localhost
@@ -1267,7 +2520,13 @@ CACHE_TTL=300000
 API_RATE_LIMIT=100
 
 # Logging
-LOG_LEVEL=info`,
+LOG_LEVEL=info
+
+# Database Configuration
+DATABASE_URL="postgresql://username:password@localhost:5432/mydb?schema=public"
+
+# Prisma Configuration
+PRISMA_SCHEMA_DISABLE_ADVISORY_LOCK="1"`,
     'Dockerfile': `# Build stage
 FROM node:20-alpine AS builder
 
@@ -1568,11 +2827,15 @@ Enterprise-grade Hapi.js API server with TypeScript, built-in validation, cachin
 - **🧪 Testing**: Lab testing framework with high coverage
 - **🐳 Docker**: Production-ready containerization
 
+- **🗄️ Database Integration**: Prisma ORM with PostgreSQL, MySQL, SQLite support
+- **🌱 Database Seeding**: Comprehensive seed data with users, profiles, and posts
+
 ## Quick Start
 
 ### Prerequisites
 
 - Node.js 20+
+- PostgreSQL, MySQL, or SQLite database
 - Redis server
 - npm/yarn/pnpm
 
@@ -1585,8 +2848,17 @@ npm install
 # Copy environment file
 cp .env.example .env
 
-# Edit environment variables
+# Edit environment variables (set DATABASE_URL)
 nano .env
+
+# Generate Prisma client
+npm run db:generate
+
+# Push database schema
+npm run db:push
+
+# Seed the database with sample data
+npm run db:seed
 \`\`\`
 
 ### Development
@@ -1714,6 +2986,46 @@ The API supports role-based access control:
 | \`CACHE_TTL\` | Cache TTL in milliseconds | \`300000\` |
 | \`API_RATE_LIMIT\` | Rate limit per user | \`100\` |
 | \`LOG_LEVEL\` | Logging level | \`info\` |
+| \`DATABASE_URL\` | Database connection string | Required |
+
+## Database
+
+This project uses Prisma ORM for database operations. The schema includes:
+
+- **Users**: Authentication and user management
+- **Profiles**: Extended user information
+- **Posts**: Content management with draft/published states
+- **Roles**: USER, ADMIN, MODERATOR role system
+
+### Database Commands
+
+\`\`\`bash
+# Generate Prisma client
+npm run db:generate
+
+# Push schema changes to database
+npm run db:push
+
+# Run migrations (production)
+npm run db:migrate
+
+# Reset database
+npm run db:migrate:reset
+
+# Open Prisma Studio
+npm run db:studio
+
+# Seed database with sample data
+npm run db:seed
+\`\`\`
+
+### Sample Users
+
+After running the seed script, you can login with:
+
+- **Admin**: admin@example.com / admin123
+- **User**: user@example.com / user123  
+- **Moderator**: moderator@example.com / moderator123
 
 ## Health Checks
 
@@ -1836,6 +3148,11 @@ MIT License - see LICENSE file for details.`
     'npm install',
     'cp .env.example .env',
     'mkdir -p logs',
-    'npm run build'
+    'npx prisma generate',
+    'npm run build',
+    'echo "📋 Database setup:"',
+    'echo "1. Set DATABASE_URL in .env"',
+    'echo "2. Run: npm run db:push"',
+    'echo "3. Run: npm run db:seed"'
   ]
 };

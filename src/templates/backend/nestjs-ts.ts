@@ -42,6 +42,8 @@ export const nestjsTypeScriptTemplate: BackendTemplate = {
     'typeorm': '^0.3.17',
     'reflect-metadata': '^0.1.13',
     'rxjs': '^7.8.1'
+      '@prisma/client': '^5.8.1',
+      'uuid': '^9.0.1',
   },
   devDependencies: {
     '@nestjs/cli': '^10.2.1',
@@ -68,6 +70,8 @@ export const nestjsTypeScriptTemplate: BackendTemplate = {
     'ts-node': '^10.9.1',
     'tsconfig-paths': '^4.2.0',
     'typescript': '^5.3.3'
+      'prisma': '^5.8.1',
+      '@types/uuid': '^9.0.7',
   },
   files: {
     'package.json': {
@@ -1089,7 +1093,13 @@ DB_NAME=nestjs_app
 
 # Logging
 LOG_LEVEL=debug
-`,
+
+
+# Database Configuration
+DATABASE_URL="postgresql://username:password@localhost:5432/mydb?schema=public"
+
+# Prisma Configuration
+PRISMA_SCHEMA_DISABLE_ADVISORY_LOCK="1"`,
     '.gitignore': `# Dependencies
 node_modules/
 npm-debug.log*
@@ -1198,6 +1208,7 @@ An enterprise-grade NestJS API server with TypeScript, dependency injection, mod
 - 🧪 **Testing Ready** - Jest testing framework with e2e support
 - 🐳 **Production Ready** - Docker configuration and deployment setup
 
+- **🗄️ Database Integration**: Prisma ORM with PostgreSQL, MySQL, SQLite support
 ## Quick Start
 
 1. **Install dependencies:**
@@ -1710,5 +1721,9 @@ describe('AppController (e2e)', () => {
     'echo "   2. Run \'npm run start:dev\' to start development"',
     'echo "   3. Visit http://localhost:3000/docs for API documentation"',
     'echo "   4. Visit http://localhost:3000/api/v1/health for health check"'
-  ]
+      'npx prisma generate',
+    'echo "📋 Database setup:"',
+    'echo "1. Set DATABASE_URL in .env"',
+    'echo "2. Run: npm run db:push"',
+    'echo "3. Run: npm run db:seed"',]
 };

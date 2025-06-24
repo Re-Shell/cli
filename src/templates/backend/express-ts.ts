@@ -28,6 +28,9 @@ export const expressTypeScriptTemplate: BackendTemplate = {
     typescript: '^5.3.3',
     'ts-node': '^10.9.1',
     nodemon: '^3.0.2'
+      '@prisma/client': '^5.8.1',
+      'bcrypt': '^5.1.1',
+      'uuid': '^9.0.1',
   },
   devDependencies: {
     '@types/node': '^20.10.5',
@@ -40,6 +43,9 @@ export const expressTypeScriptTemplate: BackendTemplate = {
     '@typescript-eslint/parser': '^6.15.0',
     '@typescript-eslint/eslint-plugin': '^6.15.0',
     prettier: '^3.1.1'
+      'prisma': '^5.8.1',
+      '@types/bcrypt': '^5.0.2',
+      '@types/uuid': '^9.0.7',
   },
   files: {
     'package.json': {
@@ -653,6 +659,7 @@ A modern Express.js API server with TypeScript, JWT authentication, and comprehe
 - 📦 **Hot Reload** - Nodemon for development
 - 🔧 **Code Quality** - ESLint, Prettier, TypeScript strict mode
 
+- **🗄️ Database Integration**: Prisma ORM with PostgreSQL, MySQL, SQLite support
 ## Quick Start
 
 1. **Install dependencies:**
@@ -990,5 +997,9 @@ networks:
     'echo "   1. Update .env with your configuration"',
     'echo "   2. Run \'npm run dev\' to start development"',
     'echo "   3. Visit http://localhost:3000/api/health"'
-  ]
+      'npx prisma generate',
+    'echo "📋 Database setup:"',
+    'echo "1. Set DATABASE_URL in .env"',
+    'echo "2. Run: npm run db:push"',
+    'echo "3. Run: npm run db:seed"',]
 };
