@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-06-23T07:04:59.354Z",
+  "timestamp": "2025-06-24T05:53:40.627Z",
   "version": "0.9.0",
   "templateTests": {
     "Express.js": {
@@ -536,10 +536,20 @@
           "passed": true,
           "description": "Includes auto-generated API documentation",
           "critical": true
+        },
+        "Prisma ORM Integration": {
+          "passed": true,
+          "description": "Includes Prisma ORM with schema and client",
+          "critical": true
+        },
+        "Database Seeding": {
+          "passed": true,
+          "description": "Includes database seed functionality",
+          "critical": true
         }
       },
-      "featureCount": 22,
-      "passedFeatures": 22,
+      "featureCount": 24,
+      "passedFeatures": 24,
       "failedFeatures": 0
     }
   },
@@ -547,8 +557,8 @@
     "totalTemplates": 5,
     "passedTemplates": 5,
     "failedTemplates": 0,
-    "totalFeatures": 98,
-    "passedFeatures": 98,
+    "totalFeatures": 100,
+    "passedFeatures": 100,
     "failedFeatures": 0
   },
   "organization": {

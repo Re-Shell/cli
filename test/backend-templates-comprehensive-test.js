@@ -325,6 +325,18 @@ const getFeatureTests = (templateName) => {
         description: 'Includes auto-generated API documentation',
         test: (content) => content.includes('hapi-swagger') && content.includes('HapiSwagger'),
         critical: true
+      },
+      {
+        name: 'Prisma ORM Integration',
+        description: 'Includes Prisma ORM with schema and client',
+        test: (content) => content.includes('@prisma/client') && content.includes('prisma/schema.prisma'),
+        critical: true
+      },
+      {
+        name: 'Database Seeding',
+        description: 'Includes database seed functionality',
+        test: (content) => content.includes('prisma/seed.ts') && content.includes('db:seed'),
+        critical: true
       }
     ]
   };
