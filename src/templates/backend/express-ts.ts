@@ -3,11 +3,11 @@ import { BackendTemplate } from '../types';
 export const expressTypeScriptTemplate: BackendTemplate = {
   id: 'express-ts',
   name: 'Express.js + TypeScript',
-  description: 'Modern Express.js API server with TypeScript, JWT authentication, and choice of Prisma or TypeORM',
+  description: 'Modern Express.js API server with TypeScript, JWT authentication, and choice of Prisma, TypeORM, or Mongoose',
   framework: 'express',
   language: 'typescript',
   version: '1.0.0',
-  tags: ['express', 'typescript', 'jwt', 'middleware', 'rest-api', 'prisma', 'typeorm', 'database'],
+  tags: ['express', 'typescript', 'jwt', 'middleware', 'rest-api', 'prisma', 'typeorm', 'mongoose', 'database'],
   dependencies: {
     express: '^4.18.2',
     cors: '^2.8.5',
@@ -18,6 +18,7 @@ export const expressTypeScriptTemplate: BackendTemplate = {
     bcryptjs: '^2.4.3',
     dotenv: '^16.3.1',
     winston: '^3.11.0',
+    'winston-daily-rotate-file': '^4.7.1',
     'express-validator': '^7.0.1',
     'express-async-errors': '^3.1.1',
     '@types/express': '^4.17.21',
@@ -36,10 +37,14 @@ export const expressTypeScriptTemplate: BackendTemplate = {
     typeorm: '^0.3.17',
     'class-validator': '^0.14.0',
     'class-transformer': '^0.5.1',
-    reflect-metadata: '^0.1.13',
-    pg: '^8.11.3',
-    mysql2: '^3.6.5',
-    sqlite3: '^5.1.6'
+    'reflect-metadata': '^0.1.13',
+    'pg': '^8.11.3',
+    'mysql2': '^3.6.5',
+    'sqlite3': '^5.1.6',
+    // Mongoose ODM for MongoDB
+    'mongoose': '^8.1.1',
+    'validator': '^13.11.0',
+    'slugify': '^1.6.6'
   },
   devDependencies: {
     '@types/node': '^20.10.5',
@@ -57,7 +62,11 @@ export const expressTypeScriptTemplate: BackendTemplate = {
     '@types/bcrypt': '^5.0.2',
     '@types/uuid': '^9.0.7',
     // TypeORM types
-    '@types/pg': '^8.10.9'
+    '@types/pg': '^8.10.9',
+    // Mongoose types
+    '@types/validator': '^13.11.8',
+    // Hot-reload tools
+    tsx: '^4.7.0'
   },
   files: {
     'package.json': {
@@ -67,7 +76,10 @@ export const expressTypeScriptTemplate: BackendTemplate = {
       main: 'dist/index.js',
       scripts: {
         start: 'node dist/index.js',
-        dev: 'nodemon src/index.ts',
+        dev: 'nodemon',
+        'dev:tsx': 'tsx watch src/index.ts',
+        'dev:fast': 'tsx watch --clear-screen=false src/index.ts',
+        'dev:debug': 'nodemon --inspect src/index.ts',
         build: 'tsc',
         test: 'jest',
         'test:watch': 'jest --watch',
@@ -88,7 +100,10 @@ export const expressTypeScriptTemplate: BackendTemplate = {
         'typeorm:migration:revert': 'npm run typeorm -- migration:revert -d src/config/typeorm.config.ts',
         'typeorm:schema:sync': 'npm run typeorm -- schema:sync -d src/config/typeorm.config.ts',
         'typeorm:schema:drop': 'npm run typeorm -- schema:drop -d src/config/typeorm.config.ts',
-        'typeorm:seed': 'ts-node src/seeds/seed.ts'
+        'typeorm:seed': 'ts-node src/seeds/seed.ts',
+        // Mongoose scripts
+        'db:mongoose:seed': 'ts-node src/database/seeds/index.ts',
+        'db:mongoose:drop': 'ts-node src/database/scripts/drop.ts'
       },
       keywords: ['express', 'typescript', 'api', 'server'],
       author: '{{author}}',
@@ -134,7 +149,7 @@ import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import 'express-async-errors';
 
-import { logger } from './config/logger';
+import { logger, httpLogger } from './config/logger';
 import { errorHandler } from './middleware/errorHandler';
 import { notFoundHandler } from './middleware/notFoundHandler';
 import { authRoutes } from './routes/auth';
@@ -167,14 +182,8 @@ app.use(compression());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Logging middleware
-app.use((req, res, next) => {
-  logger.info(\`\${req.method} \${req.url}\`, {
-    ip: req.ip,
-    userAgent: req.get('User-Agent')
-  });
-  next();
-});
+// HTTP request logging middleware
+app.use(httpLogger);
 
 // Routes
 app.use('/api/health', healthRoutes);
@@ -209,31 +218,189 @@ process.on('SIGINT', () => {
 export default app;
 `,
     'src/config/logger.ts': `import winston from 'winston';
+import DailyRotateFile from 'winston-daily-rotate-file';
 
 const logLevel = process.env.LOG_LEVEL || 'info';
+const isProduction = process.env.NODE_ENV === 'production';
+
+// Custom log levels with priorities
+const logLevels = {
+  error: 0,
+  warn: 1,
+  info: 2,
+  http: 3,
+  verbose: 4,
+  debug: 5,
+  silly: 6
+};
+
+// Log colors for console output
+const logColors = {
+  error: 'red',
+  warn: 'yellow',
+  info: 'green',
+  http: 'magenta',
+  verbose: 'grey',
+  debug: 'white',
+  silly: 'rainbow'
+};
+
+winston.addColors(logColors);
+
+// Base log format
+const baseFormat = winston.format.combine(
+  winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
+  winston.format.errors({ stack: true }),
+  winston.format.printf(({ timestamp, level, message, stack, ...meta }) => {
+    let log = \`\${timestamp} [\${level.toUpperCase()}]: \${message}\`;
+    if (stack) {
+      log += \`\\n\${stack}\`;
+    }
+    if (Object.keys(meta).length > 0) {
+      log += \`\\n\${JSON.stringify(meta, null, 2)}\`;
+    }
+    return log;
+  })
+);
+
+// File transport with daily rotation for all logs
+const allLogsTransport = new DailyRotateFile({
+  filename: 'logs/application-%DATE%.log',
+  datePattern: 'YYYY-MM-DD',
+  zippedArchive: true,
+  maxSize: '20m',
+  maxFiles: '14d',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  )
+});
+
+// File transport with daily rotation for error logs
+const errorLogsTransport = new DailyRotateFile({
+  filename: 'logs/error-%DATE%.log',
+  datePattern: 'YYYY-MM-DD',
+  zippedArchive: true,
+  maxSize: '20m',
+  maxFiles: '30d',
+  level: 'error',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  )
+});
+
+// HTTP request logs transport
+const httpLogsTransport = new DailyRotateFile({
+  filename: 'logs/http-%DATE%.log',
+  datePattern: 'YYYY-MM-DD',
+  zippedArchive: true,
+  maxSize: '20m',
+  maxFiles: '7d',
+  level: 'http',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  )
+});
 
 export const logger = winston.createLogger({
   level: logLevel,
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.errors({ stack: true }),
-    winston.format.json()
-  ),
-  defaultMeta: { service: '{{projectName}}' },
+  levels: logLevels,
+  format: baseFormat,
+  defaultMeta: { 
+    service: '{{projectName}}',
+    environment: process.env.NODE_ENV || 'development'
+  },
   transports: [
-    new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'logs/combined.log' }),
+    allLogsTransport,
+    errorLogsTransport,
+    httpLogsTransport
   ],
+  exceptionHandlers: [
+    new DailyRotateFile({
+      filename: 'logs/exceptions-%DATE%.log',
+      datePattern: 'YYYY-MM-DD',
+      zippedArchive: true,
+      maxSize: '20m',
+      maxFiles: '30d'
+    })
+  ],
+  rejectionHandlers: [
+    new DailyRotateFile({
+      filename: 'logs/rejections-%DATE%.log',
+      datePattern: 'YYYY-MM-DD',
+      zippedArchive: true,
+      maxSize: '20m',
+      maxFiles: '30d'
+    })
+  ]
 });
 
-if (process.env.NODE_ENV !== 'production') {
+// Console transport for non-production environments
+if (!isProduction) {
   logger.add(new winston.transports.Console({
+    level: logLevel,
     format: winston.format.combine(
-      winston.format.colorize(),
-      winston.format.simple()
+      winston.format.colorize({ all: true }),
+      winston.format.printf(({ timestamp, level, message, stack, ...meta }) => {
+        let log = \`\${timestamp} [\${level}]: \${message}\`;
+        if (stack) {
+          log += \`\\n\${stack}\`;
+        }
+        if (Object.keys(meta).length > 0) {
+          log += \` \${JSON.stringify(meta)}\`;
+        }
+        return log;
+      })
     )
   }));
 }
+
+// Log rotation event handlers
+allLogsTransport.on('rotate', (oldFilename, newFilename) => {
+  logger.info('Log file rotated', { oldFile: oldFilename, newFile: newFilename });
+});
+
+// Performance monitoring
+if (process.env.LOG_PERFORMANCE === 'true') {
+  logger.add(new DailyRotateFile({
+    filename: 'logs/performance-%DATE%.log',
+    datePattern: 'YYYY-MM-DD',
+    zippedArchive: true,
+    maxSize: '20m',
+    maxFiles: '7d',
+    level: 'verbose'
+  }));
+}
+
+// HTTP request logger middleware helper
+export const httpLogger = (req: any, res: any, next: any) => {
+  const start = Date.now();
+  
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    const logData = {
+      method: req.method,
+      url: req.url,
+      status: res.statusCode,
+      duration: \`\${duration}ms\`,
+      ip: req.ip,
+      userAgent: req.get('User-Agent'),
+      contentLength: res.get('Content-Length') || 0
+    };
+    
+    if (res.statusCode >= 400) {
+      logger.warn('HTTP Request Warning', logData);
+    } else {
+      logger.http('HTTP Request', logData);
+    }
+  });
+  
+  next();
+};
+
+export default logger;
 `,
     'src/config/auth.ts': `import jwt from 'jsonwebtoken';
 
@@ -1895,6 +2062,232 @@ router.get('/admin/stats',
 
 export { router as userTypeOrmRoutes };
 `,
+    // Mongoose Integration Files (for MongoDB)
+    'src/config/database.ts': `import mongoose from 'mongoose';
+
+const connectToDatabase = async (): Promise<void> => {
+  const url = process.env.MONGODB_URL || 'mongodb://localhost:27017/myapp';
+  
+  const options: mongoose.ConnectOptions = {
+    maxPoolSize: parseInt(process.env.DB_POOL_SIZE || '10'),
+    serverSelectionTimeoutMS: parseInt(process.env.DB_TIMEOUT || '5000'),
+    retryWrites: process.env.NODE_ENV === 'production',
+    retryReads: process.env.NODE_ENV === 'production',
+  };
+
+  try {
+    await mongoose.connect(url, options);
+    console.log('✅ Connected to MongoDB successfully');
+  } catch (error) {
+    console.error('Failed to connect to MongoDB:', error);
+    throw error;
+  }
+};
+
+const disconnectFromDatabase = async (): Promise<void> => {
+  try {
+    await mongoose.disconnect();
+    console.log('Disconnected from MongoDB');
+  } catch (error) {
+    console.error('Error disconnecting from MongoDB:', error);
+    throw error;
+  }
+};
+
+const checkDatabaseConnection = async (): Promise<{ status: string; latency?: number }> => {
+  try {
+    const start = Date.now();
+    await mongoose.connection.db?.admin().ping();
+    const latency = Date.now() - start;
+    return { status: 'ok', latency };
+  } catch (error) {
+    console.error('Database health check failed:', error);
+    return { status: 'error' };
+  }
+};
+
+export { connectToDatabase, disconnectFromDatabase, checkDatabaseConnection };`,
+    'src/models/User.ts': `import mongoose, { Schema, Document } from 'mongoose';
+import bcrypt from 'bcrypt';
+import validator from 'validator';
+
+export enum UserRole {
+  USER = 'user',
+  ADMIN = 'admin',
+  MODERATOR = 'moderator',
+}
+
+export interface IUser {
+  email: string;
+  password: string;
+  name: string;
+  role: UserRole;
+  security: {
+    loginAttempts: number;
+    lockUntil?: Date;
+  };
+}
+
+export interface IUserDocument extends IUser, Document {
+  comparePassword(candidatePassword: string): Promise<boolean>;
+}
+
+const UserSchema = new Schema<IUserDocument>({
+  email: {
+    type: String,
+    required: [true, 'Email is required'],
+    unique: true,
+    lowercase: true,
+    validate: [validator.isEmail, 'Please provide a valid email'],
+    index: true,
+  },
+  password: {
+    type: String,
+    required: [true, 'Password is required'],
+    minlength: [6, 'Password must be at least 6 characters long'],
+    select: false,
+  },
+  name: {
+    type: String,
+    required: [true, 'Name is required'],
+    trim: true,
+  },
+  role: {
+    type: String,
+    enum: Object.values(UserRole),
+    default: UserRole.USER,
+    index: true,
+  },
+  security: {
+    loginAttempts: { type: Number, default: 0 },
+    lockUntil: Date,
+  },
+});
+
+UserSchema.index({ email: 1, role: 1 });
+
+UserSchema.pre('save', async function(next) {
+  if (!this.isModified('password')) return next();
+  
+  try {
+    const salt = await bcrypt.genSalt(12);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+UserSchema.methods.comparePassword = async function(candidatePassword: string): Promise<boolean> {
+  return bcrypt.compare(candidatePassword, this.password);
+};
+
+UserSchema.methods.generatePasswordResetToken = function(): string {
+  return 'reset-token';
+};
+
+UserSchema.statics.findByEmail = function(email: string) {
+  return this.findOne({ email: email.toLowerCase() });
+};
+
+UserSchema.statics.getUserStats = async function() {
+  const stats = await this.aggregate([
+    { $group: { _id: '$role', count: { $sum: 1 } } }
+  ]);
+  const total = await this.countDocuments();
+  const active = await this.countDocuments({ role: { $ne: 'inactive' } });
+  return { total, active, byRole: stats };
+};
+
+export const User = mongoose.model<IUserDocument>('User', UserSchema);`,
+    'src/models/Post.ts': `import mongoose, { Schema, Document } from 'mongoose';
+import slugify from 'slugify';
+
+export enum PostStatus {
+  DRAFT = 'draft',
+  PUBLISHED = 'published',
+  ARCHIVED = 'archived',
+}
+
+export interface IPost {
+  title: string;
+  slug: string;
+  content: string;
+  author: mongoose.Types.ObjectId;
+  status: PostStatus;
+  tags: string[];
+  metadata: {
+    views: number;
+    likes: number;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IPostDocument extends IPost, Document {
+  generateSlug(): void;
+}
+
+const PostSchema = new Schema<IPostDocument>({
+  title: {
+    type: String,
+    required: [true, 'Post title is required'],
+    trim: true,
+    maxlength: [200, 'Title cannot exceed 200 characters'],
+    index: true,
+  },
+  slug: {
+    type: String,
+    unique: true,
+    lowercase: true,
+    index: true,
+  },
+  content: {
+    type: String,
+    required: [true, 'Post content is required'],
+  },
+  author: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: [true, 'Post author is required'],
+    index: true,
+  },
+  status: {
+    type: String,
+    enum: Object.values(PostStatus),
+    default: PostStatus.DRAFT,
+    index: true,
+  },
+  tags: [{
+    type: String,
+    lowercase: true,
+    trim: true,
+  }],
+  metadata: {
+    views: { type: Number, default: 0, index: true },
+    likes: { type: Number, default: 0, index: true },
+  },
+}, {
+  timestamps: true,
+  versionKey: false,
+});
+
+PostSchema.index({ status: 1, createdAt: -1 });
+PostSchema.index({ tags: 1, status: 1 });
+PostSchema.index({ title: 'text', content: 'text' });
+
+PostSchema.methods.generateSlug = function(): void {
+  this.slug = slugify(this.title, { lower: true, strict: true });
+};
+
+PostSchema.pre('save', function(next) {
+  if (this.isModified('title')) {
+    this.generateSlug();
+  }
+  next();
+});
+
+export const Post = mongoose.model<IPostDocument>('Post', PostSchema);`,
     // Prisma Integration Files (for comparison)
     'prisma/schema.prisma': `// This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
@@ -2137,6 +2530,13 @@ main()
 PORT=3000
 NODE_ENV=development
 
+# Development Settings
+LOG_LEVEL=debug
+DEBUG=app:*
+
+# Logging Configuration
+LOG_PERFORMANCE=false
+
 # JWT Configuration
 JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
 JWT_EXPIRES_IN=7d
@@ -2144,9 +2544,6 @@ REFRESH_TOKEN_EXPIRES_IN=30d
 
 # CORS Configuration
 ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173
-
-# Logging Configuration
-LOG_LEVEL=info
 
 # Database Configuration
 # Choose one ORM and configure accordingly:
@@ -2408,7 +2805,10 @@ import { userTypeOrmRoutes as userRoutes } from './routes/users.typeorm';
 ## Scripts
 
 ### General Scripts
-- \`npm run dev\` - Start development server with hot reload
+- \`npm run dev\` - Start development server with hot reload (nodemon + ts-node)
+- \`npm run dev:tsx\` - Start development server with ultra-fast hot reload (tsx)
+- \`npm run dev:fast\` - Start development server with tsx (no screen clearing)
+- \`npm run dev:debug\` - Start development server with Node.js debugging enabled
 - \`npm run build\` - Build for production
 - \`npm start\` - Start production server
 - \`npm test\` - Run tests
@@ -2417,6 +2817,41 @@ import { userTypeOrmRoutes as userRoutes } from './routes/users.typeorm';
 - \`npm run lint\` - Run ESLint
 - \`npm run lint:fix\` - Fix ESLint issues
 - \`npm run format\` - Format code with Prettier
+
+### Development Hot-Reload Options
+
+**1. Standard Development (nodemon + ts-node)**
+\`\`\`bash
+npm run dev
+\`\`\`
+- Uses nodemon with comprehensive file watching
+- Watches \`.env\` changes and restarts automatically
+- Type-checking enabled during development
+- Detailed logging and restart information
+
+**2. Ultra-Fast Development (tsx)**
+\`\`\`bash
+npm run dev:tsx
+\`\`\`
+- Uses tsx for extremely fast TypeScript compilation
+- No type-checking (faster startup)
+- Ideal for rapid iteration during development
+
+**3. Debugging Mode**
+\`\`\`bash
+npm run dev:debug
+\`\`\`
+- Enables Node.js inspector for debugging
+- Connect with VS Code debugger or Chrome DevTools
+- Visit \`chrome://inspect\` in Chrome to debug
+
+**Hot-Reload Features:**
+- ✅ Automatic restart on file changes
+- ✅ Environment variable reload
+- ✅ Graceful server shutdown
+- ✅ Fast TypeScript compilation
+- ✅ Clear restart notifications
+- ✅ Manual restart support (type 'rs' and press Enter)
 
 ### Database Scripts (Prisma)
 - \`npm run db:generate\` - Generate Prisma client
@@ -2682,10 +3117,25 @@ networks:
       useTabs: false
     },
     'nodemon.json': {
-      watch: ['src'],
-      ext: 'ts',
-      ignore: ['src/**/*.test.ts'],
-      exec: 'ts-node src/index.ts'
+      watch: ['src', '.env'],
+      ext: 'ts,js,json',
+      ignore: [
+        'src/**/*.test.ts',
+        'src/**/*.spec.ts',
+        'dist/',
+        'node_modules/',
+        'logs/',
+        'coverage/'
+      ],
+      exec: 'ts-node --transpile-only src/index.ts',
+      env: {
+        NODE_ENV: 'development',
+        LOG_LEVEL: 'debug'
+      },
+      delay: 1000,
+      verbose: true,
+      restartable: 'rs',
+      colours: true
     }
   },
   prompts: [
@@ -2714,7 +3164,8 @@ networks:
       choices: [
         { name: 'Prisma (Recommended for beginners)', value: 'prisma' },
         { name: 'TypeORM (Advanced features)', value: 'typeorm' },
-        { name: 'Both (Full comparison)', value: 'both' }
+        { name: 'Mongoose (MongoDB ODM)', value: 'mongoose' },
+        { name: 'All three (Full comparison)', value: 'all' }
       ],
       when: (answers) => answers.includeDatabase,
       default: 'prisma'
@@ -2723,7 +3174,7 @@ networks:
       type: 'list',
       name: 'database',
       message: 'Which database would you like to use?',
-      choices: ['PostgreSQL', 'MySQL', 'SQLite'],
+      choices: ['PostgreSQL', 'MySQL', 'SQLite', 'MongoDB'],
       when: (answers) => answers.includeDatabase,
       default: 'PostgreSQL'
     }
@@ -2747,6 +3198,12 @@ networks:
     'echo "2. Update src/index.ts to use TypeORM routes"',
     'echo "3. Run: npm run typeorm:schema:sync"',
     'echo "4. Run: npm run typeorm:seed"',
+    'echo ""',
+    'echo "📋 Option C: Mongoose (MongoDB users)"',
+    'echo "1. Set MONGODB_URL in .env"',
+    'echo "2. Update src/index.ts to use Mongoose routes"',
+    'echo "3. Run: npm run db:mongoose:seed"',
+    'echo "4. Install MongoDB and start server"',
     'echo ""',
     'echo "📝 Next steps:"',
     'echo "   1. Update .env with your database configuration"',
