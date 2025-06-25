@@ -1,6 +1,6 @@
 {
   "name": "@re-shell/cli",
-  "version": "0.17.0",
+  "version": "0.14.1",
   "description": "Enterprise-grade CLI platform for building, managing, and deploying microservices and microfrontend architectures with comprehensive DevOps automation, health diagnostics, and multi-language template support",
   "main": "dist/index.js",
   "files": [
