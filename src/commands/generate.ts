@@ -6,11 +6,14 @@ import { findMonorepoRoot } from '../utils/monorepo';
 interface GenerateOptions {
   spinner?: any;
   verbose?: boolean;
-  type?: 'component' | 'hook' | 'service' | 'test' | 'config' | 'documentation';
-  framework?: 'react' | 'vue' | 'svelte' | 'angular';
+  type?: 'component' | 'hook' | 'service' | 'test' | 'config' | 'documentation' | 'backend';
+  framework?: 'react' | 'vue' | 'svelte' | 'angular' | 'express' | 'fastapi' | 'django' | 'flask' | 'tornado' | 'sanic';
+  language?: 'typescript' | 'python';
+  features?: string[];
   workspace?: string;
   template?: string;
   export?: boolean;
+  port?: string;
 }
 
 interface ComponentTemplate {
@@ -114,7 +117,8 @@ function getGenerator(type: string) {
     service: generateService,
     test: generateTestFile,
     config: generateConfig,
-    documentation: generateDocs
+    documentation: generateDocs,
+    backend: generateBackend
   };
 
   const generator = generators[type as keyof typeof generators];
@@ -543,6 +547,408 @@ This project is licensed under the MIT License - see the [LICENSE](../LICENSE) f
   if (options.verbose) {
     console.log(chalk.green(`  ✓ Created docs/${name}.md`));
   }
+}
+
+async function generateBackend(monorepoRoot: string, name: string, options: GenerateOptions) {
+  const language = options.language || 'typescript';
+  const framework = options.framework || (language === 'python' ? 'fastapi' : 'express');
+  const workspace = options.workspace || `services/${name}`;
+  const workspacePath = path.join(monorepoRoot, workspace);
+  const features = options.features || [];
+
+  if (!await fs.pathExists(path.dirname(workspacePath))) {
+    await fs.ensureDir(path.dirname(workspacePath));
+  }
+
+  if (language === 'python') {
+    // Import Python generators
+    const { PythonCodeQualityGenerator } = await import('../templates/backend/python-code-quality');
+    const { CeleryTaskGenerator } = await import('../templates/backend/python-celery-tasks');
+    const { RedisIntegrationGenerator } = await import('../templates/backend/python-redis');
+    
+    const codeQualityGen = new PythonCodeQualityGenerator();
+    const celeryGen = new CeleryTaskGenerator();
+    const redisGen = new RedisIntegrationGenerator();
+
+    // Generate code quality configuration if requested
+    if (features.includes('code-quality')) {
+      const qualityConfig = {
+        framework,
+        enableStrict: true,
+        enableAutofix: true,
+        enablePreCommit: true,
+        enableVSCode: true,
+        pythonVersion: '3.11'
+      };
+
+      const qualityFiles = codeQualityGen.generateCodeQualityConfig(qualityConfig);
+      
+      for (const file of qualityFiles) {
+        const filePath = path.join(workspacePath, file.path);
+        await fs.ensureDir(path.dirname(filePath));
+        await fs.writeFile(filePath, file.content);
+        
+        if (options.verbose) {
+          console.log(chalk.green(`  ✓ Created ${file.path}`));
+        }
+      }
+    }
+
+    // Generate Celery configuration if requested
+    if (features.includes('celery')) {
+      const celeryConfig = {
+        framework,
+        enableScheduling: true,
+        enableMonitoring: true,
+        enableRetries: true,
+        enablePriority: true,
+        enableRouting: true,
+        enableResultBackend: true
+      };
+
+      const celeryFiles = celeryGen.generateCeleryConfig(celeryConfig);
+      
+      for (const file of celeryFiles) {
+        const filePath = path.join(workspacePath, file.path);
+        await fs.ensureDir(path.dirname(filePath));
+        await fs.writeFile(filePath, file.content);
+        
+        if (options.verbose) {
+          console.log(chalk.green(`  ✓ Created ${file.path}`));
+        }
+      }
+    }
+
+    // Generate Redis integration if requested
+    if (features.includes('redis')) {
+      const redisConfig = {
+        projectName: name,
+        framework: framework as 'fastapi' | 'django' | 'flask' | 'tornado' | 'sanic',
+        hasTypeScript: false
+      };
+
+      const redisFiles = redisGen.generateRedisConfig(redisConfig);
+      
+      for (const file of redisFiles) {
+        const filePath = path.join(workspacePath, file.path);
+        await fs.ensureDir(path.dirname(filePath));
+        await fs.writeFile(filePath, file.content);
+        
+        if (options.verbose) {
+          console.log(chalk.green(`  ✓ Created ${file.path}`));
+        }
+      }
+    }
+
+    // Generate basic Python project structure
+    await generatePythonBackend(workspacePath, name, framework, options);
+  } else {
+    // Generate TypeScript/JavaScript backend
+    await generateTypeScriptBackend(workspacePath, name, framework, options);
+  }
+
+  console.log('\n' + chalk.bold('Backend service generated successfully!'));
+  console.log(chalk.gray(`Location: ${workspace}`));
+  console.log(chalk.gray(`Language: ${language}`));
+  console.log(chalk.gray(`Framework: ${framework}`));
+  if (features.length > 0) {
+    console.log(chalk.gray(`Features: ${features.join(', ')}`));
+  }
+}
+
+async function generatePythonBackend(workspacePath: string, name: string, framework: string, options: GenerateOptions) {
+  // Create basic Python project structure
+  const projectFiles = {
+    'README.md': `# ${name}
+
+A ${framework} backend service.
+
+## Installation
+
+\`\`\`bash
+pip install -r requirements.txt
+\`\`\`
+
+## Development
+
+\`\`\`bash
+# Run development server
+python -m uvicorn main:app --reload
+\`\`\`
+
+## Testing
+
+\`\`\`bash
+pytest
+\`\`\`
+`,
+    'requirements.txt': getPythonRequirements(framework, options.features || []),
+    '.gitignore': `__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+.env
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+`,
+    'main.py': getPythonMainFile(framework, name),
+    'config.py': `import os
+from typing import Optional
+from pydantic import BaseSettings
+
+class Settings(BaseSettings):
+    app_name: str = "${name}"
+    debug: bool = False
+    port: int = ${options.port || '8000'}
+    database_url: Optional[str] = None
+    redis_url: Optional[str] = None
+    
+    class Config:
+        env_file = ".env"
+
+settings = Settings()
+`
+  };
+
+  for (const [filePath, content] of Object.entries(projectFiles)) {
+    const fullPath = path.join(workspacePath, filePath);
+    await fs.ensureDir(path.dirname(fullPath));
+    await fs.writeFile(fullPath, content);
+    
+    if (options.verbose) {
+      console.log(chalk.green(`  ✓ Created ${filePath}`));
+    }
+  }
+}
+
+async function generateTypeScriptBackend(workspacePath: string, name: string, framework: string, options: GenerateOptions) {
+  // Generate TypeScript backend (Express, NestJS, etc.)
+  const projectFiles = {
+    'package.json': `{
+  "name": "${name}",
+  "version": "1.0.0",
+  "description": "A ${framework} backend service",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "nodemon src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "nodemon": "^3.0.0",
+    "ts-node": "^10.9.0"
+  }
+}`,
+    'tsconfig.json': `{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "commonjs",
+    "lib": ["es2020"],
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}`,
+    'src/index.ts': `import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const app = express();
+const port = process.env.PORT || ${options.port || '8000'};
+
+app.use(cors());
+app.use(express.json());
+
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', service: '${name}' });
+});
+
+app.listen(port, () => {
+  console.log(\`${name} service running on port \${port}\`);
+});
+`
+  };
+
+  for (const [filePath, content] of Object.entries(projectFiles)) {
+    const fullPath = path.join(workspacePath, filePath);
+    await fs.ensureDir(path.dirname(fullPath));
+    await fs.writeFile(fullPath, content);
+    
+    if (options.verbose) {
+      console.log(chalk.green(`  ✓ Created ${filePath}`));
+    }
+  }
+}
+
+function getPythonRequirements(framework: string, features: string[] = []): string {
+  const base = `python-dotenv==1.0.0
+pydantic==2.5.0
+pytest==7.4.0
+pytest-asyncio==0.21.0
+pytest-cov==4.1.0
+`;
+
+  const frameworkDeps = {
+    fastapi: `fastapi==0.104.0
+uvicorn[standard]==0.24.0
+sqlalchemy==2.0.0
+alembic==1.12.0
+httpx==0.25.0`,
+    django: `django==4.2.0
+djangorestframework==3.14.0
+django-cors-headers==4.3.0
+gunicorn==21.2.0`,
+    flask: `flask==3.0.0
+flask-cors==4.0.0
+flask-sqlalchemy==3.1.0
+flask-migrate==4.0.0
+gunicorn==21.2.0`,
+    tornado: `tornado==6.3.0
+tornado-sqlalchemy==0.8.0`,
+    sanic: `sanic==23.6.0
+sanic-cors==2.2.0
+sanic-openapi==21.12.0`
+  };
+
+  let requirements = base + (frameworkDeps[framework as keyof typeof frameworkDeps] || '');
+
+  // Add feature-specific dependencies
+  if (features.includes('redis')) {
+    requirements += `\n# Redis dependencies
+redis==5.0.1
+hiredis==2.2.3
+`;
+  }
+
+  if (features.includes('celery')) {
+    requirements += `\n# Celery dependencies
+celery==5.3.4
+flower==2.0.1
+redis==5.0.1
+`;
+  }
+
+  if (features.includes('code-quality')) {
+    requirements += `\n# Code quality tools
+black==23.11.0
+isort==5.12.0
+mypy==1.7.0
+ruff==0.1.5
+pre-commit==3.5.0
+`;
+  }
+
+  return requirements;
+}
+
+function getPythonMainFile(framework: string, name: string): string {
+  const templates = {
+    fastapi: `from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from config import settings
+
+app = FastAPI(title=settings.app_name)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/health")
+async def health_check():
+    return {"status": "ok", "service": settings.app_name}
+
+@app.get("/")
+async def root():
+    return {"message": f"Welcome to {settings.app_name}"}
+`,
+    django: `"""
+Django settings for ${name} project.
+"""
+from pathlib import Path
+import os
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-key')
+
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
+
+ALLOWED_HOSTS = ['*']
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'rest_framework',
+    'corsheaders',
+]
+
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+ROOT_URLCONF = '${name}.urls'
+
+CORS_ALLOW_ALL_ORIGINS = True
+`,
+    flask: `from flask import Flask, jsonify
+from flask_cors import CORS
+from config import settings
+
+app = Flask(__name__)
+CORS(app)
+
+@app.route('/health')
+def health_check():
+    return jsonify({"status": "ok", "service": settings.app_name})
+
+@app.route('/')
+def root():
+    return jsonify({"message": f"Welcome to {settings.app_name}"})
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=settings.port, debug=settings.debug)
+`
+  };
+
+  return templates[framework as keyof typeof templates] || templates.fastapi;
 }
 
 function getComponentTemplate(name: string, framework: string, options: GenerateOptions): ComponentTemplate {

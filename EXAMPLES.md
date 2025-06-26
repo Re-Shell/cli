@@ -1,17 +1,20 @@
 # Re-Shell CLI Examples
 
-This document provides comprehensive real-world scenarios and examples for using the Re-Shell CLI to build microfrontend applications.
+This document provides comprehensive real-world scenarios and examples for using the Re-Shell CLI to build full-stack applications with microfrontends and microservices.
 
 ## Table of Contents
 
 1. [Latest Features](#latest-features)
+   - [Full-Stack Platform (v0.16.1)](#full-stack-platform-v0161)
+   - [Microfrontend Architecture (v0.16.0)](#microfrontend-architecture-v0160)
+   - [Python Ecosystem Complete (v0.15.0)](#python-ecosystem-complete-v0150)
    - [Phase 0 Complete (v0.8.0)](#phase-0-complete-v080)
    - [Performance & Resource Management (v0.7.2)](#performance--resource-management-v072)
    - [Plugin Ecosystem (v0.7.1)](#plugin-ecosystem-v071)
    - [Real-Time Development (v0.4.0)](#real-time-development-v040)
    - [Enterprise Features (v0.3.1)](#enterprise-features-v031)
 2. [Getting Started](#getting-started)
-3. [Real-World Applications](#real-world-applications)
+3. [Full-Stack Applications](#full-stack-applications)
    - [E-commerce Platform](#e-commerce-platform)
    - [Banking Dashboard](#banking-dashboard)
    - [SaaS Admin Panel](#saas-admin-panel)
@@ -20,6 +23,175 @@ This document provides comprehensive real-world scenarios and examples for using
 4. [Advanced Scenarios](#advanced-scenarios)
 
 ## Latest Features
+
+### Full-Stack Platform (v0.16.1)
+
+Complete full-stack development platform uniting microservices and microfrontends under a single CLI.
+
+#### Complete Full-Stack Application Example
+
+```bash
+# Create a full-stack e-commerce platform
+re-shell create my-marketplace --type full-stack
+cd my-marketplace
+
+# Frontend: Add microfrontends for different parts of the application
+# Customer-facing React storefront
+re-shell add storefront --framework react-ts --port 5173
+
+# Admin dashboard with Vue.js
+re-shell add admin-panel --framework vue-ts --port 5174
+
+# Seller portal with Svelte
+re-shell add seller-portal --framework svelte-ts --port 5175
+
+# Backend: Add microservices for business logic
+# Python FastAPI for high-performance product API
+re-shell generate backend product-service --language python --framework fastapi --port 8001 \
+  --features "redis,celery,websocket"
+
+# Django for complex order management with ORM
+re-shell generate backend order-service --language python --framework django --port 8002 \
+  --features "celery,admin,rest"
+
+# Node.js Express for payment processing
+re-shell generate backend payment-service --framework express --port 8003 \
+  --features "stripe,webhooks,queue"
+
+# Flask for lightweight notification service
+re-shell generate backend notification-service --language python --framework flask --port 8004 \
+  --features "email,sms,push"
+
+# Start all services with Docker orchestration
+docker-compose up
+
+# Or start individually for development
+re-shell dev --all
+```
+
+#### Microservice Communication Patterns
+
+```bash
+# REST API communication
+# Product service exposes REST endpoints
+cd services/product-service
+re-shell generate endpoint products --method GET,POST,PUT,DELETE
+re-shell generate endpoint products/:id --method GET,PUT,DELETE
+
+# GraphQL gateway (optional)
+re-shell generate backend api-gateway --framework express --features graphql --port 4000
+
+# WebSocket for real-time features
+# In the notification service
+cd services/notification-service
+re-shell generate websocket notifications --events "order.created,order.updated"
+
+# Message queue integration
+# Configure Redis for inter-service communication
+re-shell configure redis --services all --pubsub enabled
+
+# Event-driven architecture
+re-shell generate events order-events --publisher order-service \
+  --subscribers "notification-service,inventory-service"
+```
+
+#### Full-Stack Development Workflow
+
+```bash
+# 1. Start with API design
+re-shell generate openapi product-api --output api-spec.yaml
+re-shell generate openapi order-api --output order-spec.yaml
+
+# 2. Generate backend services from OpenAPI
+re-shell generate backend-from-spec product-service --spec api-spec.yaml \
+  --framework fastapi
+
+# 3. Generate TypeScript types for frontend
+re-shell generate types-from-spec --spec api-spec.yaml \
+  --output packages/shared/types
+
+# 4. Create shared UI components
+re-shell generate component Button --workspace packages/ui --export
+re-shell generate component Card --workspace packages/ui --export
+re-shell generate component DataTable --workspace packages/ui --export
+
+# 5. Implement frontend features using shared types
+cd apps/storefront
+re-shell generate hook useProducts --typescript
+re-shell generate service ProductService --typescript
+
+# 6. Add authentication across stack
+re-shell generate auth jwt --services all --frontend all
+
+# 7. Setup monitoring and observability
+re-shell generate monitoring prometheus --services all
+re-shell generate tracing opentelemetry --services all
+```
+
+### Microfrontend Architecture (v0.16.0) 
+
+Complete microfrontend platform with Webpack Module Federation, enabling true microfrontend patterns with dynamic loading, independent deployment, and runtime integration.
+
+#### Complete Microfrontend Platform Example
+
+```bash
+# Create enterprise microfrontend platform
+re-shell create enterprise-platform --type microfrontend --architecture module-federation
+
+# Generate shell application (orchestrator)
+re-shell create shell-app --template federation-shell --port 3100
+
+# Generate React microfrontend for user management
+re-shell create user-dashboard --template react-mf --port 3000 --features "auth,profile,settings"
+
+# Generate Vue.js microfrontend for product catalog  
+re-shell create product-catalog --template vue-mf --port 3001 --features "search,filter,cart"
+
+# Generate Svelte microfrontend for analytics
+re-shell create analytics-widget --template svelte-mf --port 3002 --features "charts,metrics,reports"
+
+# Start complete platform in development mode
+re-shell dev --microfrontends --all --watch
+
+# Access the platform
+open http://localhost:3100  # Shell application with unified navigation
+open http://localhost:3000  # React app (independent access)
+open http://localhost:3001  # Vue app (independent access) 
+open http://localhost:3002  # Svelte app (independent access)
+```
+
+**Features Demonstrated:**
+- **Module Federation**: Runtime integration without build coupling
+- **Independent Deployment**: Each microfrontend deployed separately
+- **Cross-Framework**: React, Vue, Svelte working together seamlessly
+- **Error Boundaries**: Isolated failures don't crash the platform
+- **Shared Dependencies**: Optimized bundle sizes
+- **Hot Module Replacement**: Live updates during development
+- **Unified Navigation**: Single application experience
+
+#### Real-World Microfrontend Scenarios
+
+**E-commerce Microfrontend Platform:**
+```bash
+# Shell application for main navigation
+re-shell create ecommerce-shell --template federation-shell --port 3100
+
+# Product catalog (Vue.js for reactive search/filtering)
+re-shell create product-catalog --template vue-mf --port 3000 \
+  --features "search,filter,categories,recommendations"
+
+# Shopping cart (React for complex state management)
+re-shell create shopping-cart --template react-mf --port 3001 \
+  --features "cart,checkout,payment,shipping"
+
+# User account (Angular for enterprise forms)
+re-shell create user-account --template angular-mf --port 3002 \
+  --features "profile,orders,wishlist,support"
+
+# Analytics dashboard (Svelte for performance)
+re-shell create admin-analytics --template svelte-mf --port 3003 \
+  --features "sales,metrics,reports,insights"
+```
 
 ### Python Ecosystem Complete (v0.15.0)
 
@@ -745,21 +917,43 @@ Every project now includes:
 - **Monorepo**: Turborepo configuration
 - **Dependencies**: Renovate auto-updates
 
-## Real-World Applications
+## Full-Stack Applications
 
 ### E-commerce Platform
 
-Complete e-commerce platform with microfrontends and plugins.
+Complete full-stack e-commerce platform with microfrontends, microservices, and plugins.
 
 ```bash
-# Initialize e-commerce platform
-re-shell init ecommerce-platform --monorepo --yes
+# Initialize full-stack e-commerce platform
+re-shell create ecommerce-platform --type full-stack
+cd ecommerce-platform
 
-# Core microfrontends
-re-shell add product-catalog --framework react --typescript
-re-shell add shopping-cart --framework vue --typescript  
-re-shell add checkout --framework react --typescript
-re-shell add user-account --framework vue --typescript
+# Frontend: Core microfrontends
+re-shell add product-catalog --framework react-ts --port 5173
+re-shell add shopping-cart --framework vue-ts --port 5174
+re-shell add checkout --framework react-ts --port 5175
+re-shell add user-account --framework vue-ts --port 5176
+
+# Backend: Microservices architecture
+# Product catalog with search and filtering
+re-shell generate backend catalog-service --language python --framework fastapi --port 8001 \
+  --features "elasticsearch,redis,s3"
+
+# Shopping cart with session management
+re-shell generate backend cart-service --framework express --port 8002 \
+  --features "redis,session"
+
+# Order processing with workflow
+re-shell generate backend order-service --language python --framework django --port 8003 \
+  --features "celery,workflow,admin"
+
+# Payment processing with Stripe
+re-shell generate backend payment-service --framework express --port 8004 \
+  --features "stripe,webhooks,pci"
+
+# Inventory management
+re-shell generate backend inventory-service --language python --framework flask --port 8005 \
+  --features "warehouse,tracking"
 
 # Install e-commerce plugins
 re-shell plugin install @re-shell/payment-gateway
@@ -794,16 +988,39 @@ re-shell plugin generate-docs --format markdown --output ./docs/api
 
 ### Banking Dashboard
 
-Secure banking application with advanced security features.
+Secure full-stack banking application with advanced security features.
 
 ```bash
 # Initialize with security template
-re-shell init secure-banking --template @re-shell/banking-template
+re-shell create secure-banking --type full-stack --template banking
+cd secure-banking
 
-# Core modules
-re-shell add account-overview --framework react --auth required
-re-shell add transaction-history --framework react --auth required
-re-shell add payment-transfer --framework vue --auth required
+# Frontend: Secure modules with authentication
+re-shell add account-overview --framework react-ts --auth required --port 5173
+re-shell add transaction-history --framework react-ts --auth required --port 5174
+re-shell add payment-transfer --framework vue-ts --auth required --port 5175
+re-shell add admin-dashboard --framework angular --auth admin --port 5176
+
+# Backend: Secure microservices
+# Core banking API with strong typing
+re-shell generate backend banking-api --language python --framework fastapi --port 8001 \
+  --features "auth,encryption,audit,compliance"
+
+# Transaction processing with ACID guarantees
+re-shell generate backend transaction-service --language python --framework django --port 8002 \
+  --features "postgres,transactions,audit-log"
+
+# Authentication and authorization service
+re-shell generate backend auth-service --framework express --port 8003 \
+  --features "jwt,oauth2,2fa,biometric"
+
+# Fraud detection service
+re-shell generate backend fraud-service --language python --framework fastapi --port 8004 \
+  --features "ml,rules-engine,alerts"
+
+# Compliance and reporting
+re-shell generate backend compliance-service --language python --framework django --port 8005 \
+  --features "reporting,kyc,aml"
 
 # Security plugins
 re-shell plugin install @re-shell/auth-provider
@@ -826,17 +1043,40 @@ re-shell plugin security-scan --all --schedule daily
 
 ### SaaS Admin Panel
 
-Multi-tenant SaaS administration panel.
+Multi-tenant full-stack SaaS platform.
 
 ```bash
 # Initialize SaaS platform
-re-shell init saas-admin --monorepo --multi-tenant
+re-shell create saas-platform --type full-stack --multi-tenant
+cd saas-platform
 
-# Admin modules
-re-shell add tenant-manager --framework react --typescript
-re-shell add billing-dashboard --framework vue --typescript
-re-shell add analytics-viewer --framework react --typescript
-re-shell add user-management --framework svelte --typescript
+# Frontend: Admin modules
+re-shell add tenant-manager --framework react-ts --port 5173
+re-shell add billing-dashboard --framework vue-ts --port 5174
+re-shell add analytics-viewer --framework react-ts --port 5175
+re-shell add user-management --framework svelte-ts --port 5176
+re-shell add api-explorer --framework vue-ts --port 5177
+
+# Backend: Multi-tenant microservices
+# Core API with tenant isolation
+re-shell generate backend core-api --language python --framework fastapi --port 8001 \
+  --features "multi-tenant,rate-limit,api-key"
+
+# Billing and subscription management
+re-shell generate backend billing-service --framework express --port 8002 \
+  --features "stripe,subscriptions,invoicing,webhooks"
+
+# Analytics and metrics collection
+re-shell generate backend analytics-service --language python --framework fastapi --port 8003 \
+  --features "timeseries,aggregation,export"
+
+# User and access management
+re-shell generate backend identity-service --language python --framework django --port 8004 \
+  --features "sso,rbac,teams,audit"
+
+# Background job processing
+re-shell generate backend worker-service --language python --framework celery --port 8005 \
+  --features "scheduled-tasks,reports,exports"
 
 # SaaS plugins
 re-shell plugin install @re-shell/multi-tenant
@@ -854,17 +1094,40 @@ re-shell change-impact analyze --real-time
 
 ### Healthcare Portal
 
-HIPAA-compliant healthcare application.
+HIPAA-compliant full-stack healthcare application.
 
 ```bash
 # Initialize with compliance template
-re-shell init healthcare-portal --template @re-shell/hipaa-compliant
+re-shell create healthcare-portal --type full-stack --template healthcare-hipaa
+cd healthcare-portal
 
-# Healthcare modules
-re-shell add patient-records --framework react --encrypted
-re-shell add appointment-scheduler --framework vue --encrypted
-re-shell add lab-results --framework react --encrypted
-re-shell add telemedicine --framework vue --webrtc
+# Frontend: Healthcare modules with encryption
+re-shell add patient-records --framework react-ts --encrypted --port 5173
+re-shell add appointment-scheduler --framework vue-ts --encrypted --port 5174
+re-shell add lab-results --framework react-ts --encrypted --port 5175
+re-shell add telemedicine --framework vue-ts --webrtc --port 5176
+re-shell add provider-portal --framework angular --encrypted --port 5177
+
+# Backend: HIPAA-compliant microservices
+# Electronic Health Records (EHR) API
+re-shell generate backend ehr-service --language python --framework django --port 8001 \
+  --features "encryption,audit,hl7,fhir"
+
+# Appointment and scheduling system
+re-shell generate backend scheduling-service --language python --framework fastapi --port 8002 \
+  --features "calendar,notifications,reminders"
+
+# Lab integration service
+re-shell generate backend lab-service --framework express --port 8003 \
+  --features "hl7,results,integration"
+
+# Telemedicine platform
+re-shell generate backend telehealth-service --framework express --port 8004 \
+  --features "webrtc,recording,transcription"
+
+# Compliance and audit service
+re-shell generate backend compliance-service --language python --framework django --port 8005 \
+  --features "hipaa,audit-trail,reporting,encryption"
 
 # Healthcare plugins
 re-shell plugin install @re-shell/hipaa-compliance
@@ -878,17 +1141,40 @@ re-shell plugin security-report --compliance hipaa
 
 ### Educational Platform
 
-Interactive learning management system.
+Interactive full-stack learning management system.
 
 ```bash
 # Initialize educational platform
-re-shell init edu-platform --monorepo
+re-shell create edu-platform --type full-stack
+cd edu-platform
 
-# Learning modules
-re-shell add course-catalog --framework react --typescript
-re-shell add video-player --framework vue --streaming
-re-shell add quiz-engine --framework svelte --interactive
-re-shell add discussion-forum --framework react --realtime
+# Frontend: Learning modules
+re-shell add course-catalog --framework react-ts --port 5173
+re-shell add video-player --framework vue-ts --streaming --port 5174
+re-shell add quiz-engine --framework svelte-ts --interactive --port 5175
+re-shell add discussion-forum --framework react-ts --realtime --port 5176
+re-shell add instructor-studio --framework vue-ts --port 5177
+
+# Backend: Educational microservices
+# Course management system
+re-shell generate backend course-service --language python --framework django --port 8001 \
+  --features "cms,versioning,publishing"
+
+# Video streaming and processing
+re-shell generate backend media-service --framework express --port 8002 \
+  --features "streaming,transcoding,cdn"
+
+# Assessment and grading engine
+re-shell generate backend assessment-service --language python --framework fastapi --port 8003 \
+  --features "quiz,grading,analytics,ai"
+
+# Real-time collaboration
+re-shell generate backend collab-service --framework express --port 8004 \
+  --features "websocket,presence,chat,webrtc"
+
+# Learning analytics and recommendations
+re-shell generate backend analytics-service --language python --framework fastapi --port 8005 \
+  --features "ml,recommendations,progress,insights"
 
 # Educational plugins
 re-shell plugin install @re-shell/video-streaming
@@ -901,6 +1187,121 @@ re-shell plugin configure-cache strategy hybrid
 ```
 
 ## Advanced Scenarios
+
+### Full-Stack Integration Patterns
+
+```bash
+# API-First Development
+# 1. Design API specification
+re-shell generate openapi api-spec --version 3.0 --output specs/
+
+# 2. Generate backend from spec
+re-shell generate backend-from-spec user-service --spec specs/user-api.yaml \
+  --framework fastapi --port 8001
+
+# 3. Generate frontend SDK
+re-shell generate sdk-from-spec user-sdk --spec specs/user-api.yaml \
+  --language typescript --output packages/sdk
+
+# 4. Use SDK in microfrontends
+cd apps/user-dashboard
+re-shell generate service UserService --use-sdk @myapp/user-sdk
+
+# Shared Authentication
+# Generate auth configuration for all services
+re-shell generate auth jwt-config --output packages/auth
+
+# Apply to all backends
+re-shell configure auth --backend all --config packages/auth/jwt.config.js
+
+# Apply to all frontends
+re-shell configure auth --frontend all --provider jwt --endpoint http://localhost:8003/auth
+
+# Database Migrations
+# Coordinate database changes across services
+re-shell generate migration create-users --service user-service
+re-shell generate migration create-orders --service order-service
+
+# Run migrations in order
+re-shell migrate run --service user-service --env development
+re-shell migrate run --service order-service --env development
+
+# API Gateway Setup
+re-shell generate backend api-gateway --framework express --port 4000 \
+  --features "rate-limit,auth,cors,proxy"
+
+# Configure routes
+re-shell configure gateway --route "/api/users/*" --target "http://localhost:8001"
+re-shell configure gateway --route "/api/orders/*" --target "http://localhost:8002"
+re-shell configure gateway --route "/api/products/*" --target "http://localhost:8003"
+```
+
+### Microservice Testing Strategies
+
+```bash
+# Unit Testing
+# Test individual services
+cd services/user-service
+pytest tests/unit/ --cov=app --cov-report=html
+
+# Integration Testing
+# Test service interactions
+re-shell test integration --services "user-service,order-service" \
+  --scenario "user-creates-order"
+
+# Contract Testing
+# Ensure API contracts are maintained
+re-shell test contracts --provider user-service --consumer order-service
+
+# End-to-End Testing
+# Test complete user flows
+re-shell test e2e --flow "user-registration-to-first-order" \
+  --frontend storefront --backends "user-service,order-service,payment-service"
+
+# Performance Testing
+# Load test individual services
+re-shell test performance --service product-service \
+  --concurrent 100 --duration 300 --ramp-up 60
+
+# Chaos Testing
+# Test resilience
+re-shell test chaos --scenario "service-failure" \
+  --target order-service --duration 60
+```
+
+### Production Deployment
+
+```bash
+# Container Orchestration
+# Generate Kubernetes manifests
+re-shell generate k8s --all --namespace production \
+  --ingress nginx --tls letsencrypt
+
+# Generate Helm charts
+re-shell generate helm --name my-app --version 1.0.0
+
+# CI/CD Pipeline
+# Generate complete pipeline
+re-shell cicd generate github-actions --stages "test,build,deploy" \
+  --environments "dev,staging,prod"
+
+# Service Mesh
+# Add Istio configuration
+re-shell generate service-mesh istio --services all \
+  --features "mtls,tracing,metrics"
+
+# Monitoring Stack
+# Setup complete observability
+re-shell generate monitoring grafana --datasource prometheus
+re-shell generate monitoring prometheus --targets all-services
+re-shell generate logging elk --services all
+re-shell generate tracing jaeger --services all
+
+# Secrets Management
+# Configure secrets for production
+re-shell secrets generate --env production --provider vault
+re-shell secrets rotate --all --env production
+```
 
 ### Plugin Development Workflow
 
