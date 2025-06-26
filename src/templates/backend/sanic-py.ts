@@ -3,6 +3,7 @@ import { BackendTemplate } from '../types';
 export const sanicTemplate: BackendTemplate = {
   id: 'sanic-py',
   name: 'Sanic + Python',
+  displayName: 'Sanic + Python',
   description: 'Ultra-fast Sanic server with async/await support, blueprints, middleware, and high-performance async I/O optimized for speed',
   framework: 'sanic',
   language: 'python',

@@ -3,6 +3,7 @@ import { BackendTemplate } from '../types';
 export const tornadoTemplate: BackendTemplate = {
   id: 'tornado-py',
   name: 'Tornado + Python',
+  displayName: 'Tornado + Python',
   description: 'High-performance Tornado server with async/await support, WebSocket connections, coroutines, and non-blocking I/O',
   framework: 'tornado',
   language: 'python',

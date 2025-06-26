@@ -1,5 +1,5 @@
-import { BaseTemplate, TemplateFile, TemplateContext } from './index';
-import { FrameworkConfig } from '../utils/framework';
+import { BaseTemplate, TemplateFile, TemplateContext } from '../index';
+import { FrameworkConfig } from '../../utils/framework';
 
 export class SvelteTemplate extends BaseTemplate {
   constructor(framework: FrameworkConfig, context: TemplateContext) {
@@ -72,6 +72,36 @@ export class SvelteTemplate extends BaseTemplate {
     files.push({
       path: 'README.md',
       content: this.generateReadme()
+    });
+
+    // Dockerfile for containerization
+    files.push({
+      path: 'Dockerfile',
+      content: this.generateDockerfile()
+    });
+
+    // Docker Compose for development
+    files.push({
+      path: 'docker-compose.yml',
+      content: this.generateDockerCompose()
+    });
+
+    // Docker ignore
+    files.push({
+      path: '.dockerignore',
+      content: this.generateDockerIgnore()
+    });
+
+    // Environment configuration
+    files.push({
+      path: '.env.example',
+      content: this.generateEnvExample()
+    });
+
+    // Nginx configuration for production
+    files.push({
+      path: 'nginx.conf',
+      content: this.generateNginxConfig()
     });
 
     return files;
@@ -412,5 +442,152 @@ export const eventBus = new EventBus();`;
   <script type="module" src="/src/main.${this.context.hasTypeScript ? 'ts' : 'js'}"></script>
 </body>
 </html>`;
+  }
+
+  private generateDockerfile(): string {
+    return `# Multi-stage build for Svelte microfrontend
+FROM node:18-alpine as build
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+RUN npm ci --only=production
+
+# Copy source code
+COPY . .
+
+# Build the application
+RUN npm run build
+
+# Production stage with nginx
+FROM nginx:alpine
+
+# Copy built assets
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Copy nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Expose port
+EXPOSE 80
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \\
+  CMD curl -f http://localhost/health || exit 1
+
+CMD ["nginx", "-g", "daemon off;"]`;
+  }
+
+  private generateDockerCompose(): string {
+    const { normalizedName, name } = this.context;
+    const port = 3002;
+    
+    return `services:
+  ${normalizedName}:
+    build: .
+    ports:
+      - "${port}:${port}"
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost:8000
+      - VITE_APP_NAME=${name}
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run dev -- --host 0.0.0.0 --port ${port}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${port}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s`;
+  }
+
+  private generateDockerIgnore(): string {
+    return `node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.git
+.gitignore
+README.md
+.env
+.nyc_output
+coverage
+.idea
+.vscode
+.DS_Store
+dist
+build`;
+  }
+
+  private generateEnvExample(): string {
+    const { normalizedName, name } = this.context;
+    
+    return `# Application Configuration
+VITE_APP_NAME=${name}
+VITE_APP_VERSION=1.0.0
+
+# API Configuration
+VITE_API_URL=http://localhost:8000
+VITE_API_TIMEOUT=5000
+
+# Microfrontend Configuration
+VITE_MF_ID=${normalizedName}
+VITE_MF_PORT=3002
+
+# Environment
+NODE_ENV=development
+
+# Feature Flags
+VITE_ENABLE_ANALYTICS=false
+VITE_ENABLE_MONITORING=false`;
+  }
+
+  private generateNginxConfig(): string {
+    return `server {
+    listen 80;
+    server_name localhost;
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # Gzip compression
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_proxied expired no-cache no-store private must-revalidate auth;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+
+    # Security headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "no-referrer-when-downgrade" always;
+    add_header Content-Security-Policy "default-src 'self' http: https: data: blob: 'unsafe-inline'" always;
+
+    # Handle SPA routing
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Static assets caching
+    location ~* \\.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # Health check endpoint
+    location /health {
+        access_log off;
+        return 200 "healthy\\n";
+        add_header Content-Type text/plain;
+    }
+
+    # Disable access to hidden files
+    location ~ /\\. {
+        deny all;
+    }
+}`;
   }
 }

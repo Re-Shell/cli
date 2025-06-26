@@ -2001,6 +2001,29 @@ generateCommand
     })
   );
 
+generateCommand
+  .command('backend <name>')
+  .description('Generate a backend service or API')
+  .option('--framework <framework>', 'Backend framework (express, fastapi, django, flask, sanic, tornado)', 'express')
+  .option('--language <language>', 'Programming language (typescript, python)', 'typescript')
+  .option('--features <features...>', 'Additional features (code-quality, celery, redis, type-hints, hot-reload, pytest)')
+  .option('--workspace <workspace>', 'Target workspace')
+  .option('--port <port>', 'Default port for the service', '8000')
+  .option('--verbose', 'Show detailed information')
+  .action(
+    createAsyncCommand(async (name, options) => {
+      const spinner = createSpinner(`Generating backend ${name}...`).start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+
+      await withTimeout(async () => {
+        await generateCode(name, { ...options, type: 'backend', spinner });
+      }, 120000); // 2 minute timeout
+
+      spinner.succeed(chalk.green(`Backend ${name} generated!`));
+    })
+  );
+
 // Development mode commands
 const devCommand = program.command('dev').description('Development mode with configuration hot-reloading');
 

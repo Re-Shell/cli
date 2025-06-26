@@ -1,8 +1,8 @@
-# Re-Shell CLI v0.15.0
+# Re-Shell CLI v0.16.1
 
-**Enterprise-Grade Microservices & Microfrontend Platform**
+**Full-Stack Development Platform - Microservices & Microfrontends United**
 
-The most comprehensive and powerful command-line interface for building, managing, and deploying distributed microservices and microfrontend architectures. Built with enterprise-grade reliability, zero-downtime deployments, comprehensive DevOps automation, and world-class developer experience.
+The most comprehensive and powerful command-line interface for building complete full-stack applications with distributed microservices and microfrontend architectures. Re-Shell unites backend and frontend development under a single CLI, providing enterprise-grade reliability, seamless integration, and exceptional developer experience.
 
 [![Version](https://img.shields.io/npm/v/@re-shell/cli.svg)](https://www.npmjs.com/package/@re-shell/cli)
 [![License](https://img.shields.io/npm/l/@re-shell/cli.svg)](https://github.com/re-shell/cli/blob/main/LICENSE)
@@ -12,34 +12,44 @@ The most comprehensive and powerful command-line interface for building, managin
 
 ## 🚀 Platform Overview
 
-Re-Shell CLI is an enterprise-grade platform that transforms how organizations build, deploy, and manage distributed systems. It provides a unified development experience across microservices backends and microfrontend architectures, enabling teams to focus on business logic while the platform handles infrastructure complexity.
+Re-Shell CLI is a comprehensive full-stack development platform that revolutionizes how teams build modern distributed applications. By uniting microservices and microfrontends under a single powerful CLI, it enables developers to create, integrate, and deploy complete applications with unprecedented ease.
 
 ### Key Capabilities
 
-- **🏗️ Microservices Architecture**: Enterprise-grade backend templates with multiple language support
-- **🎯 Microfrontend Framework**: Advanced frontend architecture with framework-agnostic approach
-- **🔄 DevOps Automation**: Complete CI/CD pipeline generation and deployment automation
-- **📊 Observability**: Comprehensive monitoring, logging, and health diagnostics
-- **🛡️ Security First**: Built-in security patterns, authentication, and compliance features
-- **🌐 Multi-Language**: Support for Node.js, Python, Rust, Java, .NET, Go, and more
-- **☁️ Cloud Native**: Kubernetes-ready with Docker, service mesh, and cloud provider integrations
+- **🎯 Full-Stack Unity**: Seamless integration between frontend microfrontends and backend microservices
+- **🏗️ Microservices Excellence**: Production-ready templates for Python (FastAPI, Django, Flask) and Node.js (Express, NestJS)
+- **🎨 Microfrontend Architecture**: Module Federation with React, Vue, Svelte, and Angular support
+- **🔄 Smart Code Generation**: API-first development with automatic type generation and SDK creation
+- **📊 Complete Observability**: Built-in monitoring, tracing, and logging across the entire stack
+- **🛡️ Enterprise Security**: JWT authentication, OAuth2, API gateways, and compliance features
+- **☁️ Production Ready**: Docker orchestration, Kubernetes manifests, and cloud provider configs
+
+### 🆕 What's New in v0.16.1
+
+- **Full-Stack Unity**: Seamlessly create and manage both frontend and backend from one CLI
+- **Microservice Templates**: Production-ready Python (FastAPI, Django, Flask) and Node.js (Express, NestJS) templates
+- **Smart Integration**: Automatic API SDK generation and type sharing between frontend and backend
+- **Complete Testing**: Comprehensive pytest configuration for Python with 85%+ coverage targets
+- **Hot Reload Everything**: Development servers with hot reload for all frameworks
+- **API Documentation**: Auto-generated OpenAPI/Swagger docs for all backend services
+- **Docker Orchestration**: One command to run your entire full-stack application locally
 
 ## 📋 Table of Contents
 
-- [Quick Start](#quick-start)
-- [Architecture](#architecture)
-- [Microservices Templates](#microservices-templates)
-- [Microfrontend Templates](#microfrontend-templates)
-- [Core Features](#core-features)
-- [Advanced Features](#advanced-features)
-- [DevOps & Deployment](#devops--deployment)
-- [Enterprise Features](#enterprise-features)
-- [CLI Commands](#cli-commands)
-- [Configuration](#configuration)
-- [Examples](#examples)
-- [Best Practices](#best-practices)
-- [Contributing](#contributing)
-- [Support](#support)
+- [Quick Start](#-quick-start)
+- [Architecture](#-architecture)
+- [Microservices Templates](#-microservices-templates)
+- [Microfrontend Templates](#-microfrontend-templates)
+- [Core Features](#-core-features)
+- [Advanced Features](#-advanced-features)
+- [DevOps & Deployment](#-devops--deployment)
+- [Enterprise Features](#-enterprise-features)
+- [CLI Commands Reference](#-cli-commands-reference)
+- [Configuration](#-configuration)
+- [Examples](#-examples)
+- [Best Practices](#-best-practices)
+- [Contributing](#-contributing)
+- [Support](#-support)
 
 ## 🚀 Quick Start
 
@@ -59,37 +69,69 @@ pnpm add -g @re-shell/cli
 re-shell --version
 ```
 
-### Create Your First Microservice
+### Create Your First Full-Stack Application
 
 ```bash
-# Initialize a new microservices workspace
-re-shell init my-platform --type microservices
+# Initialize a new full-stack project
+re-shell create my-app --type full-stack
+cd my-app
 
-# Navigate to workspace
-cd my-platform
+# Frontend: Add microfrontends
+re-shell add dashboard --framework react-ts --port 5173
+re-shell add admin-panel --framework vue-ts --port 5174
 
-# Create a Node.js microservice with Express.js
-re-shell create user-service --template express-ts --port 3001
+# Backend: Add microservices
+re-shell generate backend api-service --language python --framework fastapi --port 8001
+re-shell generate backend auth-service --framework express --port 8002
 
-# Create a Python microservice with FastAPI
-re-shell create payment-service --template fastapi --port 3002
+# Start everything with Docker orchestration
+docker-compose up
 
-# Create a Rust microservice with Actix
-re-shell create notification-service --template actix --port 3003
+# Or start individually for development
+re-shell dev --all
 ```
 
-### Create Your First Microfrontend
+### How Re-Shell Works
 
-```bash
-# Create a React microfrontend
-re-shell create user-dashboard --template react-ts --port 4001 --route /dashboard
+#### 1. **Project Structure**
+Re-Shell creates a monorepo structure optimized for full-stack development:
 
-# Create a Vue.js microfrontend
-re-shell create product-catalog --template vue-ts --port 4002 --route /products
-
-# Generate the shell application
-re-shell generate shell --name main-app
 ```
+my-app/
+├── apps/                  # Microfrontend applications
+│   ├── dashboard/         # React dashboard
+│   └── admin-panel/       # Vue.js admin panel
+├── services/              # Backend microservices
+│   ├── api-service/       # Python FastAPI service
+│   └── auth-service/      # Node.js Express service
+├── packages/              # Shared libraries
+│   ├── ui/                # Shared UI components
+│   ├── types/             # Shared TypeScript types
+│   └── sdk/               # Auto-generated API SDKs
+├── docker-compose.yml     # Local development orchestration
+└── re-shell.config.yaml   # Project configuration
+```
+
+#### 2. **Microfrontend Generation**
+When you run `re-shell add dashboard --framework react-ts`, the CLI:
+
+- Creates a complete React application with TypeScript
+- Configures Module Federation for runtime integration
+- Sets up a development server with hot reload
+- Implements microfrontend patterns (mount/unmount, event bus)
+- Generates production-ready build configurations
+- Includes Docker support for containerization
+
+#### 3. **Microservice Generation**
+When you run `re-shell generate backend api-service --language python --framework fastapi`, the CLI:
+
+- Creates a complete FastAPI project structure
+- Includes database models and migrations
+- Sets up API documentation (OpenAPI/Swagger)
+- Configures testing with pytest
+- Implements authentication and middleware
+- Generates Docker configuration
+- Includes hot-reload for development
 
 ### Launch Development Environment
 
@@ -110,36 +152,36 @@ Re-Shell CLI implements a modern distributed architecture pattern that combines 
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                     Re-Shell Platform                          │
+│                     Re-Shell Platform                           │
 ├─────────────────────────────────────────────────────────────────┤
-│  🎯 Microfrontend Layer                                        │
-│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐              │
-│  │   React     │ │    Vue.js   │ │   Svelte    │              │
-│  │ Dashboard   │ │  Catalog    │ │  Analytics  │              │
-│  └─────────────┘ └─────────────┘ └─────────────┘              │
-│         │               │               │                      │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │              Shell Application                          │   │
-│  │           (Module Federation)                           │   │
-│  └─────────────────────────────────────────────────────────┘   │
+│  🎯 Microfrontend Layer                                         │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐                │
+│  │   React     │ │    Vue.js   │ │   Svelte    │                │
+│  │ Dashboard   │ │  Catalog    │ │  Analytics  │                │
+│  └─────────────┘ └─────────────┘ └─────────────┘                │
+│         │               │               │                       │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │              Shell Application                          │    │
+│  │           (Module Federation)                           │    │
+│  └─────────────────────────────────────────────────────────┘    │
 ├─────────────────────────────────────────────────────────────────┤
-│  🔗 API Gateway & Service Mesh                                │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │  Load Balancer │ Auth │ Rate Limit │ Circuit Breaker  │   │
-│  └─────────────────────────────────────────────────────────┘   │
+│  🔗 API Gateway & Service Mesh                                  │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │  Load Balancer │ Auth │ Rate Limit │ Circuit Breaker    │    │
+│  └─────────────────────────────────────────────────────────┘    │
 ├─────────────────────────────────────────────────────────────────┤
-│  🏗️ Microservices Layer                                       │
-│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐              │
-│  │  Node.js    │ │   Python    │ │    Rust     │              │
-│  │ User Service│ │Payment API  │ │Notification │              │
-│  │ (Express)   │ │ (FastAPI)   │ │  (Actix)    │              │
-│  └─────────────┘ └─────────────┘ └─────────────┘              │
+│  🏗️ Microservices Layer                                         │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐                │
+│  │  Node.js    │ │   Python    │ │    Rust     │                │
+│  │ User Service│ │Payment API  │ │Notification │                │
+│  │ (Express)   │ │ (FastAPI)   │ │  (Actix)    │                │
+│  └─────────────┘ └─────────────┘ └─────────────┘                │
 ├─────────────────────────────────────────────────────────────────┤
-│  💾 Data Layer                                                │
-│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐              │
-│  │ PostgreSQL  │ │   MongoDB   │ │    Redis    │              │
-│  │   Users     │ │  Analytics  │ │   Cache     │              │
-│  └─────────────┘ └─────────────┘ └─────────────┘              │
+│  💾 Data Layer                                                  │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐                │
+│  │ PostgreSQL  │ │   MongoDB   │ │    Redis    │                │
+│  │   Users     │ │  Analytics  │ │   Cache     │                │
+│  └─────────────┘ └─────────────┘ └─────────────┘                │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -184,7 +226,7 @@ re-shell create modern-api --template koa-ts
 **Features**: Modern async/await, middleware composition, lightweight
 **Use Cases**: Modern APIs, middleware-heavy applications, clean architecture
 
-### Python Ecosystem ✅ **Complete in v0.15.0**
+### Python Ecosystem ✅ **Complete**
 
 #### FastAPI Template
 ```bash
@@ -283,7 +325,7 @@ All templates include comprehensive type hints with Python 3.11+ features:
 ### Additional Languages *(Roadmap)*
 
 - **🦀 Rust**: Actix-web, Rocket, Warp
-- **☕ Java**: Spring Boot, Quarkus, Micronaut  
+- **☕ Java**: Spring Boot, Quarkus, Micronaut
 - **🔷 .NET**: ASP.NET Core, Minimal APIs
 - **🐹 Go**: Gin, Echo, Fiber
 - **💎 Ruby**: Rails API, Sinatra
@@ -291,41 +333,137 @@ All templates include comprehensive type hints with Python 3.11+ features:
 
 ## 🎯 Microfrontend Templates
 
-### React Ecosystem
+Re-Shell CLI provides enterprise-grade microfrontend architecture using **Webpack Module Federation**, enabling true microfrontend patterns with dynamic loading, independent deployment, and runtime integration.
 
-#### React TypeScript Template
+### 🏗️ **Module Federation Architecture**
+
 ```bash
-re-shell create user-dashboard --template react-ts --route /dashboard
+# Create complete microfrontend platform
+re-shell create my-platform --type microfrontend --architecture module-federation
+
+# Generate shell application (host)
+re-shell create shell-app --template federation-shell --port 3100
+
+# Generate microfrontend applications (remotes)
+re-shell create react-dashboard --template react-mf --port 3000
+re-shell create vue-catalog --template vue-mf --port 3001
+re-shell create svelte-analytics --template svelte-mf --port 3002
 ```
-**Features**: Hooks, TypeScript, Vite, Module Federation
-**Use Cases**: Interactive dashboards, admin panels, user interfaces
 
-### Vue.js Ecosystem
+### ⚛️ **React Microfrontend**
 
-#### Vue TypeScript Template
 ```bash
-re-shell create product-catalog --template vue-ts --route /products
+re-shell create user-dashboard --template react-mf --port 3000
 ```
-**Features**: Composition API, TypeScript, Vite build
-**Use Cases**: Product catalogs, content management, e-commerce
+**Features**:
+- React 18 with Hooks and Suspense
+- Module Federation with dynamic imports
+- Error boundaries for isolated failures
+- Hot module replacement
+- TypeScript support
+- Real-time backend integration
 
-### Svelte Ecosystem
+**Architecture**:
+- Exposes: `./App` component for shell consumption
+- Shared: React runtime with singleton pattern
+- Independent: Can run standalone or federated
 
-#### Svelte TypeScript Template
+### 🟢 **Vue.js Microfrontend**
+
 ```bash
-re-shell create analytics-widget --template svelte-ts --route /analytics
+re-shell create product-catalog --template vue-mf --port 3001
 ```
-**Features**: Compile-time optimization, reactive programming
-**Use Cases**: Performance-critical UIs, widgets, embedded components
+**Features**:
+- Vue 3 Composition API
+- Reactive state management
+- Module Federation integration
+- Component-based architecture
+- TypeScript support
+- Live data binding
 
-### Angular Ecosystem *(Coming Soon)*
+**Architecture**:
+- Exposes: `./App` Vue component
+- Shared: Vue runtime optimization
+- Independent: Standalone development capability
 
-#### Angular Template
+### 🔥 **Svelte Microfrontend**
+
 ```bash
-re-shell create enterprise-app --template angular-ts --route /enterprise
+re-shell create analytics-widget --template svelte-mf --port 3002
 ```
-**Features**: Dependency injection, enterprise architecture
-**Use Cases**: Large applications, complex forms, enterprise software
+**Features**:
+- Compile-time optimization
+- Minimal runtime overhead
+- Reactive programming model
+- Module Federation support
+- Performance-critical rendering
+
+**Architecture**:
+- Exposes: Compiled Svelte components
+- Shared: Minimal shared dependencies
+- Independent: Ultra-fast standalone execution
+
+### 🅰️ **Angular Microfrontend** *(Enterprise Ready)*
+
+```bash
+re-shell create enterprise-app --template angular-mf --port 3003
+```
+**Features**:
+- Angular 17+ with standalone components
+- Dependency injection at microfrontend level
+- Module Federation with Angular Elements
+- Enterprise-grade architecture
+- Comprehensive testing framework
+
+**Architecture**:
+- Exposes: Angular Elements for federation
+- Shared: Angular runtime with zone isolation
+- Independent: Full Angular CLI compatibility
+
+### 🏠 **Shell Application (Host)**
+
+The shell application orchestrates all microfrontends:
+
+```bash
+re-shell create platform-shell --template federation-shell
+```
+
+**Features**:
+- **Dynamic Loading**: Load microfrontends on-demand
+- **Error Boundaries**: Isolated failure handling per microfrontend
+- **Unified Routing**: Seamless navigation between microfrontends
+- **Service Health**: Real-time monitoring of all services
+- **Loading States**: Smooth UX during microfrontend loading
+- **Fallback UI**: Graceful degradation when microfrontends fail
+
+### 🔧 **Development Experience**
+
+```bash
+# Start complete microfrontend platform
+re-shell dev --microfrontends --all
+
+# Development with hot reload
+re-shell dev --mf-mode development --watch
+
+# Production build with optimization
+re-shell build --microfrontends --federation --optimize
+```
+
+**Development Features**:
+- **Independent Development**: Teams work on separate microfrontends
+- **Hot Module Replacement**: Live updates without page refresh
+- **Cross-Framework**: Mix React, Vue, Svelte, Angular seamlessly
+- **Shared Dependencies**: Optimized bundle sizes
+- **Runtime Integration**: No build-time coupling
+
+### 📊 **Best Practices Implementation**
+
+- **🔒 Isolation**: Each microfrontend is completely independent
+- **📦 Shared Dependencies**: Optimized bundle management
+- **🔄 Communication**: Event-driven inter-app communication
+- **🛡️ Error Handling**: Graceful degradation and fallbacks
+- **🎯 Performance**: Lazy loading and code splitting
+- **🧪 Testing**: Independent testing strategies per microfrontend
 
 ## 🎛️ Core Features
 
@@ -338,7 +476,7 @@ re-shell init my-platform --type hybrid
 # Generate microservice
 re-shell create user-service --template nestjs-ts --database postgresql
 
-# Generate microfrontend  
+# Generate microfrontend
 re-shell create user-ui --template react-ts --route /users --port 4001
 
 # Generate full-stack feature
@@ -635,7 +773,7 @@ re-shell compliance check --standard pci-dss
 re-shell audit generate --quarterly-report
 ```
 
-## 📚 Best Practices
+## 📊 Best Practices
 
 ### 🏗️ **Architecture Guidelines**
 
@@ -694,7 +832,7 @@ pnpm dev
 - 🧪 **Testing**: Improve test coverage and quality
 - 🌐 **Internationalization**: Add support for multiple languages
 
-## 📞 Support
+## 💬 Support
 
 ### Community Support
 
@@ -728,9 +866,9 @@ MIT License - see the [LICENSE](LICENSE) file for details.
 
 <div align="center">
 
-**[Website](https://re-shell.dev)** • 
-**[Documentation](https://docs.re-shell.dev)** • 
-**[Examples](https://examples.re-shell.dev)** • 
+**[Website](https://re-shell.dev)** •
+**[Documentation](https://docs.re-shell.dev)** •
+**[Examples](https://examples.re-shell.dev)** •
 **[Community](https://community.re-shell.dev)**
 
 Made with ❤️ by the Re-Shell Team

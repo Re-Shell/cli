@@ -15,6 +15,7 @@ export interface BaseTemplate {
 
 export interface BackendTemplate extends BaseTemplate {
   framework: string;
+  displayName: string;
   language: 'typescript' | 'javascript' | 'python' | 'rust' | 'go' | 'java' | 'csharp';
   port?: number;
   features?: BackendFeature[];
@@ -51,7 +52,7 @@ export interface PromptChoice {
   short?: string;
 }
 
-export type BackendFeature = 
+export type BackendFeature =
   | 'authentication'
   | 'authorization'
   | 'database'
