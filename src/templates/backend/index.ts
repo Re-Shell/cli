@@ -3,6 +3,7 @@ import { djangoEnhancedTemplate } from './django-enhanced';
 import { actixWebTemplate } from './actix-web';
 import { warpTemplate } from './warp';
 import { rocketTemplate } from './rocket';
+import { axumTemplate } from './axum';
 import { BackendTemplate } from '../types';
 
 export const backendTemplates: Record<string, BackendTemplate> = {
@@ -11,6 +12,7 @@ export const backendTemplates: Record<string, BackendTemplate> = {
   'actix-web': actixWebTemplate,
   'warp': warpTemplate,
   'rocket': rocketTemplate,
+  'axum': axumTemplate,
 };
 
 export function getBackendTemplate(id: string): BackendTemplate | undefined {
@@ -35,3 +37,4 @@ export { djangoEnhancedTemplate } from './django-enhanced';
 export { actixWebTemplate } from './actix-web';
 export { warpTemplate } from './warp';
 export { rocketTemplate } from './rocket';
+export { axumTemplate } from './axum';
