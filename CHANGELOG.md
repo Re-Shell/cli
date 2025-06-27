@@ -5,6 +5,49 @@ All notable changes to the `@re-shell/cli` package will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.17.0] - 2024-12-27
+
+### 🦀 Complete Rust Ecosystem - High-Performance Microservices
+
+This major release adds comprehensive Rust support to Re-Shell CLI, providing four production-ready Rust web framework templates with enterprise-grade features. Rust developers can now build high-performance, type-safe microservices with zero-cost abstractions and memory safety guarantees.
+
+### Added
+
+#### 🦀 Rust Web Framework Templates
+- **Actix-Web**: Enterprise-grade async handlers with comprehensive middleware
+- **Warp**: Functional programming patterns with composable filters  
+- **Rocket**: Type-safe routing with compile-time verification
+- **Axum**: Modern async architecture with tower middleware stack
+
+#### ⚡ Universal Rust Features
+- **SQLx Integration**: Compile-time verified SQL with async PostgreSQL
+- **Tokio Runtime**: High-performance async runtime configuration
+- **Serde Support**: Zero-copy JSON serialization/deserialization
+- **Error Handling**: Comprehensive error handling with thiserror/anyhow
+- **Development Tools**: cargo-watch for hot reload development
+- **Security**: JWT authentication, CORS, security headers, rate limiting
+- **Docker Support**: Multi-stage builds with minimal runtime images
+- **Database Migrations**: Complete migration system with rollback support
+- **Observability**: Structured logging and distributed tracing
+
+#### 🏗️ Framework-Specific Features
+- **Actix-Web**: Actor-based middleware, async handlers, comprehensive middleware stack
+- **Warp**: Filter composition, functional patterns, immutable data flow
+- **Rocket**: Request guards, fairings, compile-time route verification  
+- **Axum**: Custom extractors, tower middleware, state management
+
+#### 🔧 Development Experience
+- **Type Safety**: Compile-time guarantees across all request/response cycles
+- **Memory Safety**: Guaranteed memory safety without garbage collection
+- **Zero-Cost Abstractions**: Maximum performance with high-level abstractions
+- **Concurrent Safety**: Data race prevention at compile time
+- **Hot Reload**: Automatic rebuilds with cargo-watch integration
+
+### Changed
+- Updated package description to include Rust capabilities
+- Enhanced backend template registry with centralized management
+- Improved template discovery and selection by language/framework
+
 ## [0.16.3] - 2024-12-27
 
 ### 🚀 Full-Stack Platform Complete - Microservices & Microfrontends United

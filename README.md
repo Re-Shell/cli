@@ -1,4 +1,4 @@
-# Re-Shell CLI v0.16.3
+# Re-Shell CLI v0.17.0
 
 **Full-Stack Development Platform - Microservices & Microfrontends United**
 
@@ -17,29 +17,26 @@ Re-Shell CLI is a comprehensive full-stack development platform that revolutioni
 ### Key Capabilities
 
 - **🎯 Full-Stack Unity**: Seamless integration between frontend microfrontends and backend microservices
-- **🖥️ Interactive TUI**: Beautiful Terminal User Interface built with Go and Bubble Tea for visual project management
-- **🏗️ Microservices Excellence**: Production-ready templates for Python (FastAPI, Django, Flask) and Node.js (Express, NestJS)
+- **🏗️ Microservices Excellence**: Production-ready templates for Rust (Actix-Web, Warp, Rocket, Axum), Python (FastAPI, Django, Flask) and Node.js (Express, NestJS)
 - **🎨 Microfrontend Architecture**: Module Federation with React, Vue, Svelte, and Angular support
 - **🔄 Smart Code Generation**: API-first development with automatic type generation and SDK creation
 - **📊 Complete Observability**: Built-in monitoring, tracing, and logging across the entire stack
 - **🛡️ Enterprise Security**: JWT authentication, OAuth2, API gateways, and compliance features
 - **☁️ Production Ready**: Docker orchestration, Kubernetes manifests, and cloud provider configs
 
-### 🆕 What's New in v0.16.3
+### 🆕 What's New in v0.17.0
 
-- **🖥️ Interactive TUI**: Beautiful Terminal User Interface with project dashboard, service manager, and visual configuration
-- **Full-Stack Unity**: Seamlessly create and manage both frontend and backend from one CLI
-- **Microservice Templates**: Production-ready Python (FastAPI, Django, Flask) and Node.js (Express, NestJS) templates
-- **Smart Integration**: Automatic API SDK generation and type sharing between frontend and backend
-- **Complete Testing**: Comprehensive pytest configuration for Python with 85%+ coverage targets
-- **Hot Reload Everything**: Development servers with hot reload for all frameworks
-- **API Documentation**: Auto-generated OpenAPI/Swagger docs for all backend services
-- **Docker Orchestration**: One command to run your entire full-stack application locally
+- **🦀 Complete Rust Ecosystem**: Four production-ready Rust templates - Actix-Web, Warp, Rocket, and Axum
+- **⚡ High-Performance Backends**: Type-safe, async Rust microservices with zero-cost abstractions
+- **🧩 Functional Programming**: Warp template with composable filters and functional patterns
+- **🛡️ Compile-Time Safety**: Rocket template with type-safe routing and compile-time verification
+- **🏗️ Modern Architecture**: Axum template with tower middleware and advanced async patterns
+- **🔄 Universal Features**: SQLx, Tokio, Serde, and error handling across all Rust templates
+- **Full-Stack Unity**: Seamlessly create and manage frontend, backend (Rust/Python/Node.js) from one CLI
 
 ## 📋 Table of Contents
 
 - [Quick Start](#-quick-start)
-- [Interactive TUI](#-interactive-tui)
 - [Architecture](#-architecture)
 - [Microservices Templates](#-microservices-templates)
 - [Microfrontend Templates](#-microfrontend-templates)
@@ -148,52 +145,6 @@ re-shell dev user-service payment-service
 # View service health dashboard
 re-shell doctor --interactive
 ```
-
-## 🖥️ Interactive TUI
-
-Experience Re-Shell through a beautiful Terminal User Interface built with Go and Bubble Tea. The TUI provides an intuitive, visual way to manage your full-stack projects without leaving the terminal.
-
-### 🚀 Launch TUI
-
-```bash
-# Launch interactive dashboard
-re-shell tui
-
-# Launch specific mode
-re-shell tui --mode dashboard
-re-shell tui --mode init
-re-shell tui --mode manage
-
-# For specific project
-re-shell tui --project /path/to/project
-```
-
-### 🎯 TUI Features
-
-- **📊 Project Dashboard** - Real-time overview with service status, build health, and activity feed
-- **🚀 Project Wizard** - Interactive project initialization with guided setup
-- **⚙️ Service Manager** - Visual management of microfrontends and microservices
-- **📁 File Explorer** - Navigate project structure with visual file browser
-- **🔧 Configuration Editor** - Visual editing of Re-Shell configurations
-- **💡 Help System** - Built-in documentation and keyboard shortcuts
-
-### ⌨️ Navigation
-
-- **↑/↓ Arrow Keys** - Navigate menu items
-- **Enter** - Select item or execute action
-- **Esc** - Return to main menu
-- **q** - Quit application
-- **Tab** - Switch between sections
-
-### 🎨 Visual Experience
-
-The TUI features a modern design with:
-- **Color-coded status indicators** - Instant visual feedback
-- **Responsive layout** - Adapts to your terminal size
-- **Smooth animations** - Loading spinners and transitions
-- **Contextual help** - Tooltips and guidance throughout
-
-**For complete TUI documentation, see [TUI.md](./TUI.md)**
 
 ## 🏗️ Architecture
 
@@ -373,7 +324,6 @@ All templates include comprehensive type hints with Python 3.11+ features:
 
 ### Additional Languages *(Roadmap)*
 
-- **🦀 Rust**: Actix-web, Rocket, Warp
 - **☕ Java**: Spring Boot, Quarkus, Micronaut
 - **🔷 .NET**: ASP.NET Core, Minimal APIs
 - **🐹 Go**: Gin, Echo, Fiber
