@@ -5,7 +5,7 @@ This document provides comprehensive real-world scenarios and examples for using
 ## Table of Contents
 
 1. [Latest Features](#latest-features)
-   - [Full-Stack Platform (v0.16.2)](#full-stack-platform-v0162)
+   - [Full-Stack Platform (v0.16.3)](#full-stack-platform-v0163)
    - [Microfrontend Architecture (v0.16.0)](#microfrontend-architecture-v0160)
    - [Python Ecosystem Complete (v0.15.0)](#python-ecosystem-complete-v0150)
    - [Phase 0 Complete (v0.8.0)](#phase-0-complete-v080)
@@ -24,7 +24,7 @@ This document provides comprehensive real-world scenarios and examples for using
 
 ## Latest Features
 
-### Full-Stack Platform (v0.16.2)
+### Full-Stack Platform (v0.16.3)
 
 Complete full-stack development platform uniting microservices and microfrontends under a single CLI.
 
