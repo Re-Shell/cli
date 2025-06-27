@@ -1,3 +1,4 @@
+// Redis integration templates for Python frameworks
 import { FileTemplate } from '../types';
 
 export interface RedisConfig {

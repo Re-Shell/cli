@@ -49,7 +49,7 @@ export const lazyModules = {
   // UI libraries
   chalk: lazy(() => import('chalk').then(m => m.default)),
   ora: lazy(() => import('ora').then(m => m.default)),
-  inquirer: lazy(() => import('inquirer').then(m => m.default)),
+  // inquirer: lazy(() => import('inquirer').then(m => m.default).catch(() => null)),
   
   // File system utilities
   globby: lazy(() => import('globby').then(m => m as any)),
@@ -58,17 +58,17 @@ export const lazyModules = {
   
   // Development tools
   chokidar: lazy(() => import('chokidar')),
-  webpack: lazy(() => import('webpack')),
+  // webpack: lazy(() => import('webpack').catch(() => null)),
   vite: lazy(() => import('vite')),
   
   // Parsing and validation
   yaml: lazy(() => import('js-yaml')),
   ajv: lazy(() => import('ajv').then(m => m.default)),
-  zod: lazy(() => import('zod')),
+  // zod: lazy(() => import('zod').catch(() => null)),
   
   // Network and API
-  axios: lazy(() => import('axios').then(m => m.default)),
-  graphqlRequest: lazy(() => import('graphql-request')),
+  // axios: lazy(() => import('axios').then(m => m.default).catch(() => null)),
+  // graphqlRequest: lazy(() => import('graphql-request').catch(() => null)),
   
   // Template engines
   handlebars: lazy(() => import('handlebars')),
