@@ -1,12 +1,14 @@
 import { hapiTypeScriptTemplate } from './hapi-ts';
 import { djangoEnhancedTemplate } from './django-enhanced';
 import { actixWebTemplate } from './actix-web';
+import { warpTemplate } from './warp';
 import { BackendTemplate } from '../types';
 
 export const backendTemplates: Record<string, BackendTemplate> = {
   'hapi-ts': hapiTypeScriptTemplate,
   'django-enhanced': djangoEnhancedTemplate,
   'actix-web': actixWebTemplate,
+  'warp': warpTemplate,
 };
 
 export function getBackendTemplate(id: string): BackendTemplate | undefined {
@@ -29,3 +31,4 @@ export function getBackendTemplatesByFramework(framework: string): BackendTempla
 export { hapiTypeScriptTemplate } from './hapi-ts';
 export { djangoEnhancedTemplate } from './django-enhanced';
 export { actixWebTemplate } from './actix-web';
+export { warpTemplate } from './warp';
