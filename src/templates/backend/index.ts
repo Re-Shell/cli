@@ -8,6 +8,7 @@ import { springBootTemplate } from './spring-boot';
 import { quarkusTemplate } from './quarkus';
 import { micronautTemplate } from './micronaut';
 import { vertxTemplate } from './vertx';
+import { aspnetCoreWebApiTemplate } from './aspnet-core-webapi';
 import { BackendTemplate } from '../types';
 
 export const backendTemplates: Record<string, BackendTemplate> = {
@@ -21,6 +22,7 @@ export const backendTemplates: Record<string, BackendTemplate> = {
   'quarkus': quarkusTemplate,
   'micronaut': micronautTemplate,
   'vertx': vertxTemplate,
+  'aspnet-core-webapi': aspnetCoreWebApiTemplate,
 };
 
 export function getBackendTemplate(id: string): BackendTemplate | undefined {
@@ -50,3 +52,4 @@ export { springBootTemplate } from './spring-boot';
 export { quarkusTemplate } from './quarkus';
 export { micronautTemplate } from './micronaut';
 export { vertxTemplate } from './vertx';
+export { aspnetCoreWebApiTemplate } from './aspnet-core-webapi';
