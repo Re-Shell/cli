@@ -5,6 +5,46 @@ All notable changes to the `@re-shell/cli` package will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.19.0] - 2024-12-27
+
+### 🔷 .NET Ecosystem Foundation - Enterprise Microservices
+
+This major release introduces comprehensive .NET support to Re-Shell CLI, providing two production-ready ASP.NET Core templates optimized for different use cases. .NET developers can now build enterprise-grade microservices with modern frameworks, high-performance optimizations, and comprehensive tooling.
+
+### Added
+
+#### 🔷 .NET Core Framework Templates
+- **ASP.NET Core Web API**: Full MVC architecture with controllers, services, comprehensive middleware stack
+- **ASP.NET Core Minimal API**: High-performance functional endpoints with AOT compilation support
+
+#### 🏢 Enterprise .NET Features
+- **Entity Framework Core**: Complete ORM integration with code-first migrations and seeding
+- **Authentication**: JWT authentication with Identity framework and secure password hashing
+- **Authorization**: Role-based access control and custom authorization policies
+- **Caching**: Redis distributed caching with configurable policies and TTL management
+- **Performance**: Output caching, rate limiting, and Ahead-of-Time (AOT) compilation
+- **Logging**: Serilog structured logging with console and file outputs
+- **API Documentation**: Swagger/OpenAPI integration with comprehensive schemas and JWT security
+- **Validation**: FluentValidation integration for model validation and business rules
+- **Error Handling**: Global exception handling middleware with structured error responses
+- **Development**: Hot reload with dotnet watch, comprehensive debugging support
+
+#### 🚀 Framework-Specific Features
+- **ASP.NET Core Web API**: Identity framework, AutoMapper, comprehensive middleware, enterprise patterns
+- **ASP.NET Core Minimal API**: Functional endpoints, output caching, rate limiting, AOT optimization
+
+#### 🐳 Infrastructure & DevOps
+- **Docker**: Multi-stage Dockerfiles with AOT-optimized builds for minimal container sizes
+- **Configuration**: Environment-specific settings with secure configuration management
+- **CORS**: Cross-origin resource sharing with configurable policies
+- **Health Checks**: Comprehensive health monitoring endpoints
+- **Database**: SQL Server integration with LocalDB for development
+
+### Changed
+- Updated package description to include .NET ecosystem capabilities
+- Enhanced backend template registry with .NET framework support
+- Improved documentation with .NET-specific examples and deployment guides
+
 ## [0.18.0] - 2024-12-27
 
 ### ☕ Complete Java Ecosystem - Enterprise Microservices

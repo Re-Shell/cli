@@ -1,4 +1,4 @@
-# Re-Shell CLI v0.18.0
+# Re-Shell CLI v0.19.0
 
 **Full-Stack Development Platform - Microservices & Microfrontends United**
 
@@ -17,22 +17,23 @@ Re-Shell CLI is a comprehensive full-stack development platform that revolutioni
 ### Key Capabilities
 
 - **🎯 Full-Stack Unity**: Seamless integration between frontend microfrontends and backend microservices
-- **🏗️ Microservices Excellence**: Production-ready templates for Java (Spring Boot, Quarkus, Micronaut, Vert.x), Rust (Actix-Web, Warp, Rocket, Axum), Python (FastAPI, Django, Flask) and Node.js (Express, NestJS)
+- **🏗️ Microservices Excellence**: Production-ready templates for .NET (ASP.NET Core Web API, Minimal API), Java (Spring Boot, Quarkus, Micronaut, Vert.x), Rust (Actix-Web, Warp, Rocket, Axum), Python (FastAPI, Django, Flask) and Node.js (Express, NestJS)
 - **🎨 Microfrontend Architecture**: Module Federation with React, Vue, Svelte, and Angular support
 - **🔄 Smart Code Generation**: API-first development with automatic type generation and SDK creation
 - **📊 Complete Observability**: Built-in monitoring, tracing, and logging across the entire stack
 - **🛡️ Enterprise Security**: JWT authentication, OAuth2, API gateways, and compliance features
 - **☁️ Production Ready**: Docker orchestration, Kubernetes manifests, and cloud provider configs
 
-### 🆕 What's New in v0.18.0
+### 🆕 What's New in v0.19.0
 
-- **☕ Complete Java Ecosystem**: Four enterprise Java frameworks - Spring Boot, Quarkus, Micronaut, and Vert.x
-- **🚀 Spring Boot**: Enterprise-grade with JWT security, JPA, Redis caching, and comprehensive testing
-- **⚡ Quarkus**: Cloud-native with GraalVM native compilation and Kubernetes-ready deployments
-- **🎯 Micronaut**: Compile-time dependency injection with AOP and cloud-native features
-- **🔄 Vert.x**: Reactive, event-driven architecture for high-performance applications
-- **🧪 Testing Excellence**: JUnit 5, Mockito, and TestContainers across all Java templates
-- **📊 Enterprise Features**: JWT auth, database migrations, caching, monitoring, and OpenAPI docs
+- **🔷 .NET Ecosystem Foundation**: Two enterprise-grade .NET Core templates for modern microservices
+- **🏗️ ASP.NET Core Web API**: Full MVC architecture with controllers, services, comprehensive middleware
+- **⚡ Minimal API**: High-performance functional endpoints with AOT compilation support
+- **🔐 Enterprise Authentication**: JWT authentication with Identity framework and custom auth services
+- **📊 Performance Optimization**: Output caching, rate limiting, and Redis distributed caching
+- **🧪 Entity Framework Core**: Complete ORM integration with migrations and code-first approach
+- **📝 Comprehensive Logging**: Serilog structured logging with console and file outputs
+- **🔧 Development Excellence**: Hot reload, Docker support, and Swagger/OpenAPI documentation
 
 ## 📋 Table of Contents
 
@@ -322,10 +323,36 @@ All templates include comprehensive type hints with Python 3.11+ features:
 - **Pyright**: Advanced type analysis with error reporting
 - **Ruff**: Fast linting with type-aware rules and automatic fixes
 
+### 🔷 .NET Ecosystem ✅ **Complete**
+
+#### ASP.NET Core Web API Template
+```bash
+re-shell create enterprise-api --template aspnet-core-webapi
+```
+**Features**: Full MVC architecture, Identity framework, JWT authentication, Entity Framework Core, comprehensive middleware
+**Use Cases**: Enterprise applications, complex business logic, team collaboration, comprehensive API development
+
+#### ASP.NET Core Minimal API Template
+```bash
+re-shell create lightweight-api --template aspnet-core-minimal
+```
+**Features**: Functional endpoints, AOT compilation, output caching, rate limiting, high performance
+**Use Cases**: High-throughput APIs, cloud-native services, performance-critical applications
+
+### 🔷 .NET Universal Features
+
+All .NET templates include enterprise-grade capabilities:
+- **Authentication**: JWT authentication with secure password hashing
+- **Database**: Entity Framework Core with code-first migrations
+- **Caching**: Redis distributed caching with configurable policies
+- **Logging**: Serilog structured logging with multiple sinks
+- **API Documentation**: Swagger/OpenAPI with comprehensive schemas
+- **Performance**: Output caching, rate limiting, and AOT compilation support
+- **Development**: Hot reload with dotnet watch, comprehensive error handling
+- **Containerization**: Docker support with optimized multi-stage builds
+
 ### Additional Languages *(Roadmap)*
 
-- **☕ Java**: Spring Boot, Quarkus, Micronaut
-- **🔷 .NET**: ASP.NET Core, Minimal APIs
 - **🐹 Go**: Gin, Echo, Fiber
 - **💎 Ruby**: Rails API, Sinatra
 - **🐘 PHP**: Laravel, Symfony
