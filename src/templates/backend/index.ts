@@ -2,6 +2,7 @@ import { hapiTypeScriptTemplate } from './hapi-ts';
 import { djangoEnhancedTemplate } from './django-enhanced';
 import { actixWebTemplate } from './actix-web';
 import { warpTemplate } from './warp';
+import { rocketTemplate } from './rocket';
 import { BackendTemplate } from '../types';
 
 export const backendTemplates: Record<string, BackendTemplate> = {
@@ -9,6 +10,7 @@ export const backendTemplates: Record<string, BackendTemplate> = {
   'django-enhanced': djangoEnhancedTemplate,
   'actix-web': actixWebTemplate,
   'warp': warpTemplate,
+  'rocket': rocketTemplate,
 };
 
 export function getBackendTemplate(id: string): BackendTemplate | undefined {
@@ -32,3 +34,4 @@ export { hapiTypeScriptTemplate } from './hapi-ts';
 export { djangoEnhancedTemplate } from './django-enhanced';
 export { actixWebTemplate } from './actix-web';
 export { warpTemplate } from './warp';
+export { rocketTemplate } from './rocket';
