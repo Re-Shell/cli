@@ -1,6 +1,6 @@
 {
   "name": "@re-shell/cli",
-  "version": "0.16.1",
+  "version": "0.16.2",
   "description": "Full-stack development platform uniting microservices and microfrontends. Build complete applications with Python (FastAPI, Django, Flask) and Node.js backends alongside React, Vue, Svelte frontends - all managed through one powerful CLI",
   "main": "dist/index.js",
   "files": [
@@ -43,7 +43,7 @@
     "migration-tools"
   ],
   "author": "Re-Shell Organization",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Re-Shell/cli.git"
