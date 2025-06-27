@@ -1,4 +1,4 @@
-# Re-Shell CLI v0.17.0
+# Re-Shell CLI v0.18.0
 
 **Full-Stack Development Platform - Microservices & Microfrontends United**
 
@@ -17,22 +17,22 @@ Re-Shell CLI is a comprehensive full-stack development platform that revolutioni
 ### Key Capabilities
 
 - **🎯 Full-Stack Unity**: Seamless integration between frontend microfrontends and backend microservices
-- **🏗️ Microservices Excellence**: Production-ready templates for Rust (Actix-Web, Warp, Rocket, Axum), Python (FastAPI, Django, Flask) and Node.js (Express, NestJS)
+- **🏗️ Microservices Excellence**: Production-ready templates for Java (Spring Boot, Quarkus, Micronaut, Vert.x), Rust (Actix-Web, Warp, Rocket, Axum), Python (FastAPI, Django, Flask) and Node.js (Express, NestJS)
 - **🎨 Microfrontend Architecture**: Module Federation with React, Vue, Svelte, and Angular support
 - **🔄 Smart Code Generation**: API-first development with automatic type generation and SDK creation
 - **📊 Complete Observability**: Built-in monitoring, tracing, and logging across the entire stack
 - **🛡️ Enterprise Security**: JWT authentication, OAuth2, API gateways, and compliance features
 - **☁️ Production Ready**: Docker orchestration, Kubernetes manifests, and cloud provider configs
 
-### 🆕 What's New in v0.17.0
+### 🆕 What's New in v0.18.0
 
-- **🦀 Complete Rust Ecosystem**: Four production-ready Rust templates - Actix-Web, Warp, Rocket, and Axum
-- **⚡ High-Performance Backends**: Type-safe, async Rust microservices with zero-cost abstractions
-- **🧩 Functional Programming**: Warp template with composable filters and functional patterns
-- **🛡️ Compile-Time Safety**: Rocket template with type-safe routing and compile-time verification
-- **🏗️ Modern Architecture**: Axum template with tower middleware and advanced async patterns
-- **🔄 Universal Features**: SQLx, Tokio, Serde, and error handling across all Rust templates
-- **Full-Stack Unity**: Seamlessly create and manage frontend, backend (Rust/Python/Node.js) from one CLI
+- **☕ Complete Java Ecosystem**: Four enterprise Java frameworks - Spring Boot, Quarkus, Micronaut, and Vert.x
+- **🚀 Spring Boot**: Enterprise-grade with JWT security, JPA, Redis caching, and comprehensive testing
+- **⚡ Quarkus**: Cloud-native with GraalVM native compilation and Kubernetes-ready deployments
+- **🎯 Micronaut**: Compile-time dependency injection with AOP and cloud-native features
+- **🔄 Vert.x**: Reactive, event-driven architecture for high-performance applications
+- **🧪 Testing Excellence**: JUnit 5, Mockito, and TestContainers across all Java templates
+- **📊 Enterprise Features**: JWT auth, database migrations, caching, monitoring, and OpenAPI docs
 
 ## 📋 Table of Contents
 
