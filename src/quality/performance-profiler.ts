@@ -3,7 +3,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as os from 'os';
 import { execSync } from 'child_process';
-import * as glob from 'fast-glob';
+import glob from 'fast-glob';
 
 export interface PerformanceProfileConfig {
   profileDuration?: number;

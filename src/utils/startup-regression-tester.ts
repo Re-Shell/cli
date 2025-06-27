@@ -186,7 +186,7 @@ export class StartupRegressionTester {
    * Run comprehensive regression test suite
    */
   async runTestSuite(): Promise<RegressionReport[]> {
-    const testCommands = [
+    const testCommands: [string, string[]][] = [
       ['node', ['dist/index.js', '--version']],
       ['node', ['dist/index.js', '--help']],
       ['node', ['dist/index.js', 'init', '--help']],
@@ -200,7 +200,7 @@ export class StartupRegressionTester {
         const report = await this.testRegression(command, args);
         reports.push(report);
       } catch (error) {
-        console.error(`Failed to test ${command} ${args?.join(' ')}: ${error}`);
+        console.error(`Failed to test ${command} ${Array.isArray(args) ? args.join(' ') : args || ''}: ${error}`);
       }
     }
     

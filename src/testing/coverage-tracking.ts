@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { execSync } from 'child_process';
-import * as glob from 'fast-glob';
+import glob from 'fast-glob';
 
 export interface CoverageTrackingConfig {
   projects: ProjectConfig[];
@@ -362,9 +362,13 @@ export class CoverageTracking extends EventEmitter {
       result.deltas = this.calculateDeltas(project.name, result.coverage);
 
       // Check thresholds
+      const thresholds = { 
+        ...this.config.thresholds, 
+        ...(project.thresholds || {}) 
+      };
       result.violations = this.checkThresholds(
         result.coverage,
-        project.thresholds || this.config.thresholds
+        thresholds
       );
 
       // Analyze trends

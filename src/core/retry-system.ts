@@ -65,7 +65,7 @@ export class RetryExecutor extends EventEmitter {
     operation: () => Promise<T>,
     customOptions?: Partial<RetryOptions>
   ): Promise<RetryResult<T>> {
-    const opts = { ...this.options, ...customOptions };
+    const opts = { ...this.defaultOptions, ...this.options, ...customOptions };
     const startTime = Date.now();
     let lastError: Error | undefined;
     let lastAttemptDuration = 0;
@@ -457,7 +457,8 @@ export class RetryManager extends EventEmitter {
       breaker = this.createCircuitBreaker(name, circuitOptions);
     }
 
-    return executor.execute(() => breaker!.execute(operation));
+    const result = await executor.execute(() => breaker!.execute(operation));
+    return result.result;
   }
 
   getRetryExecutor(name: string): RetryExecutor | undefined {

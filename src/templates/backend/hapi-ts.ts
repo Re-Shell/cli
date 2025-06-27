@@ -3,6 +3,7 @@ import { BackendTemplate } from '../types';
 export const hapiTypeScriptTemplate: BackendTemplate = {
   id: 'hapi-ts',
   name: 'Hapi.js + TypeScript',
+  displayName: 'Hapi.js + TypeScript',
   description: 'Enterprise-grade Hapi.js API server with TypeScript, built-in validation, caching, security, and plugin architecture',
   framework: 'hapi',
   language: 'typescript',

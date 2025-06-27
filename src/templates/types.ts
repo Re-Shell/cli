@@ -1,5 +1,12 @@
 // Template system types for Re-Shell CLI
 
+export interface FileTemplate {
+  path: string;
+  content: string;
+  encoding?: string;
+  permissions?: number;
+}
+
 export interface BaseTemplate {
   id: string;
   name: string;

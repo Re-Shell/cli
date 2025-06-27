@@ -132,7 +132,7 @@ export class TemplateWizard extends EventEmitter {
       required: true,
       choices: Object.values(TemplateCategory).map(cat => ({
         value: cat,
-        label: this.formatCategoryName(cat)
+        title: this.formatCategoryName(cat)
       })),
       default: TemplateCategory.CUSTOM
     });
@@ -161,13 +161,13 @@ export class TemplateWizard extends EventEmitter {
       description: 'Select a license for your template',
       type: 'select',
       choices: [
-        { value: 'MIT', label: 'MIT License' },
-        { value: 'Apache-2.0', label: 'Apache License 2.0' },
-        { value: 'GPL-3.0', label: 'GNU GPL v3' },
-        { value: 'BSD-3-Clause', label: 'BSD 3-Clause' },
-        { value: 'ISC', label: 'ISC License' },
-        { value: 'UNLICENSED', label: 'Unlicensed (Private)' },
-        { value: 'custom', label: 'Custom License' }
+        { value: 'MIT', title: 'MIT License' },
+        { value: 'Apache-2.0', title: 'Apache License 2.0' },
+        { value: 'GPL-3.0', title: 'GNU GPL v3' },
+        { value: 'BSD-3-Clause', title: 'BSD 3-Clause' },
+        { value: 'ISC', title: 'ISC License' },
+        { value: 'UNLICENSED', title: 'Unlicensed (Private)' },
+        { value: 'custom', title: 'Custom License' }
       ],
       default: 'MIT'
     });
@@ -192,13 +192,13 @@ export class TemplateWizard extends EventEmitter {
       description: 'Select features to include in your template',
       type: 'multiselect',
       choices: [
-        { value: 'inheritance', label: 'Template Inheritance (extends other templates)' },
-        { value: 'interfaces', label: 'Template Interfaces (implements contracts)' },
-        { value: 'variables', label: 'User Variables (customizable values)' },
-        { value: 'hooks', label: 'Lifecycle Hooks (pre/post actions)' },
-        { value: 'conditional', label: 'Conditional Files (based on variables)' },
-        { value: 'merge', label: 'File Merging (merge with existing files)' },
-        { value: 'examples', label: 'Usage Examples' }
+        { value: 'inheritance', title: 'Template Inheritance (extends other templates)' },
+        { value: 'interfaces', title: 'Template Interfaces (implements contracts)' },
+        { value: 'variables', title: 'User Variables (customizable values)' },
+        { value: 'hooks', title: 'Lifecycle Hooks (pre/post actions)' },
+        { value: 'conditional', title: 'Conditional Files (based on variables)' },
+        { value: 'merge', title: 'File Merging (merge with existing files)' },
+        { value: 'examples', title: 'Usage Examples' }
       ],
       default: ['variables']
     });
@@ -310,7 +310,7 @@ export class TemplateWizard extends EventEmitter {
             type: 'confirm',
             name: 'continue',
             message: `Template validation found ${validationResult.errors.length} errors. Continue anyway?`,
-            default: false
+            initial: false
           });
 
           if (!shouldContinue.continue) {
@@ -389,7 +389,7 @@ export class TemplateWizard extends EventEmitter {
 
       // Variable name
       const nameResult = await this.prompter.prompt({
-        type: 'input',
+        type: 'text',
         name: 'name',
         message: 'Variable name',
         validate: (value: string) => {
@@ -410,19 +410,19 @@ export class TemplateWizard extends EventEmitter {
         name: 'type',
         message: 'Variable type',
         choices: [
-          { value: 'string', label: 'String' },
-          { value: 'number', label: 'Number' },
-          { value: 'boolean', label: 'Boolean' },
-          { value: 'choice', label: 'Choice (from list)' },
-          { value: 'array', label: 'Array' },
-          { value: 'object', label: 'Object' }
+          { value: 'string', title: 'String' },
+          { value: 'number', title: 'Number' },
+          { value: 'boolean', title: 'Boolean' },
+          { value: 'choice', title: 'Choice (from list)' },
+          { value: 'array', title: 'Array' },
+          { value: 'object', title: 'Object' }
         ]
       });
       variable.type = typeResult.type;
 
       // Variable description
       const descResult = await this.prompter.prompt({
-        type: 'input',
+        type: 'text',
         name: 'description',
         message: 'Description',
         validate: (value: string) => value.length > 0 || 'Description is required'
@@ -434,22 +434,16 @@ export class TemplateWizard extends EventEmitter {
         type: 'confirm',
         name: 'required',
         message: 'Is this variable required?',
-        default: true
+        initial: true
       });
       variable.required = requiredResult.required;
 
       // Default value
       if (!variable.required) {
         const defaultResult = await this.prompter.prompt({
-          type: 'input',
+          type: 'text',
           name: 'default',
-          message: 'Default value',
-          transform: (value: string) => {
-            if (variable.type === 'number') return Number(value);
-            if (variable.type === 'boolean') return value.toLowerCase() === 'true';
-            if (variable.type === 'array') return value.split(',').map(s => s.trim());
-            return value;
-          }
+          message: 'Default value'
         });
         if (defaultResult.default !== '') {
           variable.default = defaultResult.default;
@@ -459,7 +453,7 @@ export class TemplateWizard extends EventEmitter {
       // Choices for choice type
       if (variable.type === 'choice') {
         const choicesResult = await this.prompter.prompt({
-          type: 'input',
+          type: 'text',
           name: 'choices',
           message: 'Enter choices (comma-separated)',
           validate: (value: string) => value.length > 0 || 'At least one choice is required'
@@ -472,12 +466,12 @@ export class TemplateWizard extends EventEmitter {
         type: 'confirm',
         name: 'usePattern',
         message: 'Add pattern validation?',
-        default: false
+        initial: false
       });
 
       if (usePatternResult.usePattern && variable.type === 'string') {
         const patternResult = await this.prompter.prompt({
-          type: 'input',
+          type: 'text',
           name: 'pattern',
           message: 'Regular expression pattern',
           validate: (value: string) => {
@@ -499,7 +493,7 @@ export class TemplateWizard extends EventEmitter {
         type: 'confirm',
         name: 'addMore',
         message: 'Add another variable?',
-        default: false
+        initial: false
       });
       addMore = moreResult.addMore;
     }
@@ -527,7 +521,7 @@ export class TemplateWizard extends EventEmitter {
 
       // File destination
       const destResult = await this.prompter.prompt({
-        type: 'input',
+        type: 'text',
         name: 'destination',
         message: 'Destination path (in generated project)',
         validate: (value: string) => value.length > 0 || 'Destination is required'
@@ -540,9 +534,9 @@ export class TemplateWizard extends EventEmitter {
         name: 'sourceType',
         message: 'How to create the source file?',
         choices: [
-          { value: 'create', label: 'Create new file with content' },
-          { value: 'existing', label: 'Use existing file' },
-          { value: 'inline', label: 'Enter content inline' }
+          { value: 'create', title: 'Create new file with content' },
+          { value: 'existing', title: 'Use existing file' },
+          { value: 'inline', title: 'Enter content inline' }
         ]
       });
 
@@ -552,7 +546,7 @@ export class TemplateWizard extends EventEmitter {
         const sourcePath = path.join(templateDir, filename + '.hbs');
         
         const contentResult = await this.prompter.prompt({
-          type: 'editor',
+          type: 'text',
           name: 'content',
           message: 'Enter file content (Handlebars template)'
         });
@@ -562,7 +556,7 @@ export class TemplateWizard extends EventEmitter {
 
       } else if (sourceTypeResult.sourceType === 'existing') {
         const sourceResult = await this.prompter.prompt({
-          type: 'input',
+          type: 'text',
           name: 'source',
           message: 'Source file path',
           validate: async (value: string) => {
@@ -579,7 +573,7 @@ export class TemplateWizard extends EventEmitter {
         const sourcePath = path.join(templateDir, filename);
         
         const contentResult = await this.prompter.prompt({
-          type: 'input',
+          type: 'text',
           name: 'content',
           message: 'Enter file content (single line)'
         });
@@ -594,10 +588,10 @@ export class TemplateWizard extends EventEmitter {
         name: 'transform',
         message: 'Template engine',
         choices: [
-          { value: 'handlebars', label: 'Handlebars (default)' },
-          { value: 'none', label: 'No transformation (copy as-is)' }
+          { value: 'handlebars', title: 'Handlebars (default)' },
+          { value: 'none', title: 'No transformation (copy as-is)' }
         ],
-        default: 'handlebars'
+        initial: 'handlebars'
       });
       if (transformResult.transform !== 'handlebars') {
         file.transform = transformResult.transform;
@@ -609,15 +603,15 @@ export class TemplateWizard extends EventEmitter {
           type: 'confirm',
           name: 'conditional',
           message: 'Make this file conditional?',
-          default: false
+          initial: false
         });
 
         if (conditionalResult.conditional) {
           const conditionResult = await this.prompter.prompt({
-            type: 'input',
+            type: 'text',
             name: 'condition',
             message: 'Condition expression (JavaScript)',
-            default: 'context.variables.includeFeature === true'
+            initial: 'context.variables.includeFeature === true'
           });
           file.condition = conditionResult.condition;
         }
@@ -629,7 +623,7 @@ export class TemplateWizard extends EventEmitter {
           type: 'confirm',
           name: 'merge',
           message: 'Enable merging if file exists?',
-          default: false
+          initial: false
         });
 
         if (mergeResult.merge) {
@@ -640,12 +634,12 @@ export class TemplateWizard extends EventEmitter {
             name: 'mergeStrategy',
             message: 'Merge strategy',
             choices: [
-              { value: 'override', label: 'Override (replace existing)' },
-              { value: 'append', label: 'Append to existing' },
-              { value: 'prepend', label: 'Prepend to existing' },
-              { value: 'deep', label: 'Deep merge (JSON/YAML only)' }
+              { value: 'override', title: 'Override (replace existing)' },
+              { value: 'append', title: 'Append to existing' },
+              { value: 'prepend', title: 'Prepend to existing' },
+              { value: 'deep', title: 'Deep merge (JSON/YAML only)' }
             ],
-            default: 'override'
+            initial: 'override'
           });
           
           if (strategyResult.mergeStrategy !== 'override') {
@@ -661,7 +655,7 @@ export class TemplateWizard extends EventEmitter {
         type: 'confirm',
         name: 'addMore',
         message: 'Add another file?',
-        default: true
+        initial: true
       });
       addMore = moreResult.addMore;
     }
@@ -687,19 +681,19 @@ export class TemplateWizard extends EventEmitter {
         name: 'type',
         message: 'Hook type',
         choices: [
-          { value: HookType.BEFORE_PROCESS, label: 'Before Process (before template processing)' },
-          { value: HookType.AFTER_PROCESS, label: 'After Process (after all files)' },
-          { value: HookType.BEFORE_FILE, label: 'Before File (before each file)' },
-          { value: HookType.AFTER_FILE, label: 'After File (after each file)' },
-          { value: HookType.VALIDATE, label: 'Validate (validation hook)' },
-          { value: HookType.CLEANUP, label: 'Cleanup (cleanup hook)' }
+          { value: HookType.BEFORE_PROCESS, title: 'Before Process (before template processing)' },
+          { value: HookType.AFTER_PROCESS, title: 'After Process (after all files)' },
+          { value: HookType.BEFORE_FILE, title: 'Before File (before each file)' },
+          { value: HookType.AFTER_FILE, title: 'After File (after each file)' },
+          { value: HookType.VALIDATE, title: 'Validate (validation hook)' },
+          { value: HookType.CLEANUP, title: 'Cleanup (cleanup hook)' }
         ]
       });
       hook.type = typeResult.type;
 
       // Hook name
       const nameResult = await this.prompter.prompt({
-        type: 'input',
+        type: 'text',
         name: 'name',
         message: 'Hook name',
         validate: (value: string) => value.length > 0 || 'Name is required'
@@ -708,7 +702,7 @@ export class TemplateWizard extends EventEmitter {
 
       // Hook description
       const descResult = await this.prompter.prompt({
-        type: 'input',
+        type: 'text',
         name: 'description',
         message: 'Description (optional)'
       });
@@ -722,14 +716,14 @@ export class TemplateWizard extends EventEmitter {
         name: 'implementation',
         message: 'Hook implementation',
         choices: [
-          { value: 'command', label: 'Shell command' },
-          { value: 'script', label: 'JavaScript code' }
+          { value: 'command', title: 'Shell command' },
+          { value: 'script', title: 'JavaScript code' }
         ]
       });
 
       if (implResult.implementation === 'command') {
         const commandResult = await this.prompter.prompt({
-          type: 'input',
+          type: 'text',
           name: 'command',
           message: 'Shell command',
           validate: (value: string) => value.length > 0 || 'Command is required'
@@ -737,7 +731,7 @@ export class TemplateWizard extends EventEmitter {
         hook.command = commandResult.command;
       } else {
         const scriptResult = await this.prompter.prompt({
-          type: 'editor',
+          type: 'text',
           name: 'script',
           message: 'JavaScript code (has access to context and require)'
         });
@@ -749,7 +743,7 @@ export class TemplateWizard extends EventEmitter {
         type: 'confirm',
         name: 'allowFailure',
         message: 'Allow hook to fail without stopping?',
-        default: false
+        initial: false
       });
       hook.allowFailure = allowFailureResult.allowFailure;
 
@@ -760,7 +754,7 @@ export class TemplateWizard extends EventEmitter {
         type: 'confirm',
         name: 'addMore',
         message: 'Add another hook?',
-        default: false
+        initial: false
       });
       addMore = moreResult.addMore;
     }

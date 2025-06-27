@@ -1,4 +1,4 @@
-import { FileTemplate } from '../../types';
+import { FileTemplate } from '../types';
 
 interface CeleryConfig {
   framework: string;

@@ -427,7 +427,7 @@ export class OperationManager extends EventEmitter {
       throw new Error(`Operation ${operationId} already rolled back`);
     }
 
-    const opts = { ...this.options, ...options };
+    const opts = { ...this.defaultOptions, ...this.options, ...options };
     
     this.emit('rollback:start', operation);
 

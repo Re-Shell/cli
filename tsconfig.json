@@ -5,6 +5,7 @@
     "declaration": true,
     "outDir": "./dist",
     "esModuleInterop": true,
+    "downlevelIteration": true,
     "skipLibCheck": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
