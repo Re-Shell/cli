@@ -69,7 +69,7 @@ export class Analytics extends EventEmitter {
     this.customProperties = options.customProperties ?? {};
     
     this.sessionId = this.generateSessionId();
-    this.userId = this.getUserId();
+    this.userId = this.generateUserId();
     
     if (this.enabled) {
       this.initialize();
@@ -116,7 +116,7 @@ export class Analytics extends EventEmitter {
     return crypto.randomBytes(16).toString('hex');
   }
 
-  private getUserId(): string | undefined {
+  private generateUserId(): string | undefined {
     if (this.anonymize) {
       // Generate anonymous user ID based on machine ID
       const machineId = this.getMachineId();
@@ -370,7 +370,7 @@ export class Analytics extends EventEmitter {
     return this.sessionId;
   }
 
-  getUserId(): string | undefined {
+  public getUserId(): string | undefined {
     return this.userId;
   }
 }

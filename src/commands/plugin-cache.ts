@@ -522,7 +522,7 @@ export async function optimizeCache(
 
       for (const rec of recommendations) {
         if (rec.setting && rec.newValue !== undefined) {
-          updates[rec.setting as keyof CacheConfiguration] = rec.newValue;
+          (updates as any)[rec.setting] = rec.newValue;
           appliedCount++;
         }
       }

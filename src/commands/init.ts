@@ -658,13 +658,14 @@ out/
             const audit = JSON.parse(auditResult);
             const vulnerabilities = audit.metadata?.vulnerabilities || {};
             const total = Object.values(vulnerabilities).reduce(
-              (sum: number, count: any) => sum + count,
-              0
+              (sum: number, count: unknown) => sum + (typeof count === 'number' ? count : 0),
+              0 as number
             );
 
-            if (total > 0) {
+            if (typeof total === 'number' && total > 0) {
               console.log(chalk.yellow(`\n⚠️  Found ${total} vulnerabilities`));
-              if (vulnerabilities.high || vulnerabilities.critical) {
+              if ((typeof vulnerabilities.high === 'number' && vulnerabilities.high > 0) || 
+                  (typeof vulnerabilities.critical === 'number' && vulnerabilities.critical > 0)) {
                 console.log(
                   chalk.red(
                     `   Critical: ${vulnerabilities.critical || 0}, High: ${

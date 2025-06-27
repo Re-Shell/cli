@@ -15,6 +15,24 @@ if (process.stderr.isTTY) {
 
 mark('env-setup-done');
 
+
+// Get version from package.json (cached)
+let version = ''; // fallback
+const packageVersion = getFromCache('package-version');
+if (typeof packageVersion === 'string') {
+  version = packageVersion;
+} else {
+  try {
+    const fs = require('fs');
+    const packageJsonPath = path.resolve(__dirname, '../package.json');
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+    version = packageJson.version;
+    setCache('package-version', version);
+  } catch {
+    // Use fallback
+  }
+}
+
 // Fast path for version requests
 if (isVersionRequest()) {
   mark('version-fast-path');
@@ -26,21 +44,166 @@ if (isVersionRequest()) {
 ██╔══██╗██╔══╝  ╚═══════╝  ╚════██║██╔══██║██╔══╝  ██║     ██║
 ██║  ██║███████╗           ███████║██║  ██║███████╗███████╗███████╗
 ╚═╝  ╚═╝╚══════╝           ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝
-                                v0.7.1
+                                v${version}
 `));
-  console.log('0.7.1');
+  console.log(version);
   process.exit(0);
 }
 
 mark('version-check-done');
 
 // Enhanced error handling and signal management
-import { setupStreamErrorHandlers, processManager } from './utils/error-handler';
+import { setupStreamErrorHandlers, processManager, createAsyncCommand, withTimeout } from './utils/error-handler';
 
 // Core imports only
 import { Command } from 'commander';
 import * as path from 'path';
 import chalk from 'chalk';
+
+// Additional imports for functions used in commands
+import { createSpinner, flushOutput } from './utils/spinner';
+import { runUpdateCommand } from './utils/checkUpdate';
+import { initMonorepo } from './commands/init';
+import { createProject } from './commands/create';
+import { addMicrofrontend } from './commands/add';
+import { removeMicrofrontend } from './commands/remove';
+import { listMicrofrontends } from './commands/list';
+import { buildMicrofrontend } from './commands/build';
+import { serveMicrofrontend } from './commands/serve';
+import { listWorkspaces, updateWorkspaces, generateWorkspaceGraph } from './commands/workspace';
+import { addGitSubmodule, removeGitSubmodule, updateGitSubmodules, showSubmoduleStatus, initSubmodules, manageSubmodules } from './commands/submodule';
+import { runDoctorCheck } from './commands/doctor';
+import { analyzeProject } from './commands/analyze';
+import { generateCICDConfig, generateDeployConfig } from './commands/cicd';
+import { importProject, exportProject, backupProject, restoreProject } from './commands/migrate';
+import { manageConfig } from './commands/config';
+import { manageEnvironment } from './commands/environment';
+import { manageMigration } from './commands/migration';
+import { validateConfiguration } from './commands/validate';
+import { manageProjectConfig } from './commands/project-config';
+import { manageWorkspaceConfig } from './commands/workspace-config';
+import { manageTemplates } from './commands/template';
+import { manageConfigDiff } from './commands/config-diff';
+import { manageBackups } from './commands/backup';
+import { generateCode, generateTests, generateDocumentation } from './commands/generate';
+import { testPlatformCapabilities, runPlatformDiagnostics, quickPlatformCheck } from './commands/platform-test';
+import { manageDevMode } from './commands/dev-mode';
+import { manageWorkspaceDefinition } from './commands/workspace-definition';
+import { manageWorkspaceGraph } from './commands/workspace-graph';
+import { manageWorkspaceHealth } from './commands/workspace-health';
+import { manageWorkspaceState } from './commands/workspace-state';
+import { manageWorkspaceTemplate } from './commands/workspace-template';
+import { manageWorkspaceBackup } from './commands/workspace-backup';
+import { manageWorkspaceMigration } from './commands/workspace-migration';
+import { manageWorkspaceConflict } from './commands/workspace-conflict';
+import { manageFileWatcher } from './commands/file-watcher';
+import { manageChangeDetector } from './commands/change-detector';
+import { manageChangeImpact, analyzeWorkspaceImpact } from './commands/change-impact';
+import { manageIncrementalBuild } from './commands/incremental-build';
+
+// Plugin-related imports
+import {
+  managePlugins,
+  discoverPlugins,
+  installPlugin,
+  uninstallPlugin,
+  showPluginInfo,
+  enablePlugin,
+  disablePlugin,
+  updatePlugins,
+  validatePlugin,
+  clearPluginCache,
+  showPluginStats,
+  reloadPlugin,
+  showPluginHooks,
+  executeHook,
+  listHookTypes
+} from './commands/plugin';
+
+import {
+  showCacheStats,
+  configureCacheSettings,
+  clearCache,
+  testCachePerformance,
+  optimizeCache,
+  listCachedCommands
+} from './commands/plugin-cache';
+
+import {
+  listPluginCommands,
+  showCommandConflicts,
+  resolveCommandConflicts,
+  showCommandStats,
+  registerTestCommand,
+  unregisterCommand,
+  showCommandInfo
+} from './commands/plugin-command';
+
+import {
+  listCommandConflicts,
+  showConflictStrategies,
+  resolveConflict,
+  autoResolveConflicts,
+  showConflictStats,
+  setPriorityOverride,
+  showResolutionHistory
+} from './commands/plugin-conflicts';
+
+import {
+  resolveDependencies,
+  showDependencyTree,
+  checkConflicts,
+  validateVersions,
+  updateDependencies
+} from './commands/plugin-dependency';
+
+import {
+  generatePluginDocumentation,
+  showCommandHelp,
+  listDocumentedCommands,
+  searchDocumentation,
+  showDocumentationStats,
+  configureHelpSystem,
+  showDocumentationTemplates
+} from './commands/plugin-docs';
+
+import {
+  searchMarketplace,
+  showPluginDetails,
+  installMarketplacePlugin,
+  showPluginReviews,
+  showFeaturedPlugins,
+  showPopularPlugins,
+  showCategories,
+  clearMarketplaceCache,
+  showMarketplaceStats
+} from './commands/plugin-marketplace';
+
+import {
+  listMiddleware,
+  showMiddlewareStats,
+  testMiddleware,
+  clearMiddlewareCache,
+  showMiddlewareChain,
+  createExampleMiddleware
+} from './commands/plugin-middleware';
+
+import {
+  scanPluginSecurity,
+  checkSecurityPolicy,
+  generateSecurityReport,
+  fixSecurityIssues
+} from './commands/plugin-security';
+
+import {
+  testCommandValidation,
+  createCommandValidationSchema,
+  listValidationRules,
+  listTransformations,
+  showCommandValidationSchema,
+  showValidationStats,
+  generateValidationTemplate
+} from './commands/plugin-validation';
 
 mark('core-imports-done');
 
@@ -99,24 +262,6 @@ const lazyImports = {
   // Utils - loaded on demand
   checkUpdate: () => import('./utils/checkUpdate')
 };
-
-// Get version from package.json (cached)
-let version = '0.7.1'; // fallback
-const packageVersion = getFromCache('package-version');
-if (packageVersion) {
-  version = packageVersion;
-} else {
-  try {
-    const fs = require('fs');
-    const packageJsonPath = path.resolve(__dirname, '../package.json');
-    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-    version = packageJson.version;
-    setCache('package-version', version);
-  } catch {
-    // Use fallback
-  }
-}
-
 mark('version-resolved');
 
 // Lazy banner generation
@@ -801,7 +946,7 @@ configCommand
       flushOutput();
 
       let presetOptions: Parameters<typeof manageConfig>[0] = { ...options, spinner };
-      
+
       switch (action) {
         case 'save':
           if (!name) throw new Error('Preset name required for save action');
@@ -1854,12 +1999,12 @@ backupCommand
       flushOutput();
 
       await withTimeout(async () => {
-        await manageBackups({ 
-          ...options, 
-          cleanup: true, 
+        await manageBackups({
+          ...options,
+          cleanup: true,
           keepCount: parseInt(options.keepCount),
           keepDays: parseInt(options.keepDays),
-          spinner 
+          spinner
         });
       }, 30000); // 30 second timeout
 
@@ -2974,12 +3119,12 @@ workspaceBackupCommand
       flushOutput();
 
       await withTimeout(async () => {
-        await manageWorkspaceBackup({ 
-          ...options, 
-          cleanup: true, 
+        await manageWorkspaceBackup({
+          ...options,
+          cleanup: true,
           keepCount: parseInt(options.keepCount),
           keepDays: parseInt(options.keepDays),
-          spinner 
+          spinner
         });
       }, 30000); // 30 second timeout
 
@@ -3003,12 +3148,12 @@ workspaceBackupCommand
       flushOutput();
 
       await withTimeout(async () => {
-        await manageWorkspaceBackup({ 
-          ...options, 
-          compare: true, 
-          backup1: id1, 
-          backup2: id2, 
-          spinner 
+        await manageWorkspaceBackup({
+          ...options,
+          compare: true,
+          backup1: id1,
+          backup2: id2,
+          spinner
         });
       }, 30000); // 30 second timeout
 
@@ -3115,11 +3260,11 @@ workspaceMigrationCommand
       flushOutput();
 
       await withTimeout(async () => {
-        await manageWorkspaceMigration({ 
-          ...options, 
-          upgrade: true, 
+        await manageWorkspaceMigration({
+          ...options,
+          upgrade: true,
           backup: !options.noBackup,
-          spinner 
+          spinner
         });
       }, 300000); // 5 minute timeout
 
@@ -3722,7 +3867,7 @@ changeImpactCommand
       flushOutput();
 
       await withTimeout(async () => {
-        await showDependencyGraph(options);
+        await manageWorkspaceGraph(options);
       }, 60000); // 1 minute timeout
 
       spinner.stop();

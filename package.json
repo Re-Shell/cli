@@ -5,7 +5,10 @@
   "main": "dist/index.js",
   "files": [
     "dist/**/*",
-    "README.md"
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "EXAMPLES.md"
   ],
   "bin": {
     "re-shell": "dist/index.js"
@@ -52,14 +55,23 @@
     "node": ">=14.0.0"
   },
   "dependencies": {
+    "boxen": "^8.0.1",
     "chalk": "^4.1.2",
     "chokidar": "^4.0.3",
+    "cli-table3": "^0.6.5",
     "commander": "^11.0.0",
+    "cosmiconfig": "^9.0.0",
+    "dayjs": "^1.11.13",
+    "dockerode": "^4.0.7",
+    "dotenv": "^16.6.0",
+    "ejs": "^3.1.10",
     "fs-extra": "^11.0.0",
     "glob": "^10.4.5",
+    "handlebars": "^4.7.8",
     "ora": "^5.4.1",
     "prompts": "^2.0.0",
     "semver": "^7.7.2",
+    "simple-git": "^3.28.0",
     "yaml": "^2.3.2"
   },
   "devDependencies": {

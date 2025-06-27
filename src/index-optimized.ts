@@ -72,7 +72,7 @@ const commandLoaders = {
   'build': () => import('./commands/build'),
   'list': () => import('./commands/list'),
   'remove': () => import('./commands/remove'),
-  'update': () => import('./commands/plugin').then(m => ({ setupUpdateCommand: m.setupUpdateCommand })),
+  'update': () => import('./commands/plugin').then(m => ({ updatePlugins: m.updatePlugins })),
   'analyze': () => import('./commands/analyze'),
   'doctor': () => import('./commands/doctor'),
   'workspace': () => import('./commands/workspace'),
@@ -126,11 +126,12 @@ Object.entries(commandLoaders).forEach(([name, loader]) => {
       cmd.description('Initialize a new Re-Shell project')
          .action(async (...args) => {
            profiler.mark(`${name}-load-start`);
-           const { setupInitCommand } = await loader();
+           const module = await loader();
            profiler.mark(`${name}-load-done`);
-           setupInitCommand(program);
-           // Re-parse to execute the actual command
-           await program.parseAsync(process.argv);
+           // Execute the function directly
+           if ('initMonorepo' in module && typeof module.initMonorepo === 'function') {
+             await (module as any).initMonorepo(...args);
+           }
          });
       break;
     
@@ -138,10 +139,12 @@ Object.entries(commandLoaders).forEach(([name, loader]) => {
       cmd.description('Add a new microfrontend or service')
          .action(async (...args) => {
            profiler.mark(`${name}-load-start`);
-           const { setupAddCommand } = await loader();
+           const module = await loader();
            profiler.mark(`${name}-load-done`);
-           setupAddCommand(program);
-           await program.parseAsync(process.argv);
+           // Execute the function directly
+           if ('addMicrofrontend' in module && typeof module.addMicrofrontend === 'function') {
+             await (module as any).addMicrofrontend(...args);
+           }
          });
       break;
     

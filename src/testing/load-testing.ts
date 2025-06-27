@@ -217,7 +217,7 @@ export class LoadTesting extends EventEmitter {
   private config: LoadTestConfig;
   private results: LoadTestResult[] = [];
   private workspaceDir: string;
-  private resourceMonitor: NodeJS.Timer | null = null;
+  private resourceMonitor: NodeJS.Timeout | null = null;
   private resourceSamples: Map<string, ResourceSample[]> = new Map();
 
   constructor(config: LoadTestConfig) {
@@ -909,7 +909,7 @@ export class Component${Math.floor(Math.random() * 1000)} {
   }
 
   private generateReport(duration: number): LoadTestReport {
-    const summary = this.generateSummary();
+    const summary = this.generateSummary(duration);
     const analysis = this.analyzeResults();
     const recommendations = this.generateRecommendations(analysis);
     const charts = this.config.captureMetrics ? 
@@ -925,7 +925,7 @@ export class Component${Math.floor(Math.random() * 1000)} {
     };
   }
 
-  private generateSummary(): LoadTestSummary {
+  private generateSummary(duration: number): LoadTestSummary {
     const maxLoad = this.calculateMaxLoad();
     const performance = this.analyzePerformance();
 

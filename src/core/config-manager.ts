@@ -292,15 +292,15 @@ export class ConfigManager extends EventEmitter {
     return { ...this.config };
   }
 
-  save(path?: string): void {
-    const savePath = path || this.projectPath;
+  save(filePath?: string): void {
+    const savePath = filePath || this.projectPath;
     if (!savePath) {
       throw new Error('No save path specified');
     }
     
     try {
       // Ensure directory exists
-      fs.ensureDirSync(path.dirname(savePath!));
+      fs.ensureDirSync(path.dirname(savePath));
       
       // Merge project config with runtime config
       const configToSave = { ...this.projectConfig };

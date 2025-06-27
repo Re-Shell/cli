@@ -1,4 +1,4 @@
-import * as prompts from 'prompts';
+import prompts from 'prompts';
 import chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as path from 'path';

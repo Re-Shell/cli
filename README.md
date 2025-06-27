@@ -862,6 +862,18 @@ MIT License - see the [LICENSE](LICENSE) file for details.
 - **Contributors**: All the developers who have contributed to this project
 - **Users**: The community of developers using Re-Shell CLI in production
 
+## 📄 License
+
+Re-Shell CLI is open source software released under the **MIT License**. This means you can:
+
+- ✅ Use it commercially
+- ✅ Modify it for your needs
+- ✅ Distribute it freely
+- ✅ Use it in private projects
+- ✅ Sublicense it
+
+See the [LICENSE](./LICENSE) file for the full license text.
+
 ---
 
 <div align="center">
@@ -871,6 +883,6 @@ MIT License - see the [LICENSE](LICENSE) file for details.
 **[Examples](https://examples.re-shell.dev)** •
 **[Community](https://community.re-shell.dev)**
 
-Made with ❤️ by the Re-Shell Team
+Made with ❤️ by the Re-Shell Team | Open Source MIT License
 
 </div>

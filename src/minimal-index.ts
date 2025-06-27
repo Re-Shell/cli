@@ -3,6 +3,13 @@
 // Minimal startup optimization test
 const startTime = Date.now();
 
+// Read package.json for version
+const { readFileSync } = require('fs');
+const { join } = require('path');
+const packageJson = JSON.parse(
+  readFileSync(join(__dirname, '../package.json'), 'utf-8')
+);
+
 // Fast path for version
 if (process.argv.includes('--version') || process.argv.includes('-v')) {
   const chalk = require('chalk');
@@ -13,9 +20,9 @@ if (process.argv.includes('--version') || process.argv.includes('-v')) {
 ██╔══██╗██╔══╝  ╚═══════╝  ╚════██║██╔══██║██╔══╝  ██║     ██║
 ██║  ██║███████╗           ███████║██║  ██║███████╗███████╗███████╗
 ╚═╝  ╚═╝╚══════╝           ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝
-                                v0.7.1
+                                v${packageJson.version}
 `));
-  console.log('0.7.1');
+  console.log(packageJson.version);
   const endTime = Date.now();
   if (process.env.DEBUG) {
     console.error(`Startup time: ${endTime - startTime}ms`);
@@ -32,7 +39,7 @@ const program = new Command();
 program
   .name('re-shell')
   .description('Re-Shell CLI - Universal Full-Stack Development Platform')
-  .version('0.7.1');
+  .version(packageJson.version);
 
 // Minimal commands for testing
 program
@@ -52,7 +59,7 @@ if (process.argv.length <= 2) {
 ██╔══██╗██╔══╝  ╚═══════╝  ╚════██║██╔══██║██╔══╝  ██║     ██║
 ██║  ██║███████╗           ███████║██║  ██║███████╗███████╗███████╗
 ╚═╝  ╚═╝╚══════╝           ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝
-                                v0.7.1
+                                v${packageJson.version}
 `));
   program.outputHelp();
 }

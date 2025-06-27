@@ -457,11 +457,21 @@ export class TemplateAnalytics extends EventEmitter {
     // Error analysis
     const errorAnalysis = this.analyzeErrors(filteredEvents);
 
+    // Calculate average duration
+    const allDurations = filteredEvents
+      .filter(e => e.duration !== undefined)
+      .map(e => e.duration!);
+    const averageDuration = allDurations.length > 0 
+      ? allDurations.reduce((a, b) => a + b, 0) / allDurations.length 
+      : 0;
+
     // Generate insights
     const insights = this.generateInsights(filteredEvents, {
+      totalEvents: filteredEvents.length,
       uniqueTemplates: uniqueTemplates.size,
       uniqueUsers: uniqueUsers.size,
-      successRate: filteredEvents.length > 0 ? successCount / filteredEvents.length * 100 : 0
+      successRate: filteredEvents.length > 0 ? successCount / filteredEvents.length * 100 : 0,
+      averageDuration
     });
 
     return {

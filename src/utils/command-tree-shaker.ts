@@ -13,6 +13,7 @@ interface CommandMetadata {
   dependencies?: string[];
   size?: number;
   loadTime?: number;
+  usage?: number;
 }
 
 interface CommandRegistry {

@@ -633,7 +633,7 @@ export class TemplateEngine extends EventEmitter {
       );
 
       // Read source file
-      const sourceContent = await fs.readFile(file.source, file.encoding || 'utf8');
+      const sourceContent = await fs.readFile(file.source, (file.encoding || 'utf8') as BufferEncoding);
 
       // Process content based on transform type
       let processedContent: string;
@@ -669,7 +669,7 @@ export class TemplateEngine extends EventEmitter {
       }
 
       // Write file
-      await fs.writeFile(destPath, processedContent, file.encoding || 'utf8');
+      await fs.writeFile(destPath, processedContent, (file.encoding || 'utf8') as BufferEncoding);
 
       // Set permissions if specified
       if (file.permissions) {

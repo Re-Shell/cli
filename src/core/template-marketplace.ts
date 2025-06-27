@@ -496,7 +496,8 @@ export class TemplateMarketplace extends EventEmitter {
       
       // Upload to marketplace
       const formData = new FormData();
-      formData.append('template', await fs.readFile(packagePath));
+      const packageBuffer = await fs.readFile(packagePath);
+      formData.append('template', new Blob([packageBuffer]), path.basename(packagePath));
       formData.append('metadata', JSON.stringify({
         private: options.private,
         beta: options.beta,

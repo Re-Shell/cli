@@ -80,6 +80,7 @@ export interface CICDJob {
   timeout?: number;
   retries?: number;
   continueOnError?: boolean;
+  dependencies?: string[];
 }
 
 export interface JobStep {

@@ -347,8 +347,7 @@ export class IntegrationTestFramework extends EventEmitter {
         cwd: args.cwd || env.workDir,
         env: { ...env.env, ...args.env },
         timeout,
-        encoding: 'utf-8',
-        shell: true
+        encoding: 'utf-8'
       });
 
       if (step.expectedOutput) {
