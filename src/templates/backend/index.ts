@@ -9,6 +9,7 @@ import { quarkusTemplate } from './quarkus';
 import { micronautTemplate } from './micronaut';
 import { vertxTemplate } from './vertx';
 import { aspnetCoreWebApiTemplate } from './aspnet-core-webapi';
+import { aspnetCoreMinimalTemplate } from './aspnet-core-minimal';
 import { BackendTemplate } from '../types';
 
 export const backendTemplates: Record<string, BackendTemplate> = {
@@ -23,6 +24,7 @@ export const backendTemplates: Record<string, BackendTemplate> = {
   'micronaut': micronautTemplate,
   'vertx': vertxTemplate,
   'aspnet-core-webapi': aspnetCoreWebApiTemplate,
+  'aspnet-core-minimal': aspnetCoreMinimalTemplate,
 };
 
 export function getBackendTemplate(id: string): BackendTemplate | undefined {
@@ -53,3 +55,4 @@ export { quarkusTemplate } from './quarkus';
 export { micronautTemplate } from './micronaut';
 export { vertxTemplate } from './vertx';
 export { aspnetCoreWebApiTemplate } from './aspnet-core-webapi';
+export { aspnetCoreMinimalTemplate } from './aspnet-core-minimal';
