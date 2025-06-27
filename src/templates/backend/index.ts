@@ -4,6 +4,8 @@ import { actixWebTemplate } from './actix-web';
 import { warpTemplate } from './warp';
 import { rocketTemplate } from './rocket';
 import { axumTemplate } from './axum';
+import { springBootTemplate } from './spring-boot';
+import { quarkusTemplate } from './quarkus';
 import { BackendTemplate } from '../types';
 
 export const backendTemplates: Record<string, BackendTemplate> = {
@@ -13,6 +15,8 @@ export const backendTemplates: Record<string, BackendTemplate> = {
   'warp': warpTemplate,
   'rocket': rocketTemplate,
   'axum': axumTemplate,
+  'spring-boot': springBootTemplate,
+  'quarkus': quarkusTemplate,
 };
 
 export function getBackendTemplate(id: string): BackendTemplate | undefined {
@@ -38,3 +42,5 @@ export { actixWebTemplate } from './actix-web';
 export { warpTemplate } from './warp';
 export { rocketTemplate } from './rocket';
 export { axumTemplate } from './axum';
+export { springBootTemplate } from './spring-boot';
+export { quarkusTemplate } from './quarkus';
