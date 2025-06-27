@@ -7,6 +7,7 @@ import { axumTemplate } from './axum';
 import { springBootTemplate } from './spring-boot';
 import { quarkusTemplate } from './quarkus';
 import { micronautTemplate } from './micronaut';
+import { vertxTemplate } from './vertx';
 import { BackendTemplate } from '../types';
 
 export const backendTemplates: Record<string, BackendTemplate> = {
@@ -19,6 +20,7 @@ export const backendTemplates: Record<string, BackendTemplate> = {
   'spring-boot': springBootTemplate,
   'quarkus': quarkusTemplate,
   'micronaut': micronautTemplate,
+  'vertx': vertxTemplate,
 };
 
 export function getBackendTemplate(id: string): BackendTemplate | undefined {
@@ -47,3 +49,4 @@ export { axumTemplate } from './axum';
 export { springBootTemplate } from './spring-boot';
 export { quarkusTemplate } from './quarkus';
 export { micronautTemplate } from './micronaut';
+export { vertxTemplate } from './vertx';
