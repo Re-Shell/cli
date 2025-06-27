@@ -5,6 +5,42 @@ All notable changes to the `@re-shell/cli` package will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.18.0] - 2024-12-27
+
+### ☕ Complete Java Ecosystem - Enterprise Microservices
+
+This major release adds comprehensive Java support to Re-Shell CLI, providing four production-ready Java web framework templates with enterprise-grade features. Java developers can now build scalable, maintainable microservices with industry-standard frameworks and best practices.
+
+### Added
+
+#### ☕ Java Web Framework Templates
+- **Spring Boot**: Enterprise-grade framework with comprehensive security, data, and actuator support
+- **Quarkus**: Cloud-native Java framework with GraalVM native compilation capabilities
+- **Micronaut**: Modern JVM framework with compile-time dependency injection and AOP
+- **Vert.x**: Reactive toolkit for building responsive, resilient, elastic applications
+
+#### 🏢 Enterprise Java Features
+- **JPA/Hibernate**: Complete ORM integration with entity management
+- **Spring Data**: Repository pattern with query methods and specifications
+- **Security**: JWT authentication, Spring Security, role-based access control
+- **Database Migrations**: Flyway and Liquibase integration
+- **Caching**: Redis and Caffeine cache implementations
+- **Testing**: JUnit 5, Mockito, TestContainers, RestAssured
+- **API Documentation**: OpenAPI/Swagger UI integration
+- **Monitoring**: Actuator endpoints, health checks, metrics with Prometheus
+- **Development Tools**: Spring DevTools, hot reload, Maven configuration
+
+#### 🚀 Framework-Specific Features
+- **Spring Boot**: Lombok support, structured logging with Logback, comprehensive middleware
+- **Quarkus**: Native image generation, Kubernetes-ready, reactive programming support
+- **Micronaut**: AOP interceptors, compile-time validation, cloud-native configuration
+- **Vert.x**: Event-driven architecture, reactive PostgreSQL client, circuit breakers
+
+### Changed
+- Updated package description to include Java ecosystem capabilities
+- Enhanced backend template registry with Java framework support
+- Improved documentation with Java-specific examples and patterns
+
 ## [0.17.0] - 2024-12-27
 
 ### 🦀 Complete Rust Ecosystem - High-Performance Microservices
