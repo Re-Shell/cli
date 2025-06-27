@@ -100,6 +100,7 @@ import { manageFileWatcher } from './commands/file-watcher';
 import { manageChangeDetector } from './commands/change-detector';
 import { manageChangeImpact, analyzeWorkspaceImpact } from './commands/change-impact';
 import { manageIncrementalBuild } from './commands/incremental-build';
+import { launchTUI } from './commands/tui';
 
 // Plugin-related imports
 import {
@@ -473,6 +474,31 @@ program
       } else {
         spinner.stop();
       }
+    })
+  );
+
+// TUI command - Interactive Terminal User Interface
+program
+  .command('tui')
+  .description('Launch interactive Terminal User Interface (TUI)')
+  .option('--project <path>', 'Project path', process.cwd())
+  .option('--mode <mode>', 'TUI mode (dashboard|init|manage|config)', 'dashboard')
+  .option('--debug', 'Enable debug output')
+  .action(
+    createAsyncCommand(async (options) => {
+      // No spinner for TUI - it has its own interface
+      processManager.addCleanup(() => {
+        // Cleanup will be handled by TUI process
+      });
+      flushOutput();
+
+      await withTimeout(async () => {
+        await launchTUI({
+          project: options.project,
+          mode: options.mode,
+          debug: options.debug
+        });
+      }, 300000); // 5 minute timeout for TUI session
     })
   );
 
