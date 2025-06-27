@@ -5,7 +5,6 @@ This document provides comprehensive real-world scenarios and examples for using
 ## Table of Contents
 
 1. [Latest Features](#latest-features)
-   - [Complete Java Ecosystem (v0.18.0)](#complete-java-ecosystem-v0180)
    - [Complete Rust Ecosystem (v0.17.0)](#complete-rust-ecosystem-v0170)
    - [Full-Stack Platform (v0.16.3)](#full-stack-platform-v0163)
    - [Microfrontend Architecture (v0.16.0)](#microfrontend-architecture-v0160)
@@ -25,69 +24,6 @@ This document provides comprehensive real-world scenarios and examples for using
 4. [Advanced Scenarios](#advanced-scenarios)
 
 ## Latest Features
-
-### Complete Java Ecosystem (v0.18.0)
-
-Enterprise-grade Java support with four production-ready frameworks - Spring Boot, Quarkus, Micronaut, and Vert.x. Build scalable, maintainable microservices with industry-standard frameworks and best practices.
-
-#### Enterprise Java Microservices
-
-```bash
-# Create Java-powered enterprise platform
-re-shell create enterprise-platform --type full-stack
-
-# Backend: Add enterprise Java microservices
-# Spring Boot for comprehensive enterprise features
-re-shell generate backend user-service --language java --framework spring-boot --port 8001 \
-  --features "jwt,jpa,redis,actuator"
-
-# Quarkus for cloud-native microservices
-re-shell generate backend product-service --language java --framework quarkus --port 8002 \
-  --features "native,panache,reactive"
-
-# Micronaut for compile-time DI and AOP
-re-shell generate backend order-service --language java --framework micronaut --port 8003 \
-  --features "data-jdbc,security,cache"
-
-# Vert.x for reactive event-driven services
-re-shell generate backend notification-service --language java --framework vertx --port 8004 \
-  --features "reactive,circuit-breaker,eventbus"
-
-# Start all services with hot reload
-re-shell dev --java --all --hot-reload
-```
-
-#### Java Framework Specializations
-
-```bash
-# Spring Boot: Enterprise-grade with comprehensive ecosystem
-re-shell create spring-api --template spring-boot
-# Features: Spring Security, JPA/Hibernate, Redis, Actuator, DevTools
-
-# Quarkus: Cloud-native with GraalVM support
-re-shell create cloud-native-api --template quarkus
-# Features: Native compilation, Kubernetes-ready, reactive programming
-
-# Micronaut: Modern JVM framework with compile-time features
-re-shell create micronaut-api --template micronaut
-# Features: Compile-time DI, AOP interceptors, cloud configuration
-
-# Vert.x: Reactive toolkit for high-performance applications
-re-shell create reactive-api --template vertx
-# Features: Event-driven, non-blocking I/O, polyglot support
-```
-
-#### Java Universal Features
-
-All Java templates include enterprise-grade capabilities:
-- **Security**: JWT authentication, role-based access control
-- **Database**: JPA/Hibernate, Spring Data, reactive clients
-- **Migrations**: Flyway and Liquibase support
-- **Caching**: Redis and Caffeine integration
-- **Testing**: JUnit 5, Mockito, TestContainers
-- **API Docs**: OpenAPI/Swagger UI
-- **Monitoring**: Health checks, metrics, distributed tracing
-- **Development**: Hot reload, Maven/Gradle builds
 
 ### Complete Rust Ecosystem (v0.17.0)
 
@@ -172,69 +108,6 @@ re-shell generate backend user-service --framework express --port 8003
 # Inter-service communication with type-safe contracts
 re-shell generate contracts --rust-to-typescript --openapi-spec
 ```
-
-### Complete Java Ecosystem (v0.18.0)
-
-Enterprise-grade Java support with four production-ready frameworks - Spring Boot, Quarkus, Micronaut, and Vert.x. Build scalable, maintainable microservices with industry-standard frameworks and best practices.
-
-#### Enterprise Java Microservices
-
-```bash
-# Create Java-powered enterprise platform
-re-shell create enterprise-platform --type full-stack
-
-# Backend: Add enterprise Java microservices
-# Spring Boot for comprehensive enterprise features
-re-shell generate backend user-service --language java --framework spring-boot --port 8001 \
-  --features "jwt,jpa,redis,actuator"
-
-# Quarkus for cloud-native microservices
-re-shell generate backend product-service --language java --framework quarkus --port 8002 \
-  --features "native,panache,reactive"
-
-# Micronaut for compile-time DI and AOP
-re-shell generate backend order-service --language java --framework micronaut --port 8003 \
-  --features "data-jdbc,security,cache"
-
-# Vert.x for reactive event-driven services
-re-shell generate backend notification-service --language java --framework vertx --port 8004 \
-  --features "reactive,circuit-breaker,eventbus"
-
-# Start all services with hot reload
-re-shell dev --java --all --hot-reload
-```
-
-#### Java Framework Specializations
-
-```bash
-# Spring Boot: Enterprise-grade with comprehensive ecosystem
-re-shell create spring-api --template spring-boot
-# Features: Spring Security, JPA/Hibernate, Redis, Actuator, DevTools
-
-# Quarkus: Cloud-native with GraalVM support
-re-shell create cloud-native-api --template quarkus
-# Features: Native compilation, Kubernetes-ready, reactive programming
-
-# Micronaut: Modern JVM framework with compile-time features
-re-shell create micronaut-api --template micronaut
-# Features: Compile-time DI, AOP interceptors, cloud configuration
-
-# Vert.x: Reactive toolkit for high-performance applications
-re-shell create reactive-api --template vertx
-# Features: Event-driven, non-blocking I/O, polyglot support
-```
-
-#### Java Universal Features
-
-All Java templates include enterprise-grade capabilities:
-- **Security**: JWT authentication, role-based access control
-- **Database**: JPA/Hibernate, Spring Data, reactive clients
-- **Migrations**: Flyway and Liquibase support
-- **Caching**: Redis and Caffeine integration
-- **Testing**: JUnit 5, Mockito, TestContainers
-- **API Docs**: OpenAPI/Swagger UI
-- **Monitoring**: Health checks, metrics, distributed tracing
-- **Development**: Hot reload, Maven/Gradle builds
 
 ### Full-Stack Platform (v0.16.3)
 
