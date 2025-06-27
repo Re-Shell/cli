@@ -5,6 +5,7 @@ This document provides comprehensive real-world scenarios and examples for using
 ## Table of Contents
 
 1. [Latest Features](#latest-features)
+   - [Complete Rust Ecosystem (v0.17.0)](#complete-rust-ecosystem-v0170)
    - [Full-Stack Platform (v0.16.3)](#full-stack-platform-v0163)
    - [Microfrontend Architecture (v0.16.0)](#microfrontend-architecture-v0160)
    - [Python Ecosystem Complete (v0.15.0)](#python-ecosystem-complete-v0150)
@@ -23,6 +24,90 @@ This document provides comprehensive real-world scenarios and examples for using
 4. [Advanced Scenarios](#advanced-scenarios)
 
 ## Latest Features
+
+### Complete Rust Ecosystem (v0.17.0)
+
+Complete enterprise-grade Rust backend support with four production-ready frameworks - Actix-Web, Warp, Rocket, and Axum. Build high-performance, type-safe microservices with zero-cost abstractions and memory safety guarantees.
+
+#### High-Performance Rust Microservices
+
+```bash
+# Create Rust-powered e-commerce platform
+re-shell create rust-ecommerce --type full-stack
+
+# Backend: Add high-performance Rust microservices
+# Actix-Web for enterprise-grade async product API
+re-shell generate backend product-service --language rust --framework actix-web --port 8001 \
+  --features "sqlx,redis,jwt,websocket"
+
+# Warp for functional order processing service
+re-shell generate backend order-service --language rust --framework warp --port 8002 \
+  --features "functional,compose,async"
+
+# Rocket for type-safe payment service
+re-shell generate backend payment-service --language rust --framework rocket --port 8003 \
+  --features "guards,fairings,type-safe"
+
+# Axum for modern notification service with tower middleware
+re-shell generate backend notification-service --language rust --framework axum --port 8004 \
+  --features "tower,extractors,tracing"
+
+# Start all Rust services with cargo-watch hot reload
+re-shell dev --rust --all --hot-reload
+```
+
+#### Rust Framework Specializations
+
+```bash
+# Actix-Web: Enterprise async handlers with comprehensive middleware
+re-shell create enterprise-api --template actix-web
+# Features: Actor-based architecture, async handlers, JWT auth, PostgreSQL + Redis
+
+# Warp: Functional programming with composable filters  
+re-shell create functional-api --template warp
+# Features: Filter composition, functional patterns, immutable data flow
+
+# Rocket: Type-safe routing with compile-time verification
+re-shell create type-safe-api --template rocket  
+# Features: Request guards, fairings, compile-time route verification
+
+# Axum: Modern async with tower middleware stack
+re-shell create modern-async-api --template axum
+# Features: Custom extractors, tower middleware, structured logging
+```
+
+#### Rust Universal Features
+
+All Rust templates include enterprise-grade capabilities:
+- **SQLx Integration**: Compile-time verified SQL with async PostgreSQL
+- **Tokio Runtime**: High-performance async runtime configuration  
+- **Serde Support**: Zero-copy JSON serialization/deserialization
+- **Error Handling**: Comprehensive error handling with thiserror/anyhow
+- **Development Tools**: cargo-watch for hot reload development
+- **Security**: JWT auth, CORS, security headers, rate limiting
+- **Docker Support**: Multi-stage builds with minimal runtime images
+- **Database Migrations**: Complete migration system with rollback support
+- **Observability**: Structured logging and distributed tracing
+
+#### Cross-Language Integration
+
+```bash
+# Full-stack with mixed languages for optimal performance
+# Frontend: React microfrontends
+re-shell add admin-dashboard --framework react-ts --port 5173
+
+# Backend: Rust for performance-critical services
+re-shell generate backend analytics-engine --language rust --framework actix-web --port 8001
+
+# Backend: Python for ML and data processing  
+re-shell generate backend ml-service --language python --framework fastapi --port 8002
+
+# Backend: Node.js for rapid development
+re-shell generate backend user-service --framework express --port 8003
+
+# Inter-service communication with type-safe contracts
+re-shell generate contracts --rust-to-typescript --openapi-spec
+```
 
 ### Full-Stack Platform (v0.16.3)
 
