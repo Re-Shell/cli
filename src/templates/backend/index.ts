@@ -6,6 +6,7 @@ import { rocketTemplate } from './rocket';
 import { axumTemplate } from './axum';
 import { springBootTemplate } from './spring-boot';
 import { quarkusTemplate } from './quarkus';
+import { micronautTemplate } from './micronaut';
 import { BackendTemplate } from '../types';
 
 export const backendTemplates: Record<string, BackendTemplate> = {
@@ -17,6 +18,7 @@ export const backendTemplates: Record<string, BackendTemplate> = {
   'axum': axumTemplate,
   'spring-boot': springBootTemplate,
   'quarkus': quarkusTemplate,
+  'micronaut': micronautTemplate,
 };
 
 export function getBackendTemplate(id: string): BackendTemplate | undefined {
@@ -44,3 +46,4 @@ export { rocketTemplate } from './rocket';
 export { axumTemplate } from './axum';
 export { springBootTemplate } from './spring-boot';
 export { quarkusTemplate } from './quarkus';
+export { micronautTemplate } from './micronaut';
