@@ -5,6 +5,7 @@ This document provides comprehensive real-world scenarios and examples for using
 ## Table of Contents
 
 1. [Latest Features](#latest-features)
+   - [Complete .NET Ecosystem (v0.20.0)](#complete-net-ecosystem-v0200)
    - [Complete Rust Ecosystem (v0.17.0)](#complete-rust-ecosystem-v0170)
    - [Full-Stack Platform (v0.16.3)](#full-stack-platform-v0163)
    - [Microfrontend Architecture (v0.16.0)](#microfrontend-architecture-v0160)
@@ -24,6 +25,64 @@ This document provides comprehensive real-world scenarios and examples for using
 4. [Advanced Scenarios](#advanced-scenarios)
 
 ## Latest Features
+
+### Complete .NET Ecosystem (v0.20.0)
+
+Complete enterprise-grade .NET development platform with 12 specialized templates covering authentication, monitoring, testing, documentation, and more. Build production-ready applications with ASP.NET Core, Blazor Server, and gRPC services.
+
+#### Enterprise .NET Application Platform
+
+```bash
+# Create enterprise .NET platform
+re-shell create dotnet-enterprise --type full-stack
+
+# Backend: Complete authentication microservice
+re-shell generate backend auth-service --language csharp --template aspnet-jwt --port 8001 \
+  --features "identity,2fa,oauth,rate-limiting"
+
+# Backend: High-performance data service with Dapper
+re-shell generate backend data-service --language csharp --template aspnet-dapper --port 8002 \
+  --features "repository,transactions,performance"
+
+# Backend: Monitored API with comprehensive logging
+re-shell generate backend api-service --language csharp --template aspnet-serilog --port 8003 \
+  --features "structured-logging,monitoring,audit"
+
+# Backend: gRPC service for inter-service communication
+re-shell generate backend grpc-service --language csharp --template grpc-service --port 8004 \
+  --features "protobuf,streaming,performance"
+
+# Frontend: Blazor Server for full-stack .NET development
+re-shell add admin-portal --template blazor-server --port 5000 \
+  --features "signalr,realtime,ssr"
+
+# Start complete platform
+docker-compose up
+```
+
+#### Advanced .NET Features
+
+```bash
+# Entity Framework Core with migrations
+re-shell generate backend ef-service --template aspnet-efcore \
+  --features "migrations,audit,soft-delete,relationships"
+
+# Comprehensive testing setup
+re-shell generate backend tested-api --template aspnet-xunit \
+  --features "unit-tests,integration-tests,test-containers"
+
+# Hot reload development environment
+re-shell generate backend dev-api --template aspnet-hotreload \
+  --features "watch,file-monitoring,utilities"
+
+# Interactive API documentation
+re-shell generate backend docs-api --template aspnet-swagger \
+  --features "openapi,code-gen,examples,versioning"
+
+# AutoMapper for object mapping
+re-shell generate backend mapping-service --template aspnet-automapper \
+  --features "profiles,validation,performance"
+```
 
 ### Complete Rust Ecosystem (v0.17.0)
 

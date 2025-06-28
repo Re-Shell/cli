@@ -5,6 +5,63 @@ All notable changes to the `@re-shell/cli` package will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.20.0] - 2024-12-28
+
+### 🔷 .NET Ecosystem Complete - Enterprise Application Platform
+
+This major release completes the comprehensive .NET ecosystem implementation, providing enterprise-grade templates with advanced security, monitoring, and development features. The .NET ecosystem now offers 12 specialized templates covering every aspect of modern application development.
+
+### Added
+
+#### 🔷 Advanced .NET Templates
+- **ASP.NET Core with Entity Framework Core**: Code-first migrations, entity configurations, audit logging, soft delete
+- **ASP.NET Core with Dapper**: High-performance data access, repository pattern, transaction management
+- **ASP.NET Core with AutoMapper**: Object-to-object mapping, custom profiles, validation integration
+- **ASP.NET Core with xUnit Testing**: Unit tests, integration tests, test fixtures, FluentAssertions, Moq
+- **ASP.NET Core with Hot Reload**: dotnet watch integration, development utilities, file monitoring
+- **ASP.NET Core with Serilog**: Structured logging, multiple sinks, performance monitoring, audit trails
+- **ASP.NET Core with Swagger/OpenAPI**: Comprehensive API documentation, code generation, examples
+- **ASP.NET Core with JWT Authentication**: Complete auth system, 2FA, external providers, rate limiting
+- **Blazor Server**: Full-stack .NET development with real-time UI updates
+- **gRPC Service**: Protocol Buffers, streaming, performance optimization
+
+#### 🏢 Enterprise Security & Authentication
+- **JWT Authentication**: Access/refresh tokens, token revocation, correlation tracking
+- **Identity Framework**: User management, email verification, password reset
+- **Two-Factor Authentication**: TOTP, SMS, authenticator app support
+- **External OAuth**: Google, Facebook, Microsoft integration
+- **Authorization Policies**: Role-based, claim-based, custom requirements
+- **Rate Limiting**: IP-based throttling, endpoint-specific limits
+- **Security Headers**: CORS, HSTS, content security policies
+
+#### 📊 Monitoring & Observability
+- **Serilog Integration**: Multiple sinks (Console, File, Database, Elasticsearch, Seq)
+- **Performance Monitoring**: Request timing, slow query detection, metrics collection
+- **Audit Logging**: User actions, security events, business operations
+- **Health Checks**: Database, external services, custom health indicators
+- **Correlation IDs**: Request tracking across microservices
+
+#### 📚 Documentation & Testing
+- **Swagger/OpenAPI**: Interactive documentation, code generation (C#, TypeScript)
+- **XML Documentation**: Comprehensive API comments, examples
+- **xUnit Testing**: Unit tests, integration tests, test containers
+- **Code Coverage**: Coverage reports, quality gates
+- **Performance Tests**: Load testing, benchmark scenarios
+
+#### 🚀 Development Experience
+- **Hot Reload**: Instant feedback, file watching, development middleware
+- **Docker Support**: Multi-stage builds, development containers
+- **Configuration Management**: Environment-specific settings, secrets management
+- **Error Handling**: Global exception handling, structured responses
+- **Validation**: FluentValidation, model binding, custom validators
+
+### Enhanced
+- Complete .NET ecosystem with 12 specialized templates
+- Enterprise-grade security and authentication
+- Comprehensive monitoring and observability
+- Production-ready development workflows
+- Advanced testing and documentation capabilities
+
 ## [0.19.0] - 2024-12-27
 
 ### 🔷 .NET Ecosystem Foundation - Enterprise Microservices
