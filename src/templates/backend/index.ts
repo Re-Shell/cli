@@ -16,6 +16,8 @@ import { aspnetDapperTemplate } from './aspnet-dapper';
 import { aspnetAutoMapperTemplate } from './aspnet-automapper';
 import { aspnetXUnitTemplate } from './aspnet-xunit';
 import { aspnetEFCoreTemplate } from './aspnet-efcore';
+import { aspnetHotReloadTemplate } from './aspnet-hotreload';
+import { aspnetSerilogTemplate } from './aspnet-serilog';
 import { BackendTemplate } from '../types';
 
 export const backendTemplates: Record<string, BackendTemplate> = {
@@ -37,6 +39,8 @@ export const backendTemplates: Record<string, BackendTemplate> = {
   'aspnet-automapper': aspnetAutoMapperTemplate,
   'aspnet-xunit': aspnetXUnitTemplate,
   'aspnet-efcore': aspnetEFCoreTemplate,
+  'aspnet-hotreload': aspnetHotReloadTemplate,
+  'aspnet-serilog': aspnetSerilogTemplate,
 };
 
 export function getBackendTemplate(id: string): BackendTemplate | undefined {
@@ -74,3 +78,5 @@ export { aspnetDapperTemplate } from './aspnet-dapper';
 export { aspnetAutoMapperTemplate } from './aspnet-automapper';
 export { aspnetXUnitTemplate } from './aspnet-xunit';
 export { aspnetEFCoreTemplate } from './aspnet-efcore';
+export { aspnetHotReloadTemplate } from './aspnet-hotreload';
+export { aspnetSerilogTemplate } from './aspnet-serilog';
