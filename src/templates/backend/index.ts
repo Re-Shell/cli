@@ -15,6 +15,7 @@ import { grpcServiceTemplate } from './grpc-service';
 import { aspnetDapperTemplate } from './aspnet-dapper';
 import { aspnetAutoMapperTemplate } from './aspnet-automapper';
 import { aspnetXUnitTemplate } from './aspnet-xunit';
+import { aspnetEFCoreTemplate } from './aspnet-efcore';
 import { BackendTemplate } from '../types';
 
 export const backendTemplates: Record<string, BackendTemplate> = {
@@ -35,6 +36,7 @@ export const backendTemplates: Record<string, BackendTemplate> = {
   'aspnet-dapper': aspnetDapperTemplate,
   'aspnet-automapper': aspnetAutoMapperTemplate,
   'aspnet-xunit': aspnetXUnitTemplate,
+  'aspnet-efcore': aspnetEFCoreTemplate,
 };
 
 export function getBackendTemplate(id: string): BackendTemplate | undefined {
@@ -71,3 +73,4 @@ export { grpcServiceTemplate } from './grpc-service';
 export { aspnetDapperTemplate } from './aspnet-dapper';
 export { aspnetAutoMapperTemplate } from './aspnet-automapper';
 export { aspnetXUnitTemplate } from './aspnet-xunit';
+export { aspnetEFCoreTemplate } from './aspnet-efcore';
