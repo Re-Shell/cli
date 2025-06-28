@@ -10,6 +10,9 @@ import { micronautTemplate } from './micronaut';
 import { vertxTemplate } from './vertx';
 import { aspnetCoreWebApiTemplate } from './aspnet-core-webapi';
 import { aspnetCoreMinimalTemplate } from './aspnet-core-minimal';
+import { blazorServerTemplate } from './blazor-server';
+import { grpcServiceTemplate } from './grpc-service';
+import { aspnetDapperTemplate } from './aspnet-dapper';
 import { BackendTemplate } from '../types';
 
 export const backendTemplates: Record<string, BackendTemplate> = {
@@ -25,6 +28,9 @@ export const backendTemplates: Record<string, BackendTemplate> = {
   'vertx': vertxTemplate,
   'aspnet-core-webapi': aspnetCoreWebApiTemplate,
   'aspnet-core-minimal': aspnetCoreMinimalTemplate,
+  'blazor-server': blazorServerTemplate,
+  'grpc-service': grpcServiceTemplate,
+  'aspnet-dapper': aspnetDapperTemplate,
 };
 
 export function getBackendTemplate(id: string): BackendTemplate | undefined {
@@ -56,3 +62,6 @@ export { micronautTemplate } from './micronaut';
 export { vertxTemplate } from './vertx';
 export { aspnetCoreWebApiTemplate } from './aspnet-core-webapi';
 export { aspnetCoreMinimalTemplate } from './aspnet-core-minimal';
+export { blazorServerTemplate } from './blazor-server';
+export { grpcServiceTemplate } from './grpc-service';
+export { aspnetDapperTemplate } from './aspnet-dapper';
