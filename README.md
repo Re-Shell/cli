@@ -1,4 +1,4 @@
-# Re-Shell CLI v0.19.0
+# Re-Shell CLI v0.20.0
 
 **Full-Stack Development Platform - Microservices & Microfrontends United**
 
@@ -24,16 +24,18 @@ Re-Shell CLI is a comprehensive full-stack development platform that revolutioni
 - **🛡️ Enterprise Security**: JWT authentication, OAuth2, API gateways, and compliance features
 - **☁️ Production Ready**: Docker orchestration, Kubernetes manifests, and cloud provider configs
 
-### 🆕 What's New in v0.19.0
+### 🆕 What's New in v0.20.0
 
-- **🔷 .NET Ecosystem Foundation**: Two enterprise-grade .NET Core templates for modern microservices
-- **🏗️ ASP.NET Core Web API**: Full MVC architecture with controllers, services, comprehensive middleware
-- **⚡ Minimal API**: High-performance functional endpoints with AOT compilation support
-- **🔐 Enterprise Authentication**: JWT authentication with Identity framework and custom auth services
-- **📊 Performance Optimization**: Output caching, rate limiting, and Redis distributed caching
-- **🧪 Entity Framework Core**: Complete ORM integration with migrations and code-first approach
-- **📝 Comprehensive Logging**: Serilog structured logging with console and file outputs
-- **🔧 Development Excellence**: Hot reload, Docker support, and Swagger/OpenAPI documentation
+- **🔷 Complete .NET Ecosystem**: 12 enterprise-grade .NET templates covering every development scenario
+- **🔐 Advanced Authentication**: JWT with 2FA, external OAuth (Google, Facebook, Microsoft), rate limiting
+- **📊 Comprehensive Monitoring**: Serilog with multiple sinks, performance tracking, audit logging
+- **📚 Enterprise Documentation**: Swagger/OpenAPI with code generation, XML documentation, examples
+- **🧪 Advanced Testing**: xUnit with FluentAssertions, Moq, integration tests, test containers
+- **⚡ Development Experience**: Hot reload with dotnet watch, file monitoring, development utilities
+- **🏗️ Specialized Templates**: Entity Framework Core, Dapper, AutoMapper, Blazor Server, gRPC
+- **🛡️ Production Security**: Identity framework, authorization policies, security headers, CORS
+- **📈 Performance Optimization**: Output caching, rate limiting, Redis integration, AOT compilation
+- **🐳 Infrastructure Ready**: Docker support, health checks, configuration management
 
 ## 📋 Table of Contents
 
@@ -339,17 +341,89 @@ re-shell create lightweight-api --template aspnet-core-minimal
 **Features**: Functional endpoints, AOT compilation, output caching, rate limiting, high performance
 **Use Cases**: High-throughput APIs, cloud-native services, performance-critical applications
 
+#### Blazor Server Template
+```bash
+re-shell create full-stack-app --template blazor-server
+```
+**Features**: Full-stack .NET development, real-time UI updates, SignalR integration, server-side rendering
+**Use Cases**: Interactive web applications, real-time dashboards, enterprise portals
+
+#### gRPC Service Template
+```bash
+re-shell create grpc-service --template grpc-service
+```
+**Features**: Protocol Buffers, streaming support, performance optimization, cross-platform communication
+**Use Cases**: Microservice communication, high-performance APIs, real-time data streaming
+
+#### Entity Framework Core Template
+```bash
+re-shell create data-service --template aspnet-efcore
+```
+**Features**: Code-first migrations, entity configurations, audit logging, soft delete, advanced relationships
+**Use Cases**: Data-intensive applications, complex domain models, enterprise data management
+
+#### Dapper Template
+```bash
+re-shell create high-perf-data --template aspnet-dapper
+```
+**Features**: High-performance data access, repository pattern, transaction management, SQL optimization
+**Use Cases**: Performance-critical data operations, complex queries, high-throughput systems
+
+#### AutoMapper Template
+```bash
+re-shell create mapping-service --template aspnet-automapper
+```
+**Features**: Object-to-object mapping, custom profiles, validation integration, performance optimization
+**Use Cases**: Complex data transformations, API integration, clean architecture implementations
+
+#### xUnit Testing Template
+```bash
+re-shell create tested-api --template aspnet-xunit
+```
+**Features**: Unit tests, integration tests, test fixtures, FluentAssertions, Moq, test containers
+**Use Cases**: Test-driven development, quality assurance, continuous integration
+
+#### Hot Reload Template
+```bash
+re-shell create dev-optimized --template aspnet-hotreload
+```
+**Features**: dotnet watch integration, development utilities, file monitoring, instant feedback
+**Use Cases**: Rapid development, prototyping, developer productivity optimization
+
+#### Serilog Template
+```bash
+re-shell create monitored-api --template aspnet-serilog
+```
+**Features**: Structured logging, multiple sinks, performance monitoring, audit trails, correlation tracking
+**Use Cases**: Production monitoring, debugging, compliance, performance analysis
+
+#### Swagger/OpenAPI Template
+```bash
+re-shell create documented-api --template aspnet-swagger
+```
+**Features**: Interactive documentation, code generation, XML comments, versioning, authentication schemas
+**Use Cases**: API documentation, client generation, developer portals, integration testing
+
+#### JWT Authentication Template
+```bash
+re-shell create secure-api --template aspnet-jwt
+```
+**Features**: Complete auth system, 2FA, external OAuth, rate limiting, authorization policies
+**Use Cases**: Secure applications, user management, enterprise authentication, compliance
+
 ### 🔷 .NET Universal Features
 
 All .NET templates include enterprise-grade capabilities:
-- **Authentication**: JWT authentication with secure password hashing
-- **Database**: Entity Framework Core with code-first migrations
-- **Caching**: Redis distributed caching with configurable policies
-- **Logging**: Serilog structured logging with multiple sinks
-- **API Documentation**: Swagger/OpenAPI with comprehensive schemas
-- **Performance**: Output caching, rate limiting, and AOT compilation support
-- **Development**: Hot reload with dotnet watch, comprehensive error handling
-- **Containerization**: Docker support with optimized multi-stage builds
+- **🔐 Advanced Authentication**: JWT with 2FA, external OAuth (Google, Facebook, Microsoft), Identity framework
+- **📊 Comprehensive Monitoring**: Serilog with multiple sinks (Console, File, Database, Elasticsearch, Seq)
+- **🗄️ Database Integration**: Entity Framework Core with migrations, Dapper for performance, repository patterns
+- **📚 Documentation**: Swagger/OpenAPI with code generation, XML documentation, interactive examples
+- **🧪 Testing Excellence**: xUnit with FluentAssertions, Moq, integration tests, test containers
+- **⚡ Development Experience**: Hot reload with dotnet watch, file monitoring, development utilities
+- **🏗️ Architecture Patterns**: Clean architecture, CQRS, repository pattern, dependency injection
+- **🛡️ Security**: Authorization policies, rate limiting, security headers, CORS configuration
+- **📈 Performance**: Output caching, Redis integration, AOT compilation, performance monitoring
+- **🐳 Infrastructure**: Docker support, health checks, configuration management, logging
 
 ### Additional Languages *(Roadmap)*
 
