@@ -14,6 +14,7 @@ import { blazorServerTemplate } from './blazor-server';
 import { grpcServiceTemplate } from './grpc-service';
 import { aspnetDapperTemplate } from './aspnet-dapper';
 import { aspnetAutoMapperTemplate } from './aspnet-automapper';
+import { aspnetXUnitTemplate } from './aspnet-xunit';
 import { BackendTemplate } from '../types';
 
 export const backendTemplates: Record<string, BackendTemplate> = {
@@ -33,6 +34,7 @@ export const backendTemplates: Record<string, BackendTemplate> = {
   'grpc-service': grpcServiceTemplate,
   'aspnet-dapper': aspnetDapperTemplate,
   'aspnet-automapper': aspnetAutoMapperTemplate,
+  'aspnet-xunit': aspnetXUnitTemplate,
 };
 
 export function getBackendTemplate(id: string): BackendTemplate | undefined {
@@ -68,3 +70,4 @@ export { blazorServerTemplate } from './blazor-server';
 export { grpcServiceTemplate } from './grpc-service';
 export { aspnetDapperTemplate } from './aspnet-dapper';
 export { aspnetAutoMapperTemplate } from './aspnet-automapper';
+export { aspnetXUnitTemplate } from './aspnet-xunit';
