@@ -82,7 +82,9 @@ export type BackendFeature =
   | 'microservices'
   | 'docker'
   | 'ci-cd'
-  | 'queue';
+  | 'queue'
+  | 'routing'
+  | 'middleware';
 
 export type FrontendFeature =
   | 'routing'
