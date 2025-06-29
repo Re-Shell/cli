@@ -23,7 +23,7 @@ export interface BaseTemplate {
 export interface BackendTemplate extends BaseTemplate {
   framework: string;
   displayName: string;
-  language: 'typescript' | 'javascript' | 'python' | 'rust' | 'go' | 'java' | 'csharp';
+  language: 'typescript' | 'javascript' | 'python' | 'rust' | 'go' | 'java' | 'csharp' | 'php';
   port?: number;
   features?: BackendFeature[];
 }
@@ -81,7 +81,8 @@ export type BackendFeature =
   | 'rest-api'
   | 'microservices'
   | 'docker'
-  | 'ci-cd';
+  | 'ci-cd'
+  | 'queue';
 
 export type FrontendFeature =
   | 'routing'

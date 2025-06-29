@@ -20,6 +20,8 @@ import { aspnetHotReloadTemplate } from './aspnet-hotreload';
 import { aspnetSerilogTemplate } from './aspnet-serilog';
 import { aspnetSwaggerTemplate } from './aspnet-swagger';
 import { aspnetJwtTemplate } from './aspnet-jwt';
+import { laravelTemplate } from './laravel';
+import { symfonyTemplate } from './symfony';
 import { BackendTemplate } from '../types';
 
 export const backendTemplates: Record<string, BackendTemplate> = {
@@ -45,6 +47,8 @@ export const backendTemplates: Record<string, BackendTemplate> = {
   'aspnet-serilog': aspnetSerilogTemplate,
   'aspnet-swagger': aspnetSwaggerTemplate,
   'aspnet-jwt': aspnetJwtTemplate,
+  'laravel': laravelTemplate,
+  'symfony': symfonyTemplate,
 };
 
 export function getBackendTemplate(id: string): BackendTemplate | undefined {
@@ -86,3 +90,5 @@ export { aspnetHotReloadTemplate } from './aspnet-hotreload';
 export { aspnetSerilogTemplate } from './aspnet-serilog';
 export { aspnetSwaggerTemplate } from './aspnet-swagger';
 export { aspnetJwtTemplate } from './aspnet-jwt';
+export { laravelTemplate } from './laravel';
+export { symfonyTemplate } from './symfony';
