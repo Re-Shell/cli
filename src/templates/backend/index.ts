@@ -23,6 +23,7 @@ import { aspnetJwtTemplate } from './aspnet-jwt';
 import { laravelTemplate } from './laravel';
 import { symfonyTemplate } from './symfony';
 import { slimTemplate } from './slim';
+import { codeigniterTemplate } from './codeigniter';
 import { BackendTemplate } from '../types';
 
 export const backendTemplates: Record<string, BackendTemplate> = {
@@ -51,6 +52,7 @@ export const backendTemplates: Record<string, BackendTemplate> = {
   'laravel': laravelTemplate,
   'symfony': symfonyTemplate,
   'slim': slimTemplate,
+  'codeigniter': codeigniterTemplate,
 };
 
 export function getBackendTemplate(id: string): BackendTemplate | undefined {
@@ -95,3 +97,4 @@ export { aspnetJwtTemplate } from './aspnet-jwt';
 export { laravelTemplate } from './laravel';
 export { symfonyTemplate } from './symfony';
 export { slimTemplate } from './slim';
+export { codeigniterTemplate } from './codeigniter';
