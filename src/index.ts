@@ -2175,8 +2175,8 @@ generateCommand
 generateCommand
   .command('backend <name>')
   .description('Generate a backend service or API')
-  .option('--framework <framework>', 'Backend framework (express, fastapi, django, flask, sanic, tornado)', 'express')
-  .option('--language <language>', 'Programming language (typescript, python)', 'typescript')
+  .option('--framework <framework>', 'Backend framework (express, fastapi, django, flask, sanic, tornado, laravel, symfony)', 'express')
+  .option('--language <language>', 'Programming language (typescript, python, php)', 'typescript')
   .option('--features <features...>', 'Additional features (code-quality, celery, redis, type-hints, hot-reload, pytest)')
   .option('--workspace <workspace>', 'Target workspace')
   .option('--port <port>', 'Default port for the service', '8000')

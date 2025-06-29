@@ -7,8 +7,8 @@ interface GenerateOptions {
   spinner?: any;
   verbose?: boolean;
   type?: 'component' | 'hook' | 'service' | 'test' | 'config' | 'documentation' | 'backend';
-  framework?: 'react' | 'vue' | 'svelte' | 'angular' | 'express' | 'fastapi' | 'django' | 'flask' | 'tornado' | 'sanic';
-  language?: 'typescript' | 'python';
+  framework?: 'react' | 'vue' | 'svelte' | 'angular' | 'express' | 'fastapi' | 'django' | 'flask' | 'tornado' | 'sanic' | 'laravel' | 'symfony';
+  language?: 'typescript' | 'python' | 'php';
   features?: string[];
   workspace?: string;
   template?: string;
@@ -551,13 +551,38 @@ This project is licensed under the MIT License - see the [LICENSE](../LICENSE) f
 
 async function generateBackend(monorepoRoot: string, name: string, options: GenerateOptions) {
   const language = options.language || 'typescript';
-  const framework = options.framework || (language === 'python' ? 'fastapi' : 'express');
+  const framework = options.framework || (language === 'python' ? 'fastapi' : language === 'php' ? 'laravel' : 'express');
   const workspace = options.workspace || `services/${name}`;
   const workspacePath = path.join(monorepoRoot, workspace);
   const features = options.features || [];
 
   if (!await fs.pathExists(path.dirname(workspacePath))) {
     await fs.ensureDir(path.dirname(workspacePath));
+  }
+
+  // Check if we have a template for this framework
+  if (framework === 'laravel' || framework === 'symfony') {
+    const { backendTemplates } = await import('../templates/backend');
+    const template = backendTemplates[framework];
+    
+    if (template) {
+      // Generate files from template
+      for (const [filePath, content] of Object.entries(template.files)) {
+        const processedContent = content
+          .replace(/{{serviceName}}/g, name)
+          .replace(/{{projectName}}/g, name)
+          .replace(/{{PORT}}/g, options.port || '8000');
+        
+        const fullPath = path.join(workspacePath, filePath);
+        await fs.ensureDir(path.dirname(fullPath));
+        await fs.writeFile(fullPath, processedContent);
+        
+        if (options.verbose) {
+          console.log(chalk.green(`  ✓ Created ${filePath}`));
+        }
+      }
+      return;
+    }
   }
 
   if (language === 'python') {
