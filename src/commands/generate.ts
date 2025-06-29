@@ -7,7 +7,7 @@ interface GenerateOptions {
   spinner?: any;
   verbose?: boolean;
   type?: 'component' | 'hook' | 'service' | 'test' | 'config' | 'documentation' | 'backend';
-  framework?: 'react' | 'vue' | 'svelte' | 'angular' | 'express' | 'fastapi' | 'django' | 'flask' | 'tornado' | 'sanic' | 'laravel' | 'symfony';
+  framework?: 'react' | 'vue' | 'svelte' | 'angular' | 'express' | 'fastapi' | 'django' | 'flask' | 'tornado' | 'sanic' | 'laravel' | 'symfony' | 'slim';
   language?: 'typescript' | 'python' | 'php';
   features?: string[];
   workspace?: string;
@@ -561,7 +561,7 @@ async function generateBackend(monorepoRoot: string, name: string, options: Gene
   }
 
   // Check if we have a template for this framework
-  if (framework === 'laravel' || framework === 'symfony') {
+  if (framework === 'laravel' || framework === 'symfony' || framework === 'slim') {
     const { backendTemplates } = await import('../templates/backend');
     const template = backendTemplates[framework];
     
