@@ -100,3 +100,5 @@ export { slimTemplate } from './slim';
 export { codeigniterTemplate } from './codeigniter';
 export { ComposerGenerator, generateComposerFiles } from './php-composer';
 export type { ComposerConfig } from './php-composer';
+export { PhpFpmGenerator, generatePhpFpmConfig } from './php-fpm';
+export type { PhpFpmConfig } from './php-fpm';
