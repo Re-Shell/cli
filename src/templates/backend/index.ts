@@ -29,6 +29,7 @@ import { echoTemplate } from './echo';
 import { fiberTemplate } from './fiber';
 import { chiTemplate } from './chi';
 import { grpcGoTemplate } from './grpc-go';
+import { goSqlxTemplate } from './go-sqlx';
 import { BackendTemplate } from '../types';
 
 export const backendTemplates: Record<string, BackendTemplate> = {
@@ -63,6 +64,7 @@ export const backendTemplates: Record<string, BackendTemplate> = {
   'fiber': fiberTemplate,
   'chi': chiTemplate,
   'grpc-go': grpcGoTemplate,
+  'go-sqlx': goSqlxTemplate,
 };
 
 export function getBackendTemplate(id: string): BackendTemplate | undefined {
@@ -113,6 +115,7 @@ export { echoTemplate } from './echo';
 export { fiberTemplate } from './fiber';
 export { chiTemplate } from './chi';
 export { grpcGoTemplate } from './grpc-go';
+export { goSqlxTemplate } from './go-sqlx';
 export { ComposerGenerator, generateComposerFiles } from './php-composer';
 export type { ComposerConfig } from './php-composer';
 export { PhpFpmGenerator, generatePhpFpmConfig } from './php-fpm';
