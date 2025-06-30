@@ -27,6 +27,7 @@ import { codeigniterTemplate } from './codeigniter';
 import { ginTemplate } from './gin';
 import { echoTemplate } from './echo';
 import { fiberTemplate } from './fiber';
+import { chiTemplate } from './chi';
 import { BackendTemplate } from '../types';
 
 export const backendTemplates: Record<string, BackendTemplate> = {
@@ -59,6 +60,7 @@ export const backendTemplates: Record<string, BackendTemplate> = {
   'gin': ginTemplate,
   'echo': echoTemplate,
   'fiber': fiberTemplate,
+  'chi': chiTemplate,
 };
 
 export function getBackendTemplate(id: string): BackendTemplate | undefined {
@@ -107,6 +109,7 @@ export { codeigniterTemplate } from './codeigniter';
 export { ginTemplate } from './gin';
 export { echoTemplate } from './echo';
 export { fiberTemplate } from './fiber';
+export { chiTemplate } from './chi';
 export { ComposerGenerator, generateComposerFiles } from './php-composer';
 export type { ComposerConfig } from './php-composer';
 export { PhpFpmGenerator, generatePhpFpmConfig } from './php-fpm';
