@@ -24,6 +24,9 @@ import { laravelTemplate } from './laravel';
 import { symfonyTemplate } from './symfony';
 import { slimTemplate } from './slim';
 import { codeigniterTemplate } from './codeigniter';
+import { ginTemplate } from './gin';
+import { echoTemplate } from './echo';
+import { fiberTemplate } from './fiber';
 import { BackendTemplate } from '../types';
 
 export const backendTemplates: Record<string, BackendTemplate> = {
@@ -53,6 +56,9 @@ export const backendTemplates: Record<string, BackendTemplate> = {
   'symfony': symfonyTemplate,
   'slim': slimTemplate,
   'codeigniter': codeigniterTemplate,
+  'gin': ginTemplate,
+  'echo': echoTemplate,
+  'fiber': fiberTemplate,
 };
 
 export function getBackendTemplate(id: string): BackendTemplate | undefined {
@@ -98,6 +104,9 @@ export { laravelTemplate } from './laravel';
 export { symfonyTemplate } from './symfony';
 export { slimTemplate } from './slim';
 export { codeigniterTemplate } from './codeigniter';
+export { ginTemplate } from './gin';
+export { echoTemplate } from './echo';
+export { fiberTemplate } from './fiber';
 export { ComposerGenerator, generateComposerFiles } from './php-composer';
 export type { ComposerConfig } from './php-composer';
 export { PhpFpmGenerator, generatePhpFpmConfig } from './php-fpm';
