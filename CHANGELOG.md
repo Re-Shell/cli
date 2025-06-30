@@ -5,6 +5,23 @@ All notable changes to the `@re-shell/cli` package will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.22.1] - 2025-06-30
+
+### 🔧 Documentation & Release Management
+
+This patch release focuses on improving documentation quality, cleaning up commit history, and enhancing the overall development experience.
+
+### Changed
+- **📚 Documentation Enhancement**: Updated README and EXAMPLES with comprehensive Go ecosystem coverage
+- **🧹 Commit History Cleanup**: Removed task completion artifacts and automated generation footers for cleaner git history
+- **🏷️ Version Management**: Improved release workflow and tagging process
+- **📖 Examples Expansion**: Added detailed Go framework examples with real-world use cases and best practices
+
+### Fixed
+- Cleaned commit messages removing "Task X completed" and similar artifacts
+- Removed automated generation footers from git history
+- Updated version references across all documentation files
+
 ## [0.22.0] - 2025-06-30
 
 ### 🚀 Go Ecosystem - High-Performance Go Development Platform

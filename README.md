@@ -1,4 +1,4 @@
-# Re-Shell CLI v0.22.0
+# Re-Shell CLI v0.22.1
 
 **Full-Stack Development Platform - Microservices & Microfrontends United**
 
@@ -37,7 +37,13 @@ Re-Shell CLI is a comprehensive full-stack development platform that revolutioni
 
 ### Previous Releases
 
-#### v0.22.0 (Current)
+#### v0.22.1 (Current)
+- **🔧 Documentation Updates**: Enhanced README and EXAMPLES with complete Go ecosystem coverage
+- **📝 Commit History Cleanup**: Removed task completion artifacts for cleaner git history
+- **🏷️ Version Management**: Improved release workflow and tagging process
+- **📚 Examples Enhancement**: Added comprehensive Go framework examples and use cases
+
+#### v0.22.0
 - **🚀 Complete Go Ecosystem**: 6 production-ready Go templates for high-performance development
 - **⚡ Go Frameworks**: Gin, Echo, Fiber, Chi, gRPC with Protocol Buffers, and sqlx for raw SQL
 - **🔧 Go Infrastructure**: GORM ORM, database migrations, hot reload with Air, Docker support

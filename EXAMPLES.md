@@ -5,7 +5,7 @@ This document provides comprehensive real-world scenarios and examples for using
 ## Table of Contents
 
 1. [Latest Features](#latest-features)
-   - [Complete Go Ecosystem (v0.22.0)](#complete-go-ecosystem-v0220)
+   - [Complete Go Ecosystem (v0.22.1)](#complete-go-ecosystem-v0221)
    - [Complete PHP Ecosystem (v0.21.0)](#complete-php-ecosystem-v0210)
    - [Complete .NET Ecosystem (v0.20.0)](#complete-net-ecosystem-v0200)
    - [Complete Rust Ecosystem (v0.17.0)](#complete-rust-ecosystem-v0170)
@@ -28,7 +28,7 @@ This document provides comprehensive real-world scenarios and examples for using
 
 ## Latest Features
 
-### Complete Go Ecosystem (v0.22.0)
+### Complete Go Ecosystem (v0.22.1)
 
 Enterprise-grade Go development platform with 6 specialized templates covering web frameworks, gRPC services, and database patterns. Build high-performance, concurrent applications with Go's simplicity and efficiency.
 
