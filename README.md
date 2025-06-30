@@ -1,4 +1,4 @@
-# Re-Shell CLI v0.20.0
+# Re-Shell CLI v0.21.0
 
 **Full-Stack Development Platform - Microservices & Microfrontends United**
 
@@ -17,14 +17,25 @@ Re-Shell CLI is a comprehensive full-stack development platform that revolutioni
 ### Key Capabilities
 
 - **🎯 Full-Stack Unity**: Seamless integration between frontend microfrontends and backend microservices
-- **🏗️ Microservices Excellence**: Production-ready templates for .NET (ASP.NET Core Web API, Minimal API), Java (Spring Boot, Quarkus, Micronaut, Vert.x), Rust (Actix-Web, Warp, Rocket, Axum), Python (FastAPI, Django, Flask) and Node.js (Express, NestJS)
+- **🏗️ Microservices Excellence**: Production-ready templates for .NET (ASP.NET Core Web API, Minimal API), Java (Spring Boot, Quarkus, Micronaut, Vert.x), Rust (Actix-Web, Warp, Rocket, Axum), Python (FastAPI, Django, Flask), PHP (Symfony, Laravel, Slim, CodeIgniter) and Node.js (Express, NestJS)
 - **🎨 Microfrontend Architecture**: Module Federation with React, Vue, Svelte, and Angular support
 - **🔄 Smart Code Generation**: API-first development with automatic type generation and SDK creation
 - **📊 Complete Observability**: Built-in monitoring, tracing, and logging across the entire stack
 - **🛡️ Enterprise Security**: JWT authentication, OAuth2, API gateways, and compliance features
 - **☁️ Production Ready**: Docker orchestration, Kubernetes manifests, and cloud provider configs
 
-### 🆕 What's New in v0.20.0
+### 🆕 What's New in v0.21.0
+
+- **🐘 Complete PHP Ecosystem**: 6 enterprise-grade PHP templates for modern web development
+- **🚀 PHP Frameworks**: Symfony, Laravel, Slim, and CodeIgniter 4 with full feature sets
+- **🔧 PHP Infrastructure**: PHP-FPM configuration, Composer integration, Docker support
+- **🛡️ PHP Security**: CSRF protection, XSS filtering, SQL injection prevention
+- **⚡ PHP Performance**: OPcache with JIT, connection pooling, Redis caching
+- **🧪 PHP Testing**: PHPUnit integration, code coverage, fixture management
+- **📊 PHP Monitoring**: Health endpoints, error logging, performance metrics
+- **🐳 PHP DevOps**: Alpine containers, Nginx integration, Xdebug support
+
+### Previous Release (v0.20.0)
 
 - **🔷 Complete .NET Ecosystem**: 12 enterprise-grade .NET templates covering every development scenario
 - **🔐 Advanced Authentication**: JWT with 2FA, external OAuth (Google, Facebook, Microsoft), rate limiting

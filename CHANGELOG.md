@@ -5,6 +5,40 @@ All notable changes to the `@re-shell/cli` package will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.21.0] - 2025-06-30
+
+### 🐘 PHP Ecosystem - Modern PHP Development Platform
+
+This release introduces comprehensive PHP support to Re-Shell CLI, providing enterprise-grade templates for modern PHP development. The PHP ecosystem includes support for major frameworks and configurations optimized for both development and production environments.
+
+### Added
+
+#### 🐘 PHP Framework Templates
+- **Symfony Framework**: Enterprise PHP framework with bundles, services, forms, and Doctrine ORM
+- **Laravel Framework**: Modern PHP framework with Eloquent ORM, migrations, and Artisan CLI  
+- **Slim Framework**: Lightweight PHP microframework for APIs and microservices
+- **CodeIgniter 4**: Lightweight PHP framework with MVC architecture and built-in security
+
+#### 🚀 PHP Infrastructure
+- **PHP-FPM Configuration**: Complete PHP-FPM pool configuration with dynamic process management
+- **PHP Composer**: Comprehensive dependency management with autoloading and optimization
+- **Docker Integration**: Alpine-based PHP-FPM containers with Nginx reverse proxy
+- **Development Tools**: Xdebug integration, OPcache with JIT, development helper scripts
+
+#### 🛡️ Enterprise PHP Features
+- **Security**: CSRF protection, XSS filtering, SQL injection prevention
+- **Performance**: OPcache configuration, JIT compilation, connection pooling
+- **Monitoring**: Health check endpoints, error logging, performance metrics
+- **Database**: Support for MySQL, PostgreSQL, SQLite with migrations
+- **Caching**: Redis integration, session management, query caching
+- **Testing**: PHPUnit integration, code coverage, fixture management
+
+### Enhanced
+- Complete PHP ecosystem with 6 specialized templates
+- Modern PHP 8.1+ support with latest features
+- Production-ready configurations and optimizations
+- Comprehensive development and debugging tools
+
 ## [0.20.0] - 2024-12-28
 
 ### 🔷 .NET Ecosystem Complete - Enterprise Application Platform
