@@ -5,6 +5,8 @@ This document provides comprehensive real-world scenarios and examples for using
 ## Table of Contents
 
 1. [Latest Features](#latest-features)
+   - [Complete Go Ecosystem (v0.22.0)](#complete-go-ecosystem-v0220)
+   - [Complete PHP Ecosystem (v0.21.0)](#complete-php-ecosystem-v0210)
    - [Complete .NET Ecosystem (v0.20.0)](#complete-net-ecosystem-v0200)
    - [Complete Rust Ecosystem (v0.17.0)](#complete-rust-ecosystem-v0170)
    - [Full-Stack Platform (v0.16.3)](#full-stack-platform-v0163)
@@ -25,6 +27,147 @@ This document provides comprehensive real-world scenarios and examples for using
 4. [Advanced Scenarios](#advanced-scenarios)
 
 ## Latest Features
+
+### Complete Go Ecosystem (v0.22.0)
+
+Enterprise-grade Go development platform with 6 specialized templates covering web frameworks, gRPC services, and database patterns. Build high-performance, concurrent applications with Go's simplicity and efficiency.
+
+#### High-Performance Go Microservices
+
+```bash
+# Create Go-powered platform
+re-shell create go-platform --type full-stack
+
+# Backend: Gin framework for RESTful APIs
+re-shell generate backend api-gateway --language go --template go-gin --port 8001 \
+  --features "jwt,rate-limit,swagger,metrics"
+
+# Backend: Echo for modern, minimalist APIs
+re-shell generate backend user-service --language go --template go-echo --port 8002 \
+  --features "middleware,validation,graceful-shutdown"
+
+# Backend: Fiber for Express-like development
+re-shell generate backend product-service --language go --template go-fiber --port 8003 \
+  --features "websocket,sse,monitoring"
+
+# Backend: Chi for composable, stdlib-compatible routing
+re-shell generate backend order-service --language go --template go-chi --port 8004 \
+  --features "middleware-chain,subrouters,restful"
+
+# Backend: gRPC for high-performance RPC
+re-shell generate backend grpc-service --language go --template go-grpc --port 8005 \
+  --features "streaming,interceptors,reflection"
+
+# Backend: sqlx for type-safe SQL operations
+re-shell generate backend data-service --language go --template go-sqlx --port 8006 \
+  --features "migrations,transactions,prepared-statements"
+
+# Start all services with hot reload
+re-shell dev --go --all --hot-reload
+```
+
+#### Go Framework Specializations
+
+```bash
+# Gin: High-performance web framework with middleware ecosystem
+re-shell create rest-api --template go-gin
+# Features: JWT auth, rate limiting, Swagger docs, Prometheus metrics
+
+# Echo: Minimalist web framework with powerful routing
+re-shell create modern-api --template go-echo
+# Features: Built-in middleware, data binding, OpenAPI integration
+
+# Fiber: Express-inspired web framework built on Fasthttp
+re-shell create fast-api --template go-fiber
+# Features: WebSocket support, server-sent events, built-in monitoring
+
+# Chi: Lightweight, composable router compatible with net/http
+re-shell create composable-api --template go-chi
+# Features: Middleware chains, subrouters, RESTful routing
+
+# gRPC: High-performance RPC framework
+re-shell create rpc-service --template go-grpc
+# Features: Protocol Buffers, streaming, service discovery
+
+# sqlx: Extensions to database/sql for type safety
+re-shell create data-api --template go-sqlx
+# Features: Named queries, struct scanning, transaction helpers
+```
+
+#### Go Universal Features
+
+All Go templates include production-ready capabilities:
+- **Database Integration**: GORM ORM with automigration, sqlx for raw SQL
+- **Authentication**: JWT with custom claims, API key auth, OAuth2 support
+- **Logging**: Structured logging with Zap or Zerolog, correlation IDs
+- **Monitoring**: Prometheus metrics, health checks, pprof profiling
+- **Testing**: Testify framework, mocking, table-driven tests, benchmarks
+- **Development**: Hot reload with Air, environment configuration
+- **Security**: bcrypt hashing, rate limiting, CORS, security headers
+- **Docker**: Multi-stage builds, minimal Alpine images, non-root user
+- **Architecture**: Clean architecture, dependency injection, context propagation
+
+### Complete PHP Ecosystem (v0.21.0)
+
+Comprehensive PHP backend support with 4 major frameworks - Symfony, Laravel, Slim, and CodeIgniter 4. Build modern, secure, and scalable PHP applications with enterprise-grade features.
+
+#### Modern PHP Microservices
+
+```bash
+# Create PHP-powered platform
+re-shell create php-platform --type full-stack
+
+# Backend: Symfony for enterprise applications
+re-shell generate backend core-api --language php --template php-symfony --port 8001 \
+  --features "doctrine,messenger,security,api-platform"
+
+# Backend: Laravel for rapid development
+re-shell generate backend admin-api --language php --template php-laravel --port 8002 \
+  --features "eloquent,queues,broadcasting,sanctum"
+
+# Backend: Slim for microservices
+re-shell generate backend micro-api --language php --template php-slim --port 8003 \
+  --features "psr15,di-container,validation"
+
+# Backend: CodeIgniter for simplicity
+re-shell generate backend simple-api --language php --template php-codeigniter --port 8004 \
+  --features "restful,filters,validation"
+
+# Start all services with PHP-FPM
+re-shell dev --php --all --xdebug
+```
+
+#### PHP Framework Specializations
+
+```bash
+# Symfony: Enterprise PHP framework with extensive features
+re-shell create enterprise-app --template php-symfony
+# Features: Dependency injection, event system, Doctrine ORM, forms
+
+# Laravel: The PHP framework for web artisans
+re-shell create artisan-app --template php-laravel
+# Features: Eloquent ORM, Blade templates, Artisan CLI, queues
+
+# Slim: Micro framework for APIs and microservices
+re-shell create micro-service --template php-slim
+# Features: PSR-7/15, middleware, DI container, minimal footprint
+
+# CodeIgniter 4: Simple and elegant toolkit
+re-shell create simple-app --template php-codeigniter
+# Features: MVC pattern, RESTful routing, built-in security
+```
+
+#### PHP Universal Features
+
+All PHP templates include modern PHP capabilities:
+- **PHP 8.2+**: Typed properties, attributes, enums, readonly properties
+- **Database**: Migrations, query builders, ORM integration
+- **Testing**: PHPUnit with fixtures, mocking, code coverage
+- **Security**: CSRF protection, XSS filtering, SQL injection prevention
+- **Performance**: OPcache with JIT, connection pooling, Redis caching
+- **Development**: Xdebug support, hot reload, environment config
+- **Docker**: PHP-FPM, Nginx/Apache, multi-stage builds
+- **Standards**: PSR compliance, coding standards, static analysis
 
 ### Complete .NET Ecosystem (v0.20.0)
 
