@@ -98,3 +98,5 @@ export { laravelTemplate } from './laravel';
 export { symfonyTemplate } from './symfony';
 export { slimTemplate } from './slim';
 export { codeigniterTemplate } from './codeigniter';
+export { ComposerGenerator, generateComposerFiles } from './php-composer';
+export type { ComposerConfig } from './php-composer';
