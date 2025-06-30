@@ -5,6 +5,48 @@ All notable changes to the `@re-shell/cli` package will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.22.0] - 2025-06-30
+
+### 🚀 Go Ecosystem - High-Performance Go Development Platform
+
+This release introduces comprehensive Go support to Re-Shell CLI, providing production-ready templates for modern Go development. The Go ecosystem includes support for major web frameworks, gRPC, and database integration patterns optimized for microservices and cloud-native applications.
+
+### Added
+
+#### 🚀 Go Framework Templates
+- **Gin Framework**: Fast HTTP web framework with middleware support and JSON validation
+- **Echo Framework**: High performance, minimalist Go web framework with automatic TLS and HTTP/2 support
+- **Fiber Framework**: Express-inspired web framework with zero memory allocation and performance
+- **Chi Router**: Lightweight, idiomatic and composable router for building Go HTTP services
+- **gRPC Server**: High-performance gRPC server with Protocol Buffers, streaming support, and interceptors
+- **Go API with sqlx**: Fast Go API with sqlx for raw SQL queries with compile-time type safety
+
+#### 🚀 Go Development Features
+- **GORM Integration**: Auto-migrations, associations, and database abstraction for all templates
+- **JWT Authentication**: Secure authentication with access and refresh tokens
+- **Request Validation**: Comprehensive input validation using go-playground/validator
+- **Structured Logging**: Zap and Zerolog integration for production logging
+- **Hot Reload**: Air configuration for rapid development cycles
+- **Database Support**: PostgreSQL, MySQL, and SQLite with migrations
+- **Redis Integration**: Caching and session management support
+- **Rate Limiting**: Built-in rate limiting with Redis or in-memory fallback
+- **Swagger/OpenAPI**: Auto-generated API documentation
+- **Docker Support**: Production-ready Dockerfile and docker-compose configurations
+- **Testing**: Testify integration with comprehensive test examples
+- **Middleware**: CORS, compression, request ID, recovery, and custom middleware
+- **Health Checks**: Built-in health check endpoints for all templates
+- **Metrics**: Prometheus metrics integration for monitoring
+
+### Technical Highlights
+- All templates follow Go best practices and idiomatic patterns
+- Comprehensive error handling and recovery mechanisms
+- Context-aware request handling with proper timeout management
+- Secure by default with bcrypt password hashing
+- Environment-based configuration management
+- Database migration support with golang-migrate
+- Multi-stage Docker builds for minimal production images
+- Comprehensive Makefiles for common development tasks
+
 ## [0.21.0] - 2025-06-30
 
 ### 🐘 PHP Ecosystem - Modern PHP Development Platform
