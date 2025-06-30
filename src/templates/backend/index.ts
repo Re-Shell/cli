@@ -28,6 +28,7 @@ import { ginTemplate } from './gin';
 import { echoTemplate } from './echo';
 import { fiberTemplate } from './fiber';
 import { chiTemplate } from './chi';
+import { grpcGoTemplate } from './grpc-go';
 import { BackendTemplate } from '../types';
 
 export const backendTemplates: Record<string, BackendTemplate> = {
@@ -61,6 +62,7 @@ export const backendTemplates: Record<string, BackendTemplate> = {
   'echo': echoTemplate,
   'fiber': fiberTemplate,
   'chi': chiTemplate,
+  'grpc-go': grpcGoTemplate,
 };
 
 export function getBackendTemplate(id: string): BackendTemplate | undefined {
@@ -110,6 +112,7 @@ export { ginTemplate } from './gin';
 export { echoTemplate } from './echo';
 export { fiberTemplate } from './fiber';
 export { chiTemplate } from './chi';
+export { grpcGoTemplate } from './grpc-go';
 export { ComposerGenerator, generateComposerFiles } from './php-composer';
 export type { ComposerConfig } from './php-composer';
 export { PhpFpmGenerator, generatePhpFpmConfig } from './php-fpm';
