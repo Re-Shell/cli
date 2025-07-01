@@ -5,6 +5,50 @@ All notable changes to the `@re-shell/cli` package will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.23.0] - 2025-07-01
+
+### 🚀 Ruby Ecosystem - Complete Ruby Development Platform
+
+This release introduces comprehensive Ruby support to Re-Shell CLI, delivering production-ready templates for modern Ruby development. The Ruby ecosystem features Rails API, Sinatra, and Grape frameworks with full-stack capabilities optimized for RESTful APIs and microservices.
+
+### Added
+
+#### 🚀 Ruby Framework Templates
+- **Ruby on Rails API**: Full-featured RESTful API with Active Record ORM, JWT authentication, and comprehensive testing
+- **Sinatra**: Lightweight web framework for building APIs and microservices with minimal overhead
+- **Grape**: REST-like API framework with advanced routing, parameter validation, and automatic documentation
+
+#### 🚀 Ruby Development Features
+- **ActiveRecord Integration**: Full ORM support with migrations, associations, and database abstraction
+- **JWT Authentication**: Secure token-based authentication with refresh token support
+- **Request Validation**: Parameter validation using sinatra-param and dry-validation
+- **Background Jobs**: Sidekiq integration for asynchronous processing
+- **API Documentation**: Swagger/OpenAPI generation with grape-swagger and rswag
+- **Testing Suite**: RSpec with FactoryBot, database cleaner, and coverage reports
+- **Docker Support**: Production-ready Docker configurations with multi-stage builds
+- **Rate Limiting**: Rack::Attack integration for API protection
+- **CORS Support**: Cross-origin resource sharing configuration
+- **Redis Integration**: Caching, sessions, and background job support
+- **Guard Integration**: Automatic test running and file watching
+
+#### 🚀 Ruby-Specific Features
+- **Pagination**: Kaminari integration with custom headers
+- **Serialization**: Active Model Serializers and Grape Entities
+- **Health Checks**: Built-in health check endpoints
+- **Environment Management**: Dotenv for configuration
+- **Code Quality**: RuboCop with framework-specific rules
+- **Database Support**: PostgreSQL with connection pooling
+- **Hot Reload**: Rerun for development productivity
+- **Middleware Stack**: Comprehensive Rack middleware configuration
+
+### Technical Highlights
+- All Ruby templates include comprehensive authentication and authorization
+- Production-ready configurations with security best practices
+- Extensive testing setup with mocking and fixtures
+- Docker Compose for local development with all services
+- Performance optimizations with caching and connection pooling
+- Modular architecture supporting microservices patterns
+
 ## [0.22.1] - 2025-06-30
 
 ### 🔧 Documentation & Release Management

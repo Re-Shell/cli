@@ -6,6 +6,7 @@ This document provides comprehensive real-world scenarios and examples for using
 
 1. [Latest Features](#latest-features)
    - [Complete Go Ecosystem (v0.22.1)](#complete-go-ecosystem-v0221)
+   - [Complete Ruby Ecosystem (v0.23.0)](#complete-ruby-ecosystem-v0230)
    - [Complete PHP Ecosystem (v0.21.0)](#complete-php-ecosystem-v0210)
    - [Complete .NET Ecosystem (v0.20.0)](#complete-net-ecosystem-v0200)
    - [Complete Rust Ecosystem (v0.17.0)](#complete-rust-ecosystem-v0170)
@@ -106,6 +107,56 @@ All Go templates include production-ready capabilities:
 - **Security**: bcrypt hashing, rate limiting, CORS, security headers
 - **Docker**: Multi-stage builds, minimal Alpine images, non-root user
 - **Architecture**: Clean architecture, dependency injection, context propagation
+
+### Complete Ruby Ecosystem (v0.23.0)
+
+```bash
+# Create a complete Ruby API application ecosystem
+
+# Backend: Ruby on Rails API for full-featured REST services
+re-shell generate backend main-api --language ruby --template ruby-rails-api --port 3000 \
+  --features "active-record,jwt,sidekiq,rspec"
+
+# Backend: Sinatra for lightweight microservices
+re-shell generate backend auth-service --language ruby --template ruby-sinatra --port 4567 \
+  --features "jwt,redis,swagger,modular"
+
+# Backend: Grape for RESTful API services
+re-shell generate backend products-api --language ruby --template ruby-grape --port 9292 \
+  --features "entities,validation,swagger,pagination"
+
+# Start all services with hot reload
+re-shell dev --ruby --all --guard
+```
+
+#### Ruby Framework Specializations
+
+```bash
+# Rails API: Full-featured API framework with conventions
+re-shell create rest-api --template ruby-rails-api
+# Features: Active Record ORM, Action Cable, Active Job, JWT auth
+
+# Sinatra: Lightweight and flexible web framework
+re-shell create micro-api --template ruby-sinatra
+# Features: Modular apps, minimal overhead, Rack middleware
+
+# Grape: RESTful API micro-framework
+re-shell create api-service --template ruby-grape
+# Features: Parameter validation, entity presentation, versioning
+```
+
+#### Ruby Universal Features
+
+All Ruby templates include production-ready capabilities:
+- **Active Record**: Full ORM with migrations and associations
+- **Authentication**: JWT tokens with refresh support
+- **Background Jobs**: Sidekiq for async processing
+- **Testing**: RSpec with FactoryBot and fixtures
+- **API Documentation**: Swagger/OpenAPI generation
+- **Performance**: Redis caching, connection pooling
+- **Development**: Guard for auto-testing, Rerun for hot reload
+- **Code Quality**: RuboCop linting with framework rules
+- **Docker**: Multi-stage builds with Ruby Alpine images
 
 ### Complete PHP Ecosystem (v0.21.0)
 

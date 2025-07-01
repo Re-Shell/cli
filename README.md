@@ -1,4 +1,4 @@
-# Re-Shell CLI v0.22.1
+# Re-Shell CLI v0.23.0
 
 **Full-Stack Development Platform - Microservices & Microfrontends United**
 
@@ -17,7 +17,7 @@ Re-Shell CLI is a comprehensive full-stack development platform that revolutioni
 ### Key Capabilities
 
 - **🎯 Full-Stack Unity**: Seamless integration between frontend microfrontends and backend microservices
-- **🏗️ Microservices Excellence**: Production-ready templates for .NET (ASP.NET Core Web API, Minimal API), Java (Spring Boot, Quarkus, Micronaut, Vert.x), Rust (Actix-Web, Warp, Rocket, Axum), Python (FastAPI, Django, Flask), PHP (Symfony, Laravel, Slim, CodeIgniter), Go (Gin, Echo, Fiber, Chi, gRPC) and Node.js (Express, NestJS)
+- **🏗️ Microservices Excellence**: Production-ready templates for .NET (ASP.NET Core Web API, Minimal API), Java (Spring Boot, Quarkus, Micronaut, Vert.x), Rust (Actix-Web, Warp, Rocket, Axum), Python (FastAPI, Django, Flask), PHP (Symfony, Laravel, Slim, CodeIgniter), Go (Gin, Echo, Fiber, Chi, gRPC), Ruby (Rails API, Sinatra, Grape) and Node.js (Express, NestJS)
 - **🎨 Microfrontend Architecture**: Module Federation with React, Vue, Svelte, and Angular support
 - **🔄 Smart Code Generation**: API-first development with automatic type generation and SDK creation
 - **📊 Complete Observability**: Built-in monitoring, tracing, and logging across the entire stack
@@ -27,6 +27,7 @@ Re-Shell CLI is a comprehensive full-stack development platform that revolutioni
 ### 🆕 What's New in v0.22.0
 
 - **🚀 Complete Go Ecosystem**: 6 production-ready Go templates for high-performance development
+- **💎 Complete Ruby Ecosystem**: 3 production-ready Ruby templates for rapid API development
 - **⚡ Go Frameworks**: Gin, Echo, Fiber, Chi, gRPC with Protocol Buffers, and sqlx for raw SQL
 - **🔧 Go Infrastructure**: GORM ORM, database migrations, hot reload with Air, Docker support
 - **🛡️ Go Security**: JWT authentication, bcrypt hashing, rate limiting, secure middleware
@@ -45,6 +46,7 @@ Re-Shell CLI is a comprehensive full-stack development platform that revolutioni
 
 #### v0.22.0
 - **🚀 Complete Go Ecosystem**: 6 production-ready Go templates for high-performance development
+- **💎 Complete Ruby Ecosystem**: 3 production-ready Ruby templates for rapid API development
 - **⚡ Go Frameworks**: Gin, Echo, Fiber, Chi, gRPC with Protocol Buffers, and sqlx for raw SQL
 - **🔧 Go Infrastructure**: GORM ORM, database migrations, hot reload with Air, Docker support
 - **🛡️ Go Security**: JWT authentication, bcrypt hashing, rate limiting, secure middleware
@@ -520,6 +522,42 @@ All Go templates include enterprise-grade capabilities:
 - **🏗️ Architecture**: Clean architecture, dependency injection, middleware patterns
 - **📚 Documentation**: OpenAPI/Swagger integration, inline documentation
 - **🐳 DevOps**: Multi-stage Docker builds, Alpine Linux, minimal images
+
+### 💎 Ruby Ecosystem ✅ **Complete**
+
+#### Ruby on Rails API Template
+```bash
+re-shell create rest-api --template ruby-rails-api
+```
+**Features**: Active Record ORM, JWT authentication, background jobs with Sidekiq, comprehensive testing with RSpec
+**Use Cases**: Full-featured REST APIs, enterprise applications, rapid API development
+
+#### Sinatra Template
+```bash
+re-shell create lightweight-api --template ruby-sinatra
+```
+**Features**: Minimal overhead, modular architecture, ActiveRecord integration, Swagger documentation
+**Use Cases**: Microservices, lightweight APIs, simple web services, prototyping
+
+#### Grape Template
+```bash
+re-shell create grape-api --template ruby-grape
+```
+**Features**: RESTful API framework, parameter validation, entity serialization, automatic documentation
+**Use Cases**: API-only applications, microservices, versioned APIs, high-performance services
+
+### 💎 Ruby Universal Features
+
+All Ruby templates include production-ready capabilities:
+- **🗄️ Database Integration**: ActiveRecord ORM with migrations, PostgreSQL support, connection pooling
+- **🔐 Security**: JWT authentication, bcrypt password hashing, Rack::Attack rate limiting
+- **📊 Monitoring**: Structured logging, health check endpoints, performance monitoring
+- **🧪 Testing**: RSpec framework, FactoryBot fixtures, database cleaner, coverage reports
+- **⚡ Performance**: Redis caching, Sidekiq background jobs, connection pooling
+- **🛠️ Development**: Hot reload with Rerun/Guard, environment management with Dotenv
+- **🏗️ Architecture**: MVC/REST patterns, modular design, middleware composition
+- **📚 Documentation**: Swagger/OpenAPI integration, YARD documentation
+- **🐳 DevOps**: Docker support, multi-stage builds, production configurations
 
 ### 🐘 PHP Ecosystem ✅ **Complete**
 
