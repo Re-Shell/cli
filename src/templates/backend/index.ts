@@ -33,6 +33,8 @@ import { goSqlxTemplate } from './go-sqlx';
 import { railsApiTemplate } from './rails-api';
 import { sinatraTemplate } from './sinatra';
 import { grapeTemplate } from './grape';
+import { openrestyTemplate } from './openresty';
+import { lapisTemplate } from './lapis';
 import { BackendTemplate } from '../types';
 
 export const backendTemplates: Record<string, BackendTemplate> = {
@@ -71,6 +73,8 @@ export const backendTemplates: Record<string, BackendTemplate> = {
   'rails-api': railsApiTemplate,
   'sinatra': sinatraTemplate,
   'grape': grapeTemplate,
+  'openresty': openrestyTemplate,
+  'lapis': lapisTemplate,
 };
 
 export function getBackendTemplate(id: string): BackendTemplate | undefined {
@@ -125,6 +129,8 @@ export { goSqlxTemplate } from './go-sqlx';
 export { railsApiTemplate } from './rails-api';
 export { sinatraTemplate } from './sinatra';
 export { grapeTemplate } from './grape';
+export { openrestyTemplate } from './openresty';
+export { lapisTemplate } from './lapis';
 export { ComposerGenerator, generateComposerFiles } from './php-composer';
 export type { ComposerConfig } from './php-composer';
 export { PhpFpmGenerator, generatePhpFpmConfig } from './php-fpm';
