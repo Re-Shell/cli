@@ -29,6 +29,175 @@ This document provides comprehensive real-world scenarios and examples for using
 
 ## Latest Features
 
+### Complete C++ Ecosystem (v0.24.0)
+
+High-performance C++ development platform with 5 specialized templates covering web frameworks, from lightweight to enterprise-grade. Build blazing-fast, type-safe microservices with modern C++ features, comprehensive testing, and production-ready tooling.
+
+#### High-Performance C++ Microservices
+
+```bash
+# Create C++-powered platform
+re-shell create cpp-platform --type full-stack
+
+# Backend: Crow for fast, header-only microframework
+re-shell generate backend api-gateway --language cpp --template cpp-crow --port 8081 \
+  --features "jwt,websocket,async,cors"
+
+# Backend: Drogon for full-featured web applications  
+re-shell generate backend core-service --language cpp --template cpp-drogon --port 8082 \
+  --features "orm,websocket,http2,redis"
+
+# Backend: cpp-httplib for lightweight services
+re-shell generate backend micro-service --language cpp --template cpp-httplib --port 8083 \
+  --features "https,compression,file-upload"
+
+# Backend: Pistache for elegant REST APIs
+re-shell generate backend rest-service --language cpp --template cpp-pistache --port 8084 \
+  --features "validation,rate-limit,caching"
+
+# Backend: Beast for WebSocket and real-time communication
+re-shell generate backend ws-service --language cpp --template cpp-beast --port 8085 \
+  --features "websockets,authentication,logging"
+
+# Start all services with hot reload
+re-shell dev --cpp --all --hot-reload
+```
+
+#### C++ Framework Specializations
+
+```bash
+# Crow: Fast header-only C++ microframework inspired by Flask
+re-shell create fast-api --template cpp-crow
+# Features: JWT auth, WebSocket, async handlers, minimal dependencies
+
+# Drogon: Modern C++17/20 HTTP application framework
+re-shell create enterprise-app --template cpp-drogon
+# Features: Built-in ORM, WebSocket, HTTP/2, view templating, PostgreSQL
+
+# cpp-httplib: Single-header C++ HTTP/HTTPS server library
+re-shell create lightweight-api --template cpp-httplib  
+# Features: Minimal footprint, SSL/TLS, gzip compression, file serving
+
+# Pistache: Elegant C++ REST framework with async support
+re-shell create rest-api --template cpp-pistache
+# Features: Middleware system, rate limiting, validation, type-safe routing
+
+# Beast: Boost.Beast for WebSocket and HTTP/HTTPS servers
+re-shell create realtime-api --template cpp-beast
+# Features: WebSocket, HTTP/2, SSL/TLS, async I/O, Boost ecosystem
+```
+
+#### C++ Universal Features
+
+All C++ templates include production-ready capabilities:
+- **CMake Build System**: Modern CMake with FetchContent for dependencies
+- **Google Test**: Comprehensive unit and integration testing framework
+- **Authentication**: JWT tokens with OpenSSL, custom claims support
+- **Logging**: spdlog for high-performance structured logging
+- **JSON Support**: nlohmann/json for modern JSON handling
+- **Docker**: Multi-stage builds with minimal runtime images
+- **Development**: Hot reload support, debug/release configurations
+- **Security**: HTTPS/TLS support, security headers, input validation
+- **Performance**: Compiler optimizations, minimal overhead, async I/O
+
+#### C++ Advanced Development Tools
+
+**OpenAPI/Swagger Integration**:
+```bash
+# Generate server stubs and client SDK from OpenAPI spec
+./scripts/generate-api.sh
+
+# Automatic request/response validation
+# Swagger UI at http://localhost:8080/docs
+```
+
+**Memory Safety & Sanitizers**:
+```bash
+# Build with AddressSanitizer
+cmake -DENABLE_ASAN=ON ..
+
+# Run all sanitizers
+./scripts/run-sanitizers.sh
+
+# Valgrind memory analysis
+valgrind --leak-check=full ./your_app
+```
+
+**Code Quality Tools**:
+```bash
+# Format code with clang-format
+make format-all
+
+# Static analysis with clang-tidy
+make tidy-all
+
+# Comprehensive quality check
+./scripts/check-quality.sh
+```
+
+### Complete Lua Ecosystem (v0.23.0)
+
+High-performance Lua development platform with 4 specialized templates for web services, API gateways, and plugin development. Leverage the power of LuaJIT and NGINX for blazing-fast applications.
+
+#### Lua-Powered Microservices
+
+```bash
+# Create Lua-powered platform
+re-shell create lua-platform --type full-stack
+
+# Backend: OpenResty for NGINX + LuaJIT performance
+re-shell generate backend gateway --language lua --template lua-openresty --port 8090 \
+  --features "jwt,redis,postgres,websocket"
+
+# Backend: Lapis for full-featured web development
+re-shell generate backend web-service --language lua --template lua-lapis --port 8091 \
+  --features "moonscript,migrations,testing"
+
+# Backend: lua-http for pure Lua HTTP services  
+re-shell generate backend api-service --language lua --template lua-http --port 8092 \
+  --features "http2,websocket,async"
+
+# Backend: Kong plugin for API gateway extensions
+re-shell generate backend gateway-plugin --language lua --template lua-kong-plugin \
+  --features "rate-limit,auth,transform"
+
+# Start all services with hot reload
+re-shell dev --lua --all --hot-reload
+```
+
+#### Lua Framework Specializations
+
+```bash
+# OpenResty: NGINX with embedded LuaJIT for ultimate performance
+re-shell create high-perf-api --template lua-openresty
+# Features: JWT auth, PostgreSQL via pgmoon, Redis, WebSocket, Module Federation
+
+# Lapis: Full-featured web framework with MoonScript support
+re-shell create web-app --template lua-lapis
+# Features: ORM with migrations, MoonScript, Busted testing, hot reload
+
+# lua-http: Pure Lua HTTP/1.1 and HTTP/2 server
+re-shell create pure-lua-api --template lua-http
+# Features: Coroutine-based async, WebSocket, HTTP/2, minimal dependencies
+
+# Kong Plugin: Extend Kong API Gateway functionality
+re-shell create kong-extension --template lua-kong-plugin
+# Features: Request/response handlers, Admin API, migrations, comprehensive testing
+```
+
+#### Lua Universal Features
+
+All Lua templates include production-ready capabilities:
+- **LuaRocks**: Package management with dependency resolution
+- **Testing**: Busted framework with mocking and coverage
+- **Performance**: LuaJIT optimization, NGINX integration
+- **Database**: PostgreSQL and Redis client libraries
+- **Hot Reload**: Development server with auto-reload
+- **Docker**: NGINX-based containers with Lua modules
+- **Module Federation**: Microfrontend support in OpenResty
+- **API Gateway**: Kong plugin development framework
+- **Caching**: Built-in Redis integration for performance
+
 ### Complete Go Ecosystem (v0.22.1)
 
 Enterprise-grade Go development platform with 6 specialized templates covering web frameworks, gRPC services, and database patterns. Build high-performance, concurrent applications with Go's simplicity and efficiency.

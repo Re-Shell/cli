@@ -37,6 +37,11 @@ import { openrestyTemplate } from './openresty';
 import { lapisTemplate } from './lapis';
 import { luaHttpTemplate } from './lua-http';
 import { kongPluginTemplate } from './kong-plugin';
+import { crowTemplate } from './crow';
+import { drogonTemplate } from './drogon';
+import { cppHttplibTemplate } from './cpp-httplib';
+import { pistacheTemplate } from './pistache';
+import { beastTemplate } from './beast';
 import { BackendTemplate } from '../types';
 
 export const backendTemplates: Record<string, BackendTemplate> = {
@@ -79,6 +84,11 @@ export const backendTemplates: Record<string, BackendTemplate> = {
   'lapis': lapisTemplate,
   'lua-http': luaHttpTemplate,
   'kong-plugin': kongPluginTemplate,
+  'crow': crowTemplate,
+  'drogon': drogonTemplate,
+  'cpp-httplib': cppHttplibTemplate,
+  'pistache': pistacheTemplate,
+  'beast': beastTemplate,
 };
 
 export function getBackendTemplate(id: string): BackendTemplate | undefined {
@@ -137,7 +147,18 @@ export { openrestyTemplate } from './openresty';
 export { lapisTemplate } from './lapis';
 export { luaHttpTemplate } from './lua-http';
 export { kongPluginTemplate } from './kong-plugin';
+export { crowTemplate } from './crow';
+export { drogonTemplate } from './drogon';
+export { cppHttplibTemplate } from './cpp-httplib';
+export { pistacheTemplate } from './pistache';
+export { beastTemplate } from './beast';
 export { ComposerGenerator, generateComposerFiles } from './php-composer';
 export type { ComposerConfig } from './php-composer';
 export { PhpFpmGenerator, generatePhpFpmConfig } from './php-fpm';
 export type { PhpFpmConfig } from './php-fpm';
+export { generateCppOpenApiFiles } from './cpp-openapi';
+export type { CppOpenApiConfig } from './cpp-openapi';
+export { generateCppSanitizersFiles } from './cpp-sanitizers';
+export type { CppSanitizersConfig } from './cpp-sanitizers';
+export { generateCppQualityToolsFiles } from './cpp-quality-tools';
+export type { CppQualityToolsConfig } from './cpp-quality-tools';

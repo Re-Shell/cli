@@ -7,6 +7,10 @@ export const hapiTypeScriptTemplate: BackendTemplate = {
   description: 'Enterprise-grade Hapi.js API server with TypeScript, built-in validation, caching, security, and plugin architecture',
   framework: 'hapi',
   language: 'typescript',
+  version: '21.3.9',
+  tags: ['typescript', 'hapi', 'api', 'rest', 'validation', 'security', 'caching'],
+  port: 3000,
+  features: ['authentication', 'database', 'validation', 'logging', 'documentation', 'testing', 'caching', 'security'],
   dependencies: {
     '@hapi/hapi': '^21.3.9',
     '@hapi/joi': '^17.1.1',
@@ -3143,8 +3147,6 @@ spec:
 
 MIT License - see LICENSE file for details.`
   },
-  version: '1.0.0',
-  tags: ['hapi', 'typescript', 'validation', 'caching', 'security', 'enterprise'],
   postInstall: [
     'npm install',
     'cp .env.example .env',
