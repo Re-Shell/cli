@@ -36,6 +36,7 @@ import { grapeTemplate } from './grape';
 import { openrestyTemplate } from './openresty';
 import { lapisTemplate } from './lapis';
 import { luaHttpTemplate } from './lua-http';
+import { kongPluginTemplate } from './kong-plugin';
 import { BackendTemplate } from '../types';
 
 export const backendTemplates: Record<string, BackendTemplate> = {
@@ -77,6 +78,7 @@ export const backendTemplates: Record<string, BackendTemplate> = {
   'openresty': openrestyTemplate,
   'lapis': lapisTemplate,
   'lua-http': luaHttpTemplate,
+  'kong-plugin': kongPluginTemplate,
 };
 
 export function getBackendTemplate(id: string): BackendTemplate | undefined {
@@ -134,6 +136,7 @@ export { grapeTemplate } from './grape';
 export { openrestyTemplate } from './openresty';
 export { lapisTemplate } from './lapis';
 export { luaHttpTemplate } from './lua-http';
+export { kongPluginTemplate } from './kong-plugin';
 export { ComposerGenerator, generateComposerFiles } from './php-composer';
 export type { ComposerConfig } from './php-composer';
 export { PhpFpmGenerator, generatePhpFpmConfig } from './php-fpm';
