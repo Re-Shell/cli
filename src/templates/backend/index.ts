@@ -35,6 +35,7 @@ import { sinatraTemplate } from './sinatra';
 import { grapeTemplate } from './grape';
 import { openrestyTemplate } from './openresty';
 import { lapisTemplate } from './lapis';
+import { luaHttpTemplate } from './lua-http';
 import { BackendTemplate } from '../types';
 
 export const backendTemplates: Record<string, BackendTemplate> = {
@@ -75,6 +76,7 @@ export const backendTemplates: Record<string, BackendTemplate> = {
   'grape': grapeTemplate,
   'openresty': openrestyTemplate,
   'lapis': lapisTemplate,
+  'lua-http': luaHttpTemplate,
 };
 
 export function getBackendTemplate(id: string): BackendTemplate | undefined {
@@ -131,6 +133,7 @@ export { sinatraTemplate } from './sinatra';
 export { grapeTemplate } from './grape';
 export { openrestyTemplate } from './openresty';
 export { lapisTemplate } from './lapis';
+export { luaHttpTemplate } from './lua-http';
 export { ComposerGenerator, generateComposerFiles } from './php-composer';
 export type { ComposerConfig } from './php-composer';
 export { PhpFpmGenerator, generatePhpFpmConfig } from './php-fpm';
