@@ -1,5 +1,9 @@
 import { hapiTypeScriptTemplate } from './hapi-ts';
+import { djangoTemplate } from './django';
 import { djangoEnhancedTemplate } from './django-enhanced';
+import { tornadoTemplate } from './tornado-py';
+import { sanicTemplate } from './sanic-py';
+import { starletteTemplate } from './starlette';
 import { actixWebTemplate } from './actix-web';
 import { warpTemplate } from './warp';
 import { rocketTemplate } from './rocket';
@@ -42,11 +46,79 @@ import { drogonTemplate } from './drogon';
 import { cppHttplibTemplate } from './cpp-httplib';
 import { pistacheTemplate } from './pistache';
 import { beastTemplate } from './beast';
+import { vaporTemplate } from './vapor';
+import { perfectTemplate } from './perfect';
+import { kituraTemplate } from './kitura';
+import { hummingbirdTemplate } from './hummingbird';
+import { shelfTemplate } from './shelf';
+import { angel3Template } from './angel3';
+import { conduitTemplate } from './conduit';
+import { expressTemplate } from './express';
+import { fastapiTemplate } from './fastapi';
+import { nestjsTemplate } from './nestjs';
+import { flaskTemplate } from './flask';
+import { koaTemplate } from './koa';
+import { fastifyTemplate } from './fastify';
+import { loopbackTemplate } from './loopback';
+import { adonisjsTemplate } from './adonisjs';
+import { restifyTemplate } from './restify';
+import { feathersjsTemplate } from './feathersjs';
+import { moleculerTemplate } from './moleculer';
+import { sailsjsTemplate } from './sailsjs';
+import { strapiTemplate } from './strapi';
+import { meteorjsTemplate } from './meteorjs';
+import { totaljsTemplate } from './totaljs';
+import { eggjsTemplate } from './eggjs';
+import { thinkjsTemplate } from './thinkjs';
+import { actionheroTemplate } from './actionherojs';
+import { foaltsTemplate } from './foalts';
+import { marblejsTemplate } from './marblejs';
+import { tsedTemplate } from './tsed';
+import { middyTemplate } from './middy';
+import { polkaTemplate } from './polka';
+import { tinyhttpTemplate } from './tinyhttp';
+import { hyperExpressTemplate } from './hyper-express';
+import { apolloServerTemplate } from './apollo-server';
+import { graphqlYogaTemplate } from './graphql-yoga';
 import { BackendTemplate } from '../types';
 
 export const backendTemplates: Record<string, BackendTemplate> = {
+  // Node.js/TypeScript
+  'express': expressTemplate,
+  'fastify': fastifyTemplate,
+  'nestjs': nestjsTemplate,
+  'koa': koaTemplate,
+  'loopback': loopbackTemplate,
+  'adonisjs': adonisjsTemplate,
+  'restify': restifyTemplate,
+  'feathersjs': feathersjsTemplate,
+  'moleculer': moleculerTemplate,
+  'sailsjs': sailsjsTemplate,
+  'strapi': strapiTemplate,
+  'meteorjs': meteorjsTemplate,
+  'totaljs': totaljsTemplate,
+  'eggjs': eggjsTemplate,
+  'thinkjs': thinkjsTemplate,
+  'actionherojs': actionheroTemplate,
+  'foalts': foaltsTemplate,
+  'marblejs': marblejsTemplate,
+  'tsed': tsedTemplate,
+  'middy': middyTemplate,
+  'polka': polkaTemplate,
+  'tinyhttp': tinyhttpTemplate,
+  'hyper-express': hyperExpressTemplate,
+  'apollo-server': apolloServerTemplate,
+  'graphql-yoga': graphqlYogaTemplate,
   'hapi-ts': hapiTypeScriptTemplate,
+  
+  // Python
+  'fastapi': fastapiTemplate,
+  'flask': flaskTemplate,
+  'django': djangoTemplate,
   'django-enhanced': djangoEnhancedTemplate,
+  'tornado-py': tornadoTemplate,
+  'sanic-py': sanicTemplate,
+  'starlette': starletteTemplate,
   'actix-web': actixWebTemplate,
   'warp': warpTemplate,
   'rocket': rocketTemplate,
@@ -89,6 +161,13 @@ export const backendTemplates: Record<string, BackendTemplate> = {
   'cpp-httplib': cppHttplibTemplate,
   'pistache': pistacheTemplate,
   'beast': beastTemplate,
+  'vapor': vaporTemplate,
+  'perfect': perfectTemplate,
+  'kitura': kituraTemplate,
+  'hummingbird': hummingbirdTemplate,
+  'shelf': shelfTemplate,
+  'angel3': angel3Template,
+  'conduit': conduitTemplate,
 };
 
 export function getBackendTemplate(id: string): BackendTemplate | undefined {
@@ -109,7 +188,11 @@ export function getBackendTemplatesByFramework(framework: string): BackendTempla
 
 // Export individual templates for backward compatibility
 export { hapiTypeScriptTemplate } from './hapi-ts';
+export { djangoTemplate } from './django';
 export { djangoEnhancedTemplate } from './django-enhanced';
+export { tornadoTemplate } from './tornado-py';
+export { sanicTemplate } from './sanic-py';
+export { starletteTemplate } from './starlette';
 export { actixWebTemplate } from './actix-web';
 export { warpTemplate } from './warp';
 export { rocketTemplate } from './rocket';
@@ -152,6 +235,40 @@ export { drogonTemplate } from './drogon';
 export { cppHttplibTemplate } from './cpp-httplib';
 export { pistacheTemplate } from './pistache';
 export { beastTemplate } from './beast';
+export { vaporTemplate } from './vapor';
+export { perfectTemplate } from './perfect';
+export { kituraTemplate } from './kitura';
+export { hummingbirdTemplate } from './hummingbird';
+export { shelfTemplate } from './shelf';
+export { angel3Template } from './angel3';
+export { conduitTemplate } from './conduit';
+export { expressTemplate } from './express';
+export { fastapiTemplate } from './fastapi';
+export { nestjsTemplate } from './nestjs';
+export { flaskTemplate } from './flask';
+export { koaTemplate } from './koa';
+export { fastifyTemplate } from './fastify';
+export { loopbackTemplate } from './loopback';
+export { adonisjsTemplate } from './adonisjs';
+export { restifyTemplate } from './restify';
+export { feathersjsTemplate } from './feathersjs';
+export { moleculerTemplate } from './moleculer';
+export { sailsjsTemplate } from './sailsjs';
+export { strapiTemplate } from './strapi';
+export { meteorjsTemplate } from './meteorjs';
+export { totaljsTemplate } from './totaljs';
+export { eggjsTemplate } from './eggjs';
+export { thinkjsTemplate } from './thinkjs';
+export { actionheroTemplate } from './actionherojs';
+export { foaltsTemplate } from './foalts';
+export { marblejsTemplate } from './marblejs';
+export { tsedTemplate } from './tsed';
+export { middyTemplate } from './middy';
+export { polkaTemplate } from './polka';
+export { tinyhttpTemplate } from './tinyhttp';
+export { hyperExpressTemplate } from './hyper-express';
+export { apolloServerTemplate } from './apollo-server';
+export { graphqlYogaTemplate } from './graphql-yoga';
 export { ComposerGenerator, generateComposerFiles } from './php-composer';
 export type { ComposerConfig } from './php-composer';
 export { PhpFpmGenerator, generatePhpFpmConfig } from './php-fpm';
