@@ -882,7 +882,7 @@ export class UXMetricsCollector extends EventEmitter {
     return commandId;
   }
 
-  async trackCommandCompletion(commandId: string, success: boolean, exitCode: number = 0, error?: string): Promise<void> {
+  async trackCommandCompletion(commandId: string, success: boolean, exitCode = 0, error?: string): Promise<void> {
     if (!this.currentSession) return;
 
     const commandMetric = this.currentSession.commands.find(c => c.commandId === commandId);

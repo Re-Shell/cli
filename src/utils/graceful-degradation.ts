@@ -37,7 +37,7 @@ interface SystemConstraints {
 
 export class GracefulDegradation extends EventEmitter {
   private static instance: GracefulDegradation;
-  private currentLevel: number = 0; // 0 = normal operation
+  private currentLevel = 0; // 0 = normal operation
   private activatedActions: DegradationAction[] = [];
   private monitoring = false;
   private monitorInterval?: NodeJS.Timeout;
@@ -168,7 +168,7 @@ export class GracefulDegradation extends EventEmitter {
   /**
    * Start monitoring system constraints
    */
-  startMonitoring(intervalMs: number = 5000): void {
+  startMonitoring(intervalMs = 5000): void {
     if (this.monitoring) return;
     
     this.monitoring = true;

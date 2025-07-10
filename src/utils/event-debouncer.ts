@@ -45,7 +45,7 @@ export class EventDebouncer extends EventEmitter {
   private eventBatches: Map<string, DebouncedEvent[]> = new Map();
   private options: DebounceOptions;
   private filters: EventFilter[];
-  private eventCounter: number = 0;
+  private eventCounter = 0;
 
   constructor(options: Partial<DebounceOptions> = {}) {
     super();

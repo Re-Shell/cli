@@ -140,7 +140,7 @@ export class WorkspaceConflictManager {
   async resolveConflicts(
     definition: WorkspaceDefinition,
     conflicts: WorkspaceConflict[],
-    autoResolve: boolean = false
+    autoResolve = false
   ): Promise<ConflictResolutionResult> {
     const result: ConflictResolutionResult = {
       resolved: [],
@@ -609,7 +609,7 @@ export class WorkspaceConflictManager {
     conflict: WorkspaceConflict,
     resolution: ConflictResolution,
     changes: ConflictChange[],
-    preview: boolean = false
+    preview = false
   ): Promise<void> {
     switch (resolution.action) {
       case 'rename-workspace':
@@ -639,7 +639,7 @@ export class WorkspaceConflictManager {
     definition: WorkspaceDefinition,
     conflict: WorkspaceConflict,
     changes: ConflictChange[],
-    preview: boolean = false
+    preview = false
   ): Promise<void> {
     const affected = conflict.affectedWorkspaces;
     
@@ -678,7 +678,7 @@ export class WorkspaceConflictManager {
     definition: WorkspaceDefinition,
     conflict: WorkspaceConflict,
     changes: ConflictChange[],
-    preview: boolean = false
+    preview = false
   ): Promise<void> {
     const basePort = parseInt(conflict.id.split('-')[1]);
     let currentPort = basePort + 1;
@@ -713,7 +713,7 @@ export class WorkspaceConflictManager {
     definition: WorkspaceDefinition,
     conflict: WorkspaceConflict,
     changes: ConflictChange[],
-    preview: boolean = false
+    preview = false
   ): Promise<void> {
     const basePath = conflict.id.replace('path-', '');
     
@@ -743,7 +743,7 @@ export class WorkspaceConflictManager {
     definition: WorkspaceDefinition,
     conflict: WorkspaceConflict,
     changes: ConflictChange[],
-    preview: boolean = false
+    preview = false
   ): Promise<void> {
     if (conflict.type === 'dependency-missing') {
       const [, , workspace, depName] = conflict.id.split('-');
@@ -775,7 +775,7 @@ export class WorkspaceConflictManager {
     definition: WorkspaceDefinition,
     conflict: WorkspaceConflict,
     changes: ConflictChange[],
-    preview: boolean = false
+    preview = false
   ): Promise<void> {
     if (conflict.type === 'type-mismatch') {
       const workspaceName = conflict.affectedWorkspaces[0];

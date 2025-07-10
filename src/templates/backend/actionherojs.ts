@@ -1,8 +1,17 @@
-import { BackendTemplate } from '../../types/template';
+import { BackendTemplate } from '../types';
 
 export const actionheroTemplate: BackendTemplate = {
+  id: 'actionherojs',
   name: 'actionherojs',
+  displayName: 'ActionHero',
   description: 'Multi-transport API server with clustering, real-time capabilities, and background jobs',
+  language: 'javascript',
+  framework: 'actionhero',
+  version: '29.0.0',
+  tags: ['multi-transport', 'clustering', 'real-time', 'background-jobs', 'api'],
+  port: 8080,
+  dependencies: {},
+  features: ['websockets', 'clustering', 'background-jobs', 'real-time', 'multi-transport'],
   packageJson: {
     name: 'actionhero-backend',
     version: '1.0.0',
@@ -119,8 +128,7 @@ export const test = {
       };
     }
   }
-};
-`
+};`
     },
     {
       path: 'config/servers/websocket.ts',
@@ -164,8 +172,7 @@ export const test = {
       };
     }
   }
-};
-`
+};`
     },
     {
       path: 'config/servers/socket.ts',
@@ -195,8 +202,7 @@ export const test = {
       };
     }
   }
-};
-`
+};`
     },
     {
       path: 'config/redis.ts',
@@ -279,8 +285,7 @@ export const test = {
       }
     };
   }
-};
-`
+};`
     },
     {
       path: 'config/tasks.ts',
@@ -320,8 +325,7 @@ export const test = {
       maxEventLoopDelay: 5
     };
   }
-};
-`
+};`
     },
     {
       path: 'config/routes.ts',
@@ -372,8 +376,7 @@ export const test = {
       ]
     };
   }
-};
-`
+};`
     },
     {
       path: 'actions/status.ts',
@@ -2454,4 +2457,3 @@ MIT
     }
   ]
 };
-`

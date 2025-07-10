@@ -365,7 +365,7 @@ export class PerformanceMonitor extends EventEmitter {
     this.emit('metric:recorded', metric);
   }
 
-  recordOperation(name: string, duration: number, success: boolean = true, metadata?: Record<string, any>): void {
+  recordOperation(name: string, duration: number, success = true, metadata?: Record<string, any>): void {
     // Update operation counters
     const counter = this.operationCounters.get(name) || { count: 0, total: 0, errors: 0 };
     counter.count++;

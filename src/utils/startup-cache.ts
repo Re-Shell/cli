@@ -79,7 +79,7 @@ export class StartupCache {
   /**
    * Set a cached value
    */
-  set(key: string, value: any, ttl: number = 3600000): void { // Default 1 hour
+  set(key: string, value: any, ttl = 3600000): void { // Default 1 hour
     const entry: CacheEntry = {
       key,
       value,

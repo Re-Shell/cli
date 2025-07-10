@@ -5,8 +5,9 @@ This document provides comprehensive real-world scenarios and examples for using
 ## Table of Contents
 
 1. [Latest Features](#latest-features)
-   - [Complete Go Ecosystem (v0.22.1)](#complete-go-ecosystem-v0221)
+   - [Backend Framework Templates (v0.24.0)](#backend-framework-templates-v0240)
    - [Complete Ruby Ecosystem (v0.23.0)](#complete-ruby-ecosystem-v0230)
+   - [Complete Go Ecosystem (v0.22.1)](#complete-go-ecosystem-v0221)
    - [Complete PHP Ecosystem (v0.21.0)](#complete-php-ecosystem-v0210)
    - [Complete .NET Ecosystem (v0.20.0)](#complete-net-ecosystem-v0200)
    - [Complete Rust Ecosystem (v0.17.0)](#complete-rust-ecosystem-v0170)
@@ -29,75 +30,110 @@ This document provides comprehensive real-world scenarios and examples for using
 
 ## Latest Features
 
-### Complete C++ Ecosystem (v0.24.0)
+### Backend Framework Templates (v0.24.0)
 
-High-performance C++ development platform with 5 specialized templates covering web frameworks, from lightweight to enterprise-grade. Build blazing-fast, type-safe microservices with modern C++ features, comprehensive testing, and production-ready tooling.
+Comprehensive full-stack platform with 26 new backend framework templates for Node.js and Python ecosystems. Build modern microservices with Express, Fastify, NestJS, Django, FastAPI, and more - all with enterprise features, real-time capabilities, and production-ready configurations.
 
-#### High-Performance C++ Microservices
+#### Modern Microservices Architecture
 
 ```bash
-# Create C++-powered platform
-re-shell create cpp-platform --type full-stack
+# Create full-stack platform with new backend templates
+re-shell create modern-platform --type full-stack
 
-# Backend: Crow for fast, header-only microframework
-re-shell generate backend api-gateway --language cpp --template cpp-crow --port 8081 \
-  --features "jwt,websocket,async,cors"
+# High-Performance Node.js Services
+re-shell create api-gateway --template hyper-express
+# 100,000+ req/sec with WebSocket support
 
-# Backend: Drogon for full-featured web applications  
-re-shell generate backend core-service --language cpp --template cpp-drogon --port 8082 \
-  --features "orm,websocket,http2,redis"
+re-shell create user-service --template fastify
+# 35,000 req/sec with schema validation
 
-# Backend: cpp-httplib for lightweight services
-re-shell generate backend micro-service --language cpp --template cpp-httplib --port 8083 \
-  --features "https,compression,file-upload"
+re-shell create realtime-service --template feathersjs
+# Built-in Socket.io for real-time updates
 
-# Backend: Pistache for elegant REST APIs
-re-shell generate backend rest-service --language cpp --template cpp-pistache --port 8084 \
-  --features "validation,rate-limit,caching"
+re-shell create microservices --template moleculer
+# Service discovery and fault tolerance
 
-# Backend: Beast for WebSocket and real-time communication
-re-shell generate backend ws-service --language cpp --template cpp-beast --port 8085 \
-  --features "websockets,authentication,logging"
+re-shell create enterprise-api --template nestjs
+# Dependency injection, GraphQL, CQRS
+
+# Python Async Services
+re-shell create ml-api --template fastapi
+# Type hints, async support, auto-docs
+
+re-shell create analytics-service --template django
+# Full-featured with admin interface
 
 # Start all services with hot reload
-re-shell dev --cpp --all --hot-reload
+re-shell dev --all --hot-reload
 ```
 
-#### C++ Framework Specializations
+#### Node.js Framework Examples
 
 ```bash
-# Crow: Fast header-only C++ microframework inspired by Flask
-re-shell create fast-api --template cpp-crow
-# Features: JWT auth, WebSocket, async handlers, minimal dependencies
+# Express: Classic framework with modern features
+re-shell create rest-api --template express
+# Features: TypeScript, JWT auth, Prisma ORM, rate limiting
 
-# Drogon: Modern C++17/20 HTTP application framework
-re-shell create enterprise-app --template cpp-drogon
-# Features: Built-in ORM, WebSocket, HTTP/2, view templating, PostgreSQL
+# Fastify: High-performance alternative to Express
+re-shell create fast-api --template fastify
+# Features: 35k req/sec, schema validation, WebSocket support
 
-# cpp-httplib: Single-header C++ HTTP/HTTPS server library
-re-shell create lightweight-api --template cpp-httplib  
-# Features: Minimal footprint, SSL/TLS, gzip compression, file serving
+# NestJS: Enterprise-grade framework
+re-shell create enterprise-app --template nestjs
+# Features: DI, GraphQL, microservices, CQRS, OpenAPI
 
-# Pistache: Elegant C++ REST framework with async support
-re-shell create rest-api --template cpp-pistache
-# Features: Middleware system, rate limiting, validation, type-safe routing
+# Feathers.js: Real-time applications
+re-shell create chat-app --template feathersjs
+# Features: Socket.io, service-oriented, hooks, multi-DB
 
-# Beast: Boost.Beast for WebSocket and HTTP/HTTPS servers
-re-shell create realtime-api --template cpp-beast
-# Features: WebSocket, HTTP/2, SSL/TLS, async I/O, Boost ecosystem
+# AdonisJS: Laravel-inspired for Node.js
+re-shell create full-stack --template adonisjs
+# Features: MVC, Lucid ORM, Edge templates, migrations
+
+# Moleculer: Microservices framework
+re-shell create microservices --template moleculer
+# Features: Service discovery, caching, circuit breaker
+
+# Strapi: Headless CMS
+re-shell create cms --template strapi
+# Features: Admin panel, content types, media library
+
+# Apollo Server: GraphQL server
+re-shell create graphql-api --template apollo-server
+# Features: Subscriptions, DataLoader, federation
 ```
 
-#### C++ Universal Features
+#### Python Framework Examples
 
-All C++ templates include production-ready capabilities:
-- **CMake Build System**: Modern CMake with FetchContent for dependencies
-- **Google Test**: Comprehensive unit and integration testing framework
-- **Authentication**: JWT tokens with OpenSSL, custom claims support
-- **Logging**: spdlog for high-performance structured logging
-- **JSON Support**: nlohmann/json for modern JSON handling
-- **Docker**: Multi-stage builds with minimal runtime images
-- **Development**: Hot reload support, debug/release configurations
-- **Security**: HTTPS/TLS support, security headers, input validation
+```bash
+# FastAPI: Modern async framework
+re-shell create async-api --template fastapi
+# Features: Type hints, OpenAPI docs, WebSocket, Pydantic
+
+# Django: Batteries-included framework
+re-shell create web-app --template django
+# Features: ORM, admin, DRF, management commands
+
+# Flask: Lightweight and flexible
+re-shell create microservice --template flask
+# Features: Blueprints, SQLAlchemy, CLI commands
+
+# Starlette: High-performance async
+re-shell create lightweight-api --template starlette
+# Features: WebSocket, GraphQL, Server-Sent Events
+```
+
+#### Universal Features
+
+All templates include enterprise-ready capabilities:
+- **TypeScript/Type Hints**: Full type safety and IntelliSense
+- **Authentication**: JWT with refresh tokens
+- **Database**: ORMs with migrations and pooling
+- **API Documentation**: OpenAPI/Swagger UI
+- **Testing**: Unit, integration, and e2e tests
+- **Docker**: Multi-stage builds and compose files
+- **Hot Reload**: Development productivity
+- **Monitoring**: Health checks and metrics
 - **Performance**: Compiler optimizations, minimal overhead, async I/O
 
 #### C++ Advanced Development Tools

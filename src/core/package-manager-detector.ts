@@ -848,7 +848,7 @@ export class PackageManagerDetector extends EventEmitter {
     context: ProjectContext
   ): PackageManager {
     // Holistic recommendation based on context
-    let recommendations: Array<{ manager: PackageManager; score: number }> = [];
+    const recommendations: Array<{ manager: PackageManager; score: number }> = [];
 
     for (const [manager, data] of Object.entries(analysis)) {
       const info = PackageManagerDetector.managerInfo.get(manager as PackageManager);

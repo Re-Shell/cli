@@ -2555,4 +2555,4 @@ Performance comparison (requests/second):
 
 MIT`
   }
-};`
+};

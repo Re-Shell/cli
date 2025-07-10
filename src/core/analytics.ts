@@ -223,7 +223,7 @@ export class Analytics extends EventEmitter {
     }
   }
 
-  increment(metric: string, value: number = 1, tags?: Record<string, string>): void {
+  increment(metric: string, value = 1, tags?: Record<string, string>): void {
     if (!this.enabled) return;
     
     const analyticsMetric: AnalyticsMetric = {

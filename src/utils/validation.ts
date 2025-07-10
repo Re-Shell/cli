@@ -211,7 +211,7 @@ export class ConfigurationValidator {
   private suggestions: ValidationSuggestion[] = [];
 
   // Validate configuration against schema
-  validateConfiguration(config: any, schema: ValidationRule[], context: string = ''): ValidationResult {
+  validateConfiguration(config: any, schema: ValidationRule[], context = ''): ValidationResult {
     this.reset();
 
     for (const rule of schema) {

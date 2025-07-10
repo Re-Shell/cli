@@ -110,7 +110,7 @@ export class ResourceAnalytics extends EventEmitter {
   /**
    * Start resource monitoring
    */
-  start(intervalMs: number = 5000): void {
+  start(intervalMs = 5000): void {
     if (this.monitoring) return;
     
     this.monitoring = true;
@@ -156,7 +156,7 @@ export class ResourceAnalytics extends EventEmitter {
   /**
    * Generate comprehensive resource report
    */
-  generateReport(periodHours: number = 24): ResourceReport {
+  generateReport(periodHours = 24): ResourceReport {
     const now = Date.now();
     const periodStart = now - (periodHours * 60 * 60 * 1000);
     
@@ -187,7 +187,7 @@ export class ResourceAnalytics extends EventEmitter {
   /**
    * Get resource trends
    */
-  getTrends(metric: string, samples: number = 20): ResourceTrend | null {
+  getTrends(metric: string, samples = 20): ResourceTrend | null {
     if (this.snapshots.length < samples) {
       return null;
     }
@@ -208,7 +208,7 @@ export class ResourceAnalytics extends EventEmitter {
   /**
    * Get resource usage history
    */
-  getHistory(hours: number = 1): ResourceSnapshot[] {
+  getHistory(hours = 1): ResourceSnapshot[] {
     const cutoff = Date.now() - (hours * 60 * 60 * 1000);
     return this.snapshots.filter(s => s.timestamp >= cutoff);
   }
@@ -231,7 +231,7 @@ export class ResourceAnalytics extends EventEmitter {
   /**
    * Clear old data
    */
-  cleanup(retentionHours: number = 168): void { // Default 1 week
+  cleanup(retentionHours = 168): void { // Default 1 week
     const cutoff = Date.now() - (retentionHours * 60 * 60 * 1000);
     
     this.snapshots = this.snapshots.filter(s => s.timestamp >= cutoff);

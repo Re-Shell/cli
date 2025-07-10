@@ -1,11 +1,15 @@
-import { BackendTemplate } from '../../types';
+import { BackendTemplate } from '../types';
 
 export const apolloServerTemplate: BackendTemplate = {
   id: 'apollo-server',
   name: 'Apollo Server',
+  displayName: 'Apollo Server',
   description: 'Community-driven, open-source GraphQL server with TypeScript, subscriptions, and caching',
-  category: 'backend',
   language: 'typescript',
+  framework: 'apollo-server',
+  version: '4.10.0',
+  tags: ['graphql', 'apollo', 'subscriptions', 'caching', 'typescript'],
+  port: 4000,
   features: [
     'Apollo Server 4 with Express integration',
     'TypeScript with full type definitions',
@@ -57,7 +61,7 @@ export const apolloServerTemplate: BackendTemplate = {
     'supertest': '^6.3.3',
     '@types/supertest': '^6.0.2'
   },
-  structure: {
+  files: {
     'src/index.ts': `import 'dotenv/config';
 import express from 'express';
 import { ApolloServer } from '@apollo/server';
@@ -1708,4 +1712,4 @@ Connect to Apollo Studio for monitoring:
   scripts: {
     postInstall: `echo "Apollo Server setup complete! Run 'npm run dev' to start the server."`
   }
-};`
+};

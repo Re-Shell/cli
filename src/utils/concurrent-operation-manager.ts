@@ -43,9 +43,9 @@ export class ConcurrentOperationManager extends EventEmitter {
   private operationTimes: number[] = [];
   
   private constructor(
-    maxConcurrent: number = 5,
-    rateLimitWindow: number = 1000,
-    maxOperationsPerWindow: number = 10
+    maxConcurrent = 5,
+    rateLimitWindow = 1000,
+    maxOperationsPerWindow = 10
   ) {
     super();
     this.maxConcurrent = maxConcurrent;

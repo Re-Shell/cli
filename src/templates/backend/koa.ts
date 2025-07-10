@@ -1627,4 +1627,4 @@ npm run seed
 
 MIT`
   }
-};`
+};

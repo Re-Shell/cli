@@ -130,8 +130,8 @@ const processManager = ProcessManager.getInstance();
 // Enhanced async operation wrapper with timeout and retry
 export async function withTimeout<T>(
   operation: () => Promise<T>,
-  timeoutMs: number = 30000,
-  retries: number = 0
+  timeoutMs = 30000,
+  retries = 0
 ): Promise<T> {
   const attemptOperation = async (attempt: number): Promise<T> => {
     return Promise.race([

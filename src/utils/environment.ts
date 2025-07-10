@@ -181,7 +181,7 @@ export class EnvironmentManager {
     };
 
     // Update project config with default environments
-    let projectConfig = await configManager.loadProjectConfig(this.projectPath);
+    const projectConfig = await configManager.loadProjectConfig(this.projectPath);
     if (!projectConfig) {
       throw new ValidationError('No project configuration found. Initialize a project first.');
     }
@@ -399,7 +399,7 @@ export class EnvironmentManager {
 
   // Private helper methods
   private async saveEnvironments(): Promise<void> {
-    let projectConfig = await configManager.loadProjectConfig(this.projectPath);
+    const projectConfig = await configManager.loadProjectConfig(this.projectPath);
     if (!projectConfig) {
       throw new ValidationError('No project configuration found');
     }

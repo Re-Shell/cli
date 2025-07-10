@@ -1,4 +1,4 @@
-# Re-Shell CLI v0.23.0
+# Re-Shell CLI v0.24.0
 
 **Full-Stack Development Platform - Microservices & Microfrontends United**
 
@@ -17,28 +17,35 @@ Re-Shell CLI is a comprehensive full-stack development platform that revolutioni
 ### Key Capabilities
 
 - **🎯 Full-Stack Unity**: Seamless integration between frontend microfrontends and backend microservices
-- **🏗️ Microservices Excellence**: Production-ready templates for .NET (ASP.NET Core Web API, Minimal API), Java (Spring Boot, Quarkus, Micronaut, Vert.x), Rust (Actix-Web, Warp, Rocket, Axum), Python (FastAPI, Django, Flask), PHP (Symfony, Laravel, Slim, CodeIgniter), Go (Gin, Echo, Fiber, Chi, gRPC), Ruby (Rails API, Sinatra, Grape) and Node.js (Express, NestJS)
+- **🏗️ Microservices Excellence**: Production-ready templates for Node.js (Express, Fastify, NestJS, Koa, Feathers.js, AdonisJS, Moleculer, Strapi, Apollo Server, GraphQL Yoga, LoopBack, Sails.js, and more), Python (FastAPI, Django, Flask, Starlette), .NET (ASP.NET Core Web API, Minimal API), Java (Spring Boot, Quarkus, Micronaut, Vert.x), Rust (Actix-Web, Warp, Rocket, Axum), PHP (Symfony, Laravel, Slim, CodeIgniter), Go (Gin, Echo, Fiber, Chi, gRPC), and Ruby (Rails API, Sinatra, Grape)
 - **🎨 Microfrontend Architecture**: Module Federation with React, Vue, Svelte, and Angular support
 - **🔄 Smart Code Generation**: API-first development with automatic type generation and SDK creation
 - **📊 Complete Observability**: Built-in monitoring, tracing, and logging across the entire stack
 - **🛡️ Enterprise Security**: JWT authentication, OAuth2, API gateways, and compliance features
 - **☁️ Production Ready**: Docker orchestration, Kubernetes manifests, and cloud provider configs
 
-### 🆕 What's New in v0.22.0
+### 🆕 What's New in v0.24.0
 
-- **🚀 Complete Go Ecosystem**: 6 production-ready Go templates for high-performance development
-- **💎 Complete Ruby Ecosystem**: 3 production-ready Ruby templates for rapid API development
-- **⚡ Go Frameworks**: Gin, Echo, Fiber, Chi, gRPC with Protocol Buffers, and sqlx for raw SQL
-- **🔧 Go Infrastructure**: GORM ORM, database migrations, hot reload with Air, Docker support
-- **🛡️ Go Security**: JWT authentication, bcrypt hashing, rate limiting, secure middleware
-- **📊 Go Monitoring**: Structured logging (Zap/Zerolog), Prometheus metrics, health checks
-- **🧪 Go Testing**: Testify framework, mocking, coverage reports, benchmark support
-- **🏗️ Go Architecture**: Clean architecture, dependency injection, context handling
-- **🐳 Go DevOps**: Multi-stage builds, minimal Alpine images, docker-compose orchestration
+- **🚀 Backend Framework Templates**: 26 new production-ready backend templates transforming Re-Shell into a full-stack platform
+- **⚡ Node.js Frameworks**: Express, Fastify, NestJS, Koa, Feathers.js, AdonisJS, Moleculer, Strapi, and more
+- **🐍 Python Frameworks**: FastAPI, Django, Flask, Starlette with async support and type hints
+- **🏎️ Performance Leaders**: Hyper-Express (100k+ req/sec), Fastify (35k req/sec), Polka (5x faster than Express)
+- **🔄 Real-time Support**: Feathers.js with Socket.io, Meteor.js with DDP, GraphQL subscriptions
+- **🏗️ Microservices**: Moleculer with service discovery, NestJS with CQRS, event-driven architectures
+- **📊 GraphQL**: Apollo Server and GraphQL Yoga with subscriptions and DataLoader
+- **🛡️ Enterprise Features**: JWT auth, rate limiting, API versioning, health checks across all templates
+- **🐳 Docker Ready**: All templates include multi-stage Docker builds and docker-compose configs
 
 ### Previous Releases
 
-#### v0.22.1 (Current)
+#### v0.23.0
+- **💎 Complete Ruby Ecosystem**: Rails API, Sinatra, and Grape frameworks
+- **🔧 Ruby Infrastructure**: ActiveRecord ORM, Sidekiq jobs, RSpec testing
+- **🛡️ Ruby Security**: JWT auth, Rack::Attack rate limiting, parameter validation
+- **📊 Ruby Documentation**: Swagger with grape-swagger and rswag
+- **🐳 Ruby DevOps**: Docker support, Guard integration, RuboCop code quality
+
+#### v0.22.1
 - **🔧 Documentation Updates**: Enhanced README and EXAMPLES with complete Go ecosystem coverage
 - **📝 Commit History Cleanup**: Removed task completion artifacts for cleaner git history
 - **🏷️ Version Management**: Improved release workflow and tagging process
@@ -240,35 +247,86 @@ Re-Shell CLI implements a modern distributed architecture pattern that combines 
 
 ## 🔧 Microservices Templates
 
-### Node.js Ecosystem
+### Node.js Ecosystem ✅ **Complete**
 
 #### Express.js Template
 ```bash
-re-shell create api-service --template express-ts
+re-shell create api-service --template express
 ```
-**Features**: Middleware composition, JWT auth, health checks, Docker ready
+**Features**: TypeScript, JWT auth, Prisma ORM, rate limiting, middleware composition
 **Use Cases**: REST APIs, traditional web services, rapid prototyping
 
 #### Fastify Template
 ```bash
-re-shell create high-perf-api --template fastify-ts
+re-shell create high-perf-api --template fastify
 ```
-**Features**: Schema validation, plugin architecture, high performance
+**Features**: 35,000 req/sec performance, schema validation, plugin architecture, WebSocket support
 **Use Cases**: High-throughput APIs, real-time services, performance-critical applications
 
 #### NestJS Template
 ```bash
-re-shell create enterprise-api --template nestjs-ts
+re-shell create enterprise-api --template nestjs
 ```
-**Features**: Dependency injection, decorators, enterprise architecture
-**Use Cases**: Large-scale applications, complex business logic, team collaboration
+**Features**: Dependency injection, GraphQL, CQRS, microservices support, OpenAPI
+**Use Cases**: Enterprise applications, complex business logic, microservices architecture
 
 #### Koa.js Template
 ```bash
-re-shell create modern-api --template koa-ts
+re-shell create modern-api --template koa
 ```
-**Features**: Modern async/await, middleware composition, lightweight
+**Features**: Async/await composition, TypeScript, lightweight middleware system
 **Use Cases**: Modern APIs, middleware-heavy applications, clean architecture
+
+#### Feathers.js Template
+```bash
+re-shell create realtime-api --template feathersjs
+```
+**Features**: Real-time Socket.io, service-oriented, hook system, multi-database
+**Use Cases**: Real-time applications, chat systems, collaborative tools
+
+#### AdonisJS Template
+```bash
+re-shell create full-stack-api --template adonisjs
+```
+**Features**: MVC architecture, Lucid ORM, Edge templating, Laravel-inspired
+**Use Cases**: Full-stack applications, rapid development, enterprise apps
+
+#### Moleculer Template
+```bash
+re-shell create microservices --template moleculer
+```
+**Features**: Service discovery, fault tolerance, caching, distributed tracing
+**Use Cases**: Microservices architecture, distributed systems, scalable services
+
+#### Strapi Template
+```bash
+re-shell create headless-cms --template strapi
+```
+**Features**: Admin panel, content types, media library, role-based permissions
+**Use Cases**: Headless CMS, content management, API-first development
+
+#### Apollo Server Template
+```bash
+re-shell create graphql-api --template apollo-server
+```
+**Features**: GraphQL subscriptions, DataLoader, schema stitching, federation
+**Use Cases**: GraphQL APIs, real-time subscriptions, federated graphs
+
+#### Additional Node.js Templates
+- **GraphQL Yoga**: Modern GraphQL server with envelop plugins
+- **LoopBack**: API framework with ORM and OpenAPI support
+- **Sails.js**: MVC framework for data-driven APIs
+- **Foal TS**: TypeScript framework with CLI tools
+- **Marble.js**: Reactive framework using RxJS
+- **tinyhttp**: Modern Express alternative (2x faster)
+- **Polka**: Ultra-performant (5x faster than Express)
+- **Restify**: Optimized for RESTful services
+- **Total.js**: Full-stack framework with NoSQL
+- **ActionHero**: Multi-transport (HTTP, WebSocket, TCP)
+- **Middy**: Serverless middleware for AWS Lambda
+- **Egg.js**: Enterprise framework by Alibaba
+- **Hyper-Express**: 100,000+ req/sec performance
+- **Ts.ED**: Decorators and classes for Express/Koa
 
 ### Python Ecosystem ✅ **Complete**
 

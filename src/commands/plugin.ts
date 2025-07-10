@@ -755,7 +755,7 @@ export async function showPluginHooks(
 // Execute a hook manually
 export async function executeHook(
   hookType: string,
-  data: string = '{}',
+  data = '{}',
   options: PluginCommandOptions = {}
 ): Promise<void> {
   const { verbose = false, json = false } = options;

@@ -1109,8 +1109,8 @@ export class Component${Math.floor(Math.random() * 1000)} {
   private analyzeTrends(): TrendAnalysis {
     // Analyze resource usage trends across scenarios
     let memoryTrend: 'stable' | 'linear' | 'exponential' = 'stable';
-    let cpuTrend: 'stable' | 'linear' | 'exponential' = 'stable';
-    let performanceTrend: 'stable' | 'degrading' | 'improving' = 'stable';
+    const cpuTrend: 'stable' | 'linear' | 'exponential' = 'stable';
+    const performanceTrend: 'stable' | 'degrading' | 'improving' = 'stable';
 
     // Simple trend analysis based on load vs resource usage
     const memoryByLoad: Array<{ load: number; memory: number }> = [];

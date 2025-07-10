@@ -1684,4 +1684,4 @@ tests/            # Test files
 
 MIT`
   }
-};`
+};

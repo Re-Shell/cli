@@ -294,7 +294,7 @@ async function createTemplateFromProject(options: TemplateCommandOptions): Promi
   });
 
   // Create template config with variable substitutions
-  let templateConfig = JSON.parse(JSON.stringify(projectConfig));
+  const templateConfig = JSON.parse(JSON.stringify(projectConfig));
   
   response.variableFields.forEach((field: string) => {
     switch (field) {
@@ -387,7 +387,7 @@ async function createTemplateFromWorkspace(options: TemplateCommandOptions): Pro
     }
   ];
 
-  let templateConfig = JSON.parse(JSON.stringify(workspaceConfig));
+  const templateConfig = JSON.parse(JSON.stringify(workspaceConfig));
   templateConfig.name = '${workspaceName}';
   if (templateConfig.framework) templateConfig.framework = '${framework}';
 

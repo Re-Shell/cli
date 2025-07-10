@@ -510,7 +510,7 @@ export class PluginCommandDocumentationGenerator extends EventEmitter {
   }
 
   // Wrap text to specified width
-  private wrapText(text: string, width: number, indent: string = ''): string {
+  private wrapText(text: string, width: number, indent = ''): string {
     const words = text.split(' ');
     const lines: string[] = [];
     let currentLine = indent;
@@ -964,7 +964,7 @@ export function createDocumentationGenerator(
   return new PluginCommandDocumentationGenerator(helpConfig);
 }
 
-export function estimateReadingTime(text: string, wordsPerMinute: number = 200): number {
+export function estimateReadingTime(text: string, wordsPerMinute = 200): number {
   const wordCount = text.split(/\s+/).length;
   return Math.ceil(wordCount / wordsPerMinute);
 }

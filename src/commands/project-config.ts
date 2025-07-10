@@ -166,7 +166,7 @@ async function getProjectConfigValue(key: string, options: ProjectConfigCommandO
 async function setProjectConfigValue(key: string, value: string, options: ProjectConfigCommandOptions, spinner?: ProgressSpinner): Promise<void> {
   if (spinner) spinner.setText(`Setting project configuration value: ${key} = ${value}`);
   
-  let projectConfig = await configManager.loadProjectConfig();
+  const projectConfig = await configManager.loadProjectConfig();
   if (!projectConfig) {
     throw new ValidationError('No project configuration found. Run `re-shell project-config init` first.');
   }
@@ -487,7 +487,7 @@ async function interactiveAdvancedProjectConfig(): Promise<void> {
 }
 
 // Utility functions
-function displayConfigSection(config: any, indent: number = 0): void {
+function displayConfigSection(config: any, indent = 0): void {
   const prefix = '  '.repeat(indent);
   
   for (const [key, value] of Object.entries(config)) {

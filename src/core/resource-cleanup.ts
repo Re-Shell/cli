@@ -83,8 +83,8 @@ export class ResourceManager extends EventEmitter {
   private stateSnapshots: Map<string, StateSnapshot> = new Map();
   private recoveryPlans: Map<string, RecoveryPlan> = new Map();
   private activeOperations: Map<string, { startTime: Date; resources: string[] }> = new Map();
-  private cleanupInProgress: boolean = false;
-  private shutdownHooksRegistered: boolean = false;
+  private cleanupInProgress = false;
+  private shutdownHooksRegistered = false;
 
   constructor() {
     super();
@@ -164,7 +164,7 @@ export class ResourceManager extends EventEmitter {
     return false;
   }
 
-  async cleanupResource(id: string, force: boolean = false): Promise<boolean> {
+  async cleanupResource(id: string, force = false): Promise<boolean> {
     const handle = this.resources.get(id);
     if (!handle) return false;
 

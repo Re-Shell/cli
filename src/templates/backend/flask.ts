@@ -1367,4 +1367,4 @@ celery -A app.celery flower
 
 MIT`
   }
-};`
+};

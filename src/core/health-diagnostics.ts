@@ -104,7 +104,7 @@ export interface SystemInfo {
 export class HealthDiagnostics extends EventEmitter {
   private checks: Map<string, HealthCheck> = new Map();
   private lastReport?: DiagnosticReport;
-  private running: boolean = false;
+  private running = false;
 
   constructor() {
     super();

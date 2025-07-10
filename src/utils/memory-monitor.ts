@@ -47,7 +47,7 @@ export class MemoryMonitor extends EventEmitter {
   /**
    * Start memory monitoring
    */
-  start(intervalMs: number = 10000): void {
+  start(intervalMs = 10000): void {
     if (this.monitoring) return;
     
     this.monitoring = true;
@@ -100,7 +100,7 @@ export class MemoryMonitor extends EventEmitter {
   /**
    * Get memory usage trend
    */
-  getMemoryTrend(samples: number = 10): 'increasing' | 'decreasing' | 'stable' {
+  getMemoryTrend(samples = 10): 'increasing' | 'decreasing' | 'stable' {
     if (this.history.length < samples) {
       return 'stable';
     }

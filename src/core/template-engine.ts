@@ -780,7 +780,7 @@ export class TemplateEngine extends EventEmitter {
       };
 
       try {
-        let output: string = '';
+        let output = '';
 
         if (hook.command) {
           // Execute shell command

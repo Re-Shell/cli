@@ -5,6 +5,88 @@ All notable changes to the `@re-shell/cli` package will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.24.0] - 2025-07-10
+
+### 🚀 Backend Framework Templates - Comprehensive Full-Stack Platform
+
+This release introduces 26 new backend framework templates, transforming Re-Shell from a microfrontend-focused tool into a complete full-stack development platform. The update adds production-ready templates for Node.js and Python ecosystems with enterprise features.
+
+### Added
+
+#### 🚀 Node.js Framework Templates (18 new templates)
+- **Express**: Classic Node.js framework with TypeScript, JWT auth, and Prisma ORM
+- **Fastify**: High-performance framework achieving 35,000 req/sec with schema validation
+- **NestJS**: Enterprise-grade framework with dependency injection, GraphQL, and CQRS
+- **Koa**: Lightweight async framework with compose middleware architecture
+- **Feathers.js**: Real-time framework with built-in Socket.io and service-oriented design
+- **AdonisJS**: Full MVC framework inspired by Laravel with lucid ORM
+- **Moleculer**: Microservices framework with service discovery and fault tolerance
+- **Strapi**: Headless CMS with admin panel and content type builder
+- **Apollo Server**: GraphQL server with subscriptions and DataLoader
+- **GraphQL Yoga**: Modern GraphQL server with envelop plugins
+- **LoopBack**: API framework with built-in ORM and OpenAPI support
+- **Sails.js**: MVC framework for data-driven APIs with WebSocket support
+- **Foal TS**: TypeScript framework with CLI tools and OpenAPI generation
+- **Marble.js**: Reactive framework using RxJS for event-driven services
+- **tinyhttp**: Modern Express-like framework with async middleware
+- **Polka**: Ultra-performant framework, 5x faster than Express
+- **Restify**: Optimized framework for building RESTful services
+- **Total.js**: Full-stack framework with NoSQL database
+
+#### 🚀 Python Framework Templates (8 new templates)
+- **FastAPI**: Modern async framework with automatic OpenAPI docs and type hints
+- **Django**: Full-featured framework with ORM, admin interface, and batteries included
+- **Flask**: Lightweight framework with Blueprints and SQLAlchemy integration
+- **Starlette**: Async framework powering FastAPI with WebSocket support
+
+#### 🚀 Specialized Templates
+- **ActionHero**: Multi-transport framework supporting HTTP, WebSocket, and TCP
+- **Middy**: Serverless middleware framework for AWS Lambda
+- **Egg.js**: Enterprise framework by Alibaba with plugin architecture
+- **Hyper-Express**: Ultra-high performance framework achieving 100k+ req/sec
+
+### Technical Features
+
+#### Common Features Across All Templates
+- **TypeScript/Type Hints**: Full type safety and IntelliSense support
+- **Authentication**: JWT with refresh tokens and secure session management
+- **Database Integration**: ORMs with migrations and connection pooling
+- **API Documentation**: OpenAPI/Swagger with interactive UI
+- **Testing**: Comprehensive test suites with mocking and coverage
+- **Docker Support**: Multi-stage builds and docker-compose configs
+- **Hot Reload**: Development productivity with automatic restarts
+- **Logging**: Structured logging with correlation IDs
+- **Error Handling**: Centralized error handling with proper status codes
+- **Validation**: Request/response validation with detailed errors
+- **CORS**: Configurable cross-origin resource sharing
+- **Rate Limiting**: API protection against abuse
+- **Health Checks**: Readiness and liveness probes
+
+#### Performance Highlights
+- Hyper-Express: 100,000+ requests/second capability
+- Fastify: 35,000 requests/second with full features
+- Polka: 5x faster than Express.js
+- tinyhttp: 2x faster with smaller footprint
+
+#### Enterprise Features
+- Microservices patterns with service discovery
+- Event-driven architectures with message queues
+- CQRS and Event Sourcing support
+- GraphQL subscriptions for real-time data
+- Multi-database support with transactions
+- Background job processing
+- Caching strategies with Redis
+- API versioning and deprecation
+
+### Examples
+The release includes comprehensive examples demonstrating:
+- Microservices architecture patterns
+- Real-time applications with WebSockets
+- GraphQL APIs with subscriptions
+- High-performance REST APIs
+- Event-driven services
+- Serverless functions
+
 ## [0.23.0] - 2025-07-01
 
 ### 🚀 Ruby Ecosystem - Complete Ruby Development Platform

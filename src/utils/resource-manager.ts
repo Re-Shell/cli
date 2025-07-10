@@ -114,7 +114,7 @@ export class ResourceManager {
   /**
    * Cleanup old or unused resources
    */
-  async cleanupOldResources(maxAge: number = 3600000): Promise<void> {
+  async cleanupOldResources(maxAge = 3600000): Promise<void> {
     const now = Date.now();
     const toCleanup: string[] = [];
     

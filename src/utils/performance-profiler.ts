@@ -27,8 +27,8 @@ interface PerformanceReport {
 export class PerformanceProfiler {
   private static instance: PerformanceProfiler;
   private marks: Map<string, PerformanceMark> = new Map();
-  private startTime: number = 0;
-  private enabled: boolean = false;
+  private startTime = 0;
+  private enabled = false;
   private reportPath: string;
 
   private constructor() {
@@ -52,7 +52,7 @@ export class PerformanceProfiler {
   /**
    * Start profiling
    */
-  start(command: string = 'unknown'): void {
+  start(command = 'unknown'): void {
     if (!this.enabled) return;
     
     this.startTime = performance.now();

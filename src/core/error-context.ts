@@ -394,7 +394,7 @@ export class ErrorContextManager extends EventEmitter {
     return false;
   }
 
-  getRecentErrors(count: number = 10): ErrorContext[] {
+  getRecentErrors(count = 10): ErrorContext[] {
     return this.getAllErrorContexts().slice(0, count);
   }
 

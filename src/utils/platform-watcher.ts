@@ -55,7 +55,7 @@ export class PlatformWatcher extends EventEmitter {
   private watcherHealth: Map<string, WatcherHealthStatus> = new Map();
   private fallbackOptions: WatcherFallbackOptions;
   private healthCheckTimer: NodeJS.Timeout | null = null;
-  private isActive: boolean = false;
+  private isActive = false;
 
   constructor(fallbackOptions: Partial<WatcherFallbackOptions> = {}) {
     super();

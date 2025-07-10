@@ -494,7 +494,7 @@ export class ConfigManager {
     const { global, project, merged } = await this.getMergedConfig(projectPath);
     const workspaceConfig = await this.loadWorkspaceConfig(workspacePath);
 
-    let workspaceMerged = { ...merged };
+    const workspaceMerged = { ...merged };
 
     // Apply workspace-specific config (overrides project and global)
     if (workspaceConfig) {
