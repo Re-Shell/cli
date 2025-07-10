@@ -294,7 +294,7 @@ export class ChangeDetector {
   // Scan directory and calculate hashes
   private async scanDirectory(
     dirPath: string,
-    currentDepth: number = 0
+    currentDepth = 0
   ): Promise<Map<string, FileHash>> {
     const results = new Map<string, FileHash>();
 

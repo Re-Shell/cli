@@ -98,8 +98,8 @@ export class ConfigDiffer {
   async diff(
     left: any, 
     right: any,
-    leftSource: string = 'left',
-    rightSource: string = 'right'
+    leftSource = 'left',
+    rightSource = 'right'
   ): Promise<ConfigDiff> {
     const changes: DiffEntry[] = [];
     const startTime = new Date().toISOString();
@@ -142,8 +142,8 @@ export class ConfigDiffer {
     left: any,
     right: any,
     strategy: MergeStrategy,
-    leftSource: string = 'left',
-    rightSource: string = 'right'
+    leftSource = 'left',
+    rightSource = 'right'
   ): Promise<MergeResult> {
     const conflicts: ConflictEntry[] = [];
     const warnings: string[] = [];
@@ -193,7 +193,7 @@ export class ConfigDiffer {
 
   // Apply a diff to a configuration
   async applyDiff(base: any, diff: ConfigDiff): Promise<any> {
-    let result = JSON.parse(JSON.stringify(base)); // Deep clone
+    const result = JSON.parse(JSON.stringify(base)); // Deep clone
 
     for (const change of diff.changes) {
       switch (change.operation) {

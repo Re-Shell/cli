@@ -271,9 +271,9 @@ export class MiddlewareChainManager extends EventEmitter {
       // Create middleware execution context
       const middlewareContext = { ...context };
       let result: any;
-      let modifiedArgs = args;
-      let modifiedOptions = options;
-      let skipRemaining = false;
+      const modifiedArgs = args;
+      const modifiedOptions = options;
+      const skipRemaining = false;
 
       // Execute middleware with timeout
       const timeout = middleware.options?.timeout || 30000;

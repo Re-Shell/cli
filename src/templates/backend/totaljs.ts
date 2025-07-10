@@ -1,15 +1,21 @@
-import { Template } from '../../types';
+import { BackendTemplate } from '../types';
 
-export const totaljsTemplate: Template = {
+export const totaljsTemplate: BackendTemplate = {
   id: 'backend-totaljs',
   name: 'Total.js',
+  displayName: 'Total.js',
   description: 'Full-featured framework with built-in CMS and real-time capabilities',
-  category: 'backend',
-  icon: '🚀',
-  files: [
-    {
-      path: 'index.js',
-      content: `require('total4');
+  language: 'javascript',
+  framework: 'totaljs',
+  version: '4.0.0',
+  tags: ['cms', 'real-time', 'full-featured', 'nosql'],
+  port: 8000,
+  dependencies: {
+    'total4': '^4.0.0'
+  },
+  features: ['cms', 'real-time', 'routing', 'nosql', 'websockets'],
+  files: {
+    'index.js': `require('total4');
 
 // Main application configuration
 MAIN('default', function() {
@@ -41,11 +47,8 @@ MAIN('default', function() {
     // Start HTTP server
     HTTP('release', { port: process.env.PORT || 8000 });
 });
-`
-    },
-    {
-      path: 'controllers/default.js',
-      content: `exports.install = function() {
+`,
+    'controllers/default.js': `exports.install = function() {
     // Route definitions
     ROUTE('GET /', view_homepage);
     ROUTE('GET /api/', json_api_info);
@@ -242,11 +245,8 @@ function view_cms_widgets() {
         self.view('@cms/widgets', { widgets: widgets });
     });
 }
-`
-    },
-    {
-      path: 'schemas/user.js',
-      content: `NEWSCHEMA('User', function(schema) {
+`,
+    'schemas/user.js': `NEWSCHEMA('User', function(schema) {
     
     // Schema definition
     schema.define('id', 'UID');
@@ -370,11 +370,8 @@ function view_cms_widgets() {
         });
     });
 });
-`
-    },
-    {
-      path: 'models/cms.js',
-      content: `// CMS Page model
+`,
+    'models/cms.js': `// CMS Page model
 NEWSCHEMA('Page', function(schema) {
     
     schema.define('id', 'UID');
@@ -513,11 +510,8 @@ NEWSCHEMA('Media', function(schema) {
         });
     });
 });
-`
-    },
-    {
-      path: 'definitions/auth.js',
-      content: `// Authentication and authorization definitions
+`,
+    'definitions/auth.js': `// Authentication and authorization definitions
 
 // Middleware for authentication
 MIDDLEWARE('auth', function(req, res, next, options) {
@@ -643,11 +637,8 @@ OPERATION('auth.reset', function($, model) {
             });
         });
 });
-`
-    },
-    {
-      path: 'definitions/helpers.js',
-      content: `// Global helper functions
+`,
+    'definitions/helpers.js': `// Global helper functions
 
 // Localization helper
 F.helpers.translate = function(key, lang) {
@@ -763,11 +754,8 @@ F.helpers.timeago = function(date) {
     
     return date.format('yyyy-MM-dd');
 };
-`
-    },
-    {
-      path: 'views/index.html',
-      content: `@{layout('layout')}
+`,
+    'views/index.html': `@{layout('layout')}
 
 <div class="hero">
     <h1>Welcome to @{config.name}</h1>
@@ -951,11 +939,8 @@ button:hover {
     background: #5a67d8;
 }
 </style>
-`
-    },
-    {
-      path: 'views/layout.html',
-      content: `<!DOCTYPE html>
+`,
+    'views/layout.html': `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -1049,11 +1034,8 @@ button:hover {
     @{import('script')}
 </body>
 </html>
-`
-    },
-    {
-      path: 'views/cms/index.html',
-      content: `@{layout('layout')}
+`,
+    'views/cms/index.html': `@{layout('layout')}
 
 <div class="container cms">
     <h1>Content Management System</h1>
@@ -1131,11 +1113,8 @@ button:hover {
     font-size: 0.95rem;
 }
 </style>
-`
-    },
-    {
-      path: 'tests/test.js',
-      content: `// Total.js testing framework
+`,
+    'tests/test.js': `// Total.js testing framework
 
 // Load testing module
 require('total4/test');
@@ -1288,11 +1267,8 @@ setTimeout(function() {
     // Give server time to start
     RUN();
 }, 2000);
-`
-    },
-    {
-      path: 'package.json',
-      content: `{
+`,
+    'package.json': `{
   "name": "totaljs-app",
   "version": "1.0.0",
   "description": "Total.js application with CMS and real-time features",
@@ -1313,21 +1289,15 @@ setTimeout(function() {
     "node": ">=14.0.0"
   }
 }
-`
-    },
-    {
-      path: 'debug.js',
-      content: `// Debug mode with auto-restart
+`,
+    'debug.js': `// Debug mode with auto-restart
 require('total4/debug')({ 
     port: 8000,
     watch: true,
     cluster: false
 });
-`
-    },
-    {
-      path: 'config',
-      content: `# Total.js configuration file
+`,
+    'config': `# Total.js configuration file
 
 name                : Total.js Application
 version             : 1.0.0
@@ -1381,11 +1351,8 @@ cors-credentials    : true
 # Custom settings
 currency            : USD
 items-per-page      : 20
-`
-    },
-    {
-      path: 'resources/en.resource',
-      content: `// English translations
+`,
+    'resources/en.resource': `// English translations
 
 welcome             : Welcome
 login               : Login
@@ -1430,11 +1397,8 @@ users               : Users
 analytics           : Analytics
 dashboard           : Dashboard
 content             : Content
-`
-    },
-    {
-      path: 'Dockerfile',
-      content: `FROM node:18-alpine
+`,
+    'Dockerfile': `FROM node:18-alpine
 
 # Install dependencies for Total.js
 RUN apk add --no-cache \
@@ -1472,11 +1436,8 @@ ENV NODE_ENV=production
 
 # Start application
 CMD ["node", "index.js"]
-`
-    },
-    {
-      path: 'docker-compose.yml',
-      content: `version: '3.8'
+`,
+    'docker-compose.yml': `version: '3.8'
 
 services:
   app:
@@ -1530,11 +1491,8 @@ services:
 volumes:
   redis_data:
   postgres_data:
-`
-    },
-    {
-      path: '.env.example',
-      content: `# Environment Variables
+`,
+    '.env.example': `# Environment Variables
 
 # Application
 NODE_ENV=development
@@ -1554,11 +1512,8 @@ SENTRY_DSN=
 STRIPE_API_KEY=
 AWS_ACCESS_KEY_ID=
 AWS_SECRET_ACCESS_KEY=
-`
-    },
-    {
-      path: 'README.md',
-      content: `# Total.js Application
+`,
+    'README.md': `# Total.js Application
 
 A full-featured web application built with Total.js framework, including CMS and real-time capabilities.
 
@@ -1704,6 +1659,5 @@ TEST('test.name', function() {
 
 MIT
 `
-    }
-  ]
+  }
 };

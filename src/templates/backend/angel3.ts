@@ -492,7 +492,7 @@ Future configureServer(Angel app) async {
   ws.onConnection.listen((socket) {
     socket.request.container.registerSingleton<WebSocketContext>(socket);
     
-    print('WebSocket client connected: ${socket.id}');
+    print('WebSocket client connected: \${socket.id}');
     
     socket.send('connected', {
       'id': socket.id,
@@ -501,7 +501,7 @@ Future configureServer(Angel app) async {
   });
   
   ws.onDisconnection.listen((socket) {
-    print('WebSocket client disconnected: ${socket.id}');
+    print('WebSocket client disconnected: \${socket.id}');
   });
   
   // Register WebSocket actions

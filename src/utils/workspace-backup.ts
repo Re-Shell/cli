@@ -522,7 +522,7 @@ export class WorkspaceBackupManager {
   private async restoreFiles(
     targetPath: string,
     files: Record<string, string>,
-    force: boolean = false
+    force = false
   ): Promise<void> {
     for (const [fileName, content] of Object.entries(files)) {
       const fullPath = path.join(targetPath, fileName);

@@ -87,7 +87,7 @@ export class PluginLifecycleManager extends EventEmitter {
   private plugins: Map<string, ManagedPluginRegistration> = new Map();
   private dependencyGraph: Map<string, Set<string>> = new Map();
   private config: PluginLoaderConfig;
-  private isInitialized: boolean = false;
+  private isInitialized = false;
   private hotReloadWatchers: Map<string, any> = new Map();
 
   constructor(config: Partial<PluginLoaderConfig> = {}) {

@@ -52,7 +52,7 @@ export class OperationQueue extends EventEmitter {
     BACKGROUND: 0
   } as const;
   
-  private constructor(maxConcurrent: number = 3) {
+  private constructor(maxConcurrent = 3) {
     super();
     this.maxConcurrent = maxConcurrent;
   }

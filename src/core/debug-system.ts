@@ -72,8 +72,8 @@ export class DebugSystem extends EventEmitter {
   private currentSession?: DebugSession;
   private sessions: DebugSession[] = [];
   private activeOperations: Map<string, { start: number; trace: DebugTrace }> = new Map();
-  private traceCounter: number = 0;
-  private sessionCounter: number = 0;
+  private traceCounter = 0;
+  private sessionCounter = 0;
   private outputStream?: fs.WriteStream;
 
   constructor(options: Partial<DebugOptions> = {}) {

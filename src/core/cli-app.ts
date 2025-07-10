@@ -27,7 +27,7 @@ export class CLIApp {
   private analytics: Analytics;
   private config: ConfigManager;
   private plugins?: PluginHookAPI;
-  private initialized: boolean = false;
+  private initialized = false;
 
   constructor(private options: CLIAppOptions) {
     this.logger = options.logger || getGlobalLogger();
@@ -412,7 +412,7 @@ export class CLIApp {
     console.log(`Use "${this.options.name} help <command>" for more information about a command.`);
   }
 
-  private shutdown(exitCode: number = 0): void {
+  private shutdown(exitCode = 0): void {
     this.logger.debug('Shutting down CLI application...');
     
     // Flush analytics

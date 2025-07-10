@@ -111,8 +111,8 @@ export class PluginHookSystem extends EventEmitter {
   private hooks: Map<HookType, HookHandler[]> = new Map();
   private middleware: HookMiddleware[] = [];
   private executionStats: Map<string, number> = new Map();
-  private isEnabled: boolean = true;
-  private debugMode: boolean = false;
+  private isEnabled = true;
+  private debugMode = false;
 
   constructor(options: { debugMode?: boolean } = {}) {
     super();

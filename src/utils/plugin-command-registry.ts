@@ -130,7 +130,7 @@ export class PluginCommandRegistry extends EventEmitter {
   private conflicts: Map<string, string[]> = new Map(); // commandName -> conflicting commandIds
   private program: Command;
   private config: CommandRegistryConfig;
-  private isInitialized: boolean = false;
+  private isInitialized = false;
   private middlewareManager = createMiddlewareChainManager();
   private conflictResolver = createConflictResolver();
 

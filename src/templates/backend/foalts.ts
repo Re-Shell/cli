@@ -1002,7 +1002,7 @@ export class TodoController {
     const count = await this.todoService.bulkDelete(ids, ctx.user.id);
 
     return new HttpResponseOK({
-      message: `${count} todos deleted successfully`
+      message: \`\${count} todos deleted successfully\`
     });
   }
 
@@ -1029,7 +1029,7 @@ export class TodoController {
     const count = await this.todoService.bulkUpdate(ids, ctx.user.id, updates);
 
     return new HttpResponseOK({
-      message: `${count} todos updated successfully`
+      message: \`\${count} todos updated successfully\`
     });
   }
 }`,
@@ -2586,4 +2586,4 @@ See \`.env.example\` for all available environment variables.
 
 MIT`
   }
-};`
+};

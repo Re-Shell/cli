@@ -1,11 +1,15 @@
-import { BackendTemplate } from '../../types';
+import { BackendTemplate } from '../types';
 
 export const starletteTemplate: BackendTemplate = {
   id: 'starlette',
   name: 'Starlette',
+  displayName: 'Starlette',
   description: 'Lightweight ASGI framework for high-performance asyncio services',
-  category: 'backend',
   language: 'python',
+  framework: 'starlette',
+  version: '0.37.2',
+  tags: ['asgi', 'async', 'lightweight', 'high-performance', 'websockets'],
+  port: 8000,
   features: [
     'ASGI framework',
     'WebSocket support',
@@ -21,35 +25,31 @@ export const starletteTemplate: BackendTemplate = {
     'Docker support'
   ],
   dependencies: {
-    production: {
-      'starlette': '^0.37.2',
-      'uvicorn[standard]': '^0.30.1',
-      'python-multipart': '^0.0.9',
-      'jinja2': '^3.1.4',
-      'itsdangerous': '^2.2.0',
-      'sqlalchemy': '^2.0.30',
-      'alembic': '^1.13.1',
-      'asyncpg': '^0.29.0',
-      'ariadne': '^0.23.0',
-      'python-jose[cryptography]': '^3.3.0',
-      'passlib[bcrypt]': '^1.7.4',
-      'python-dotenv': '^1.0.1',
-      'httpx': '^0.27.0',
-      'redis': '^5.0.3',
-      'aiofiles': '^23.2.1'
-    },
-    development: {
-      'pytest': '^8.2.0',
-      'pytest-asyncio': '^0.23.7',
-      'pytest-cov': '^5.0.0',
-      'black': '^24.4.2',
-      'flake8': '^7.0.0',
-      'mypy': '^1.10.0',
-      'isort': '^5.13.2',
-      'pre-commit': '^3.7.1'
-    }
+    'starlette': '^0.37.2',
+    'uvicorn[standard]': '^0.30.1',
+    'python-multipart': '^0.0.9',
+    'jinja2': '^3.1.4',
+    'itsdangerous': '^2.2.0',
+    'sqlalchemy': '^2.0.30',
+    'alembic': '^1.13.1',
+    'asyncpg': '^0.29.0',
+    'ariadne': '^0.23.0',
+    'python-jose[cryptography]': '^3.3.0',
+    'passlib[bcrypt]': '^1.7.4',
+    'python-dotenv': '^1.0.1',
+    'httpx': '^0.27.0',
+    'redis': '^5.0.3',
+    'aiofiles': '^23.2.1',
+    'pytest': '^8.2.0',
+    'pytest-asyncio': '^0.23.7',
+    'pytest-cov': '^5.0.0',
+    'black': '^24.4.2',
+    'flake8': '^7.0.0',
+    'mypy': '^1.10.0',
+    'isort': '^5.13.2',
+    'pre-commit': '^3.7.1'
   },
-  structure: {
+  files: {
     'src/': {
       '__init__.py': '',
       'main.py': `import os
@@ -77,8 +77,8 @@ middleware = [
         CORSMiddleware,
         allow_origins=settings.CORS_ORIGINS,
         allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+        allow_methods=\["*"\],
+        allow_headers=\["*"\],
     ),
     Middleware(
         SessionMiddleware,
@@ -109,7 +109,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 async def homepage(request):
     return templates.TemplateResponse(
         "index.html",
-        {"request": request, "title": "Starlette App"}
+        \{"request": request, "title": "Starlette App"\}
     )
 
 @app.route("/health")
@@ -138,8 +138,8 @@ class Settings(BaseSettings):
     SECRET_KEY: str = Field(..., env="SECRET_KEY")
     
     # Server
-    ALLOWED_HOSTS: List[str] = Field(["*"], env="ALLOWED_HOSTS")
-    CORS_ORIGINS: List[str] = Field(["http://localhost:3000"], env="CORS_ORIGINS")
+    ALLOWED_HOSTS: List[str] = Field(\["*"\], env="ALLOWED_HOSTS")
+    CORS_ORIGINS: List[str] = Field(\["http://localhost:3000"\], env="CORS_ORIGINS")
     HTTPS_ONLY: bool = Field(False, env="HTTPS_ONLY")
     
     # Database
@@ -336,7 +336,7 @@ async def logout(request):
     auth_service = get_auth_service()
     await auth_service.revoke_token(token)
     
-    return JSONResponse({"message": "Successfully logged out"})
+    return JSONResponse(\{"message": "Successfully logged out"\})
 
 async def refresh(request):
     # Get refresh token from request
@@ -354,9 +354,9 @@ async def refresh(request):
         raise HTTPException(status_code=401, detail=str(e))
 
 auth_routes = Starlette(routes=[
-    Route("/login", login, methods=["POST"]),
-    Route("/logout", logout, methods=["POST"]),
-    Route("/refresh", refresh, methods=["POST"]),
+    Route("/login", login, methods=\["POST"\]),
+    Route("/logout", logout, methods=\["POST"\]),
+    Route("/refresh", refresh, methods=\["POST"\]),
 ])`,
         'users.py': `from starlette.applications import Starlette
 from starlette.routing import Route
@@ -405,13 +405,13 @@ async def delete_user(request):
     user_service = get_user_service()
     
     await user_service.delete_user(user.id)
-    return JSONResponse({"message": "User deleted successfully"})
+    return JSONResponse(\{"message": "User deleted successfully"\})
 
 user_routes = Starlette(routes=[
-    Route("/", create_user, methods=["POST"]),
-    Route("/me", get_current_user, methods=["GET"]),
-    Route("/me", update_user, methods=["PUT"]),
-    Route("/me", delete_user, methods=["DELETE"]),
+    Route("/", create_user, methods=\["POST"\]),
+    Route("/me", get_current_user, methods=\["GET"\]),
+    Route("/me", update_user, methods=\["PUT"\]),
+    Route("/me", delete_user, methods=\["DELETE"\]),
 ])`,
         'websocket.py': `from starlette.applications import Starlette
 from starlette.routing import WebSocketRoute
@@ -424,7 +424,7 @@ from typing import Dict, Set
 # Connection manager
 class ConnectionManager:
     def __init__(self):
-        self.active_connections: Dict[str, Set[WebSocket]] = {}
+        self.active_connections: Dict[str, Set[WebSocket]] = \{\}
     
     async def connect(self, websocket: WebSocket, room: str = "default"):
         await websocket.accept()
@@ -463,12 +463,12 @@ async def websocket_endpoint(websocket: WebSocket):
             
             if message_type == "message":
                 # Broadcast to room
-                await manager.broadcast({
+                await manager.broadcast(\{
                     "type": "message",
                     "data": data.get("data"),
                     "sender": websocket.client.host,
                     "room": room
-                }, room)
+                \}, room)
             
             elif message_type == "join":
                 new_room = data.get("room", "default")
@@ -476,13 +476,13 @@ async def websocket_endpoint(websocket: WebSocket):
                 await manager.connect(websocket, new_room)
                 room = new_room
                 
-                await websocket.send_json({
+                await websocket.send_json(\{
                     "type": "room_joined",
                     "room": room
-                })
+                \})
             
             elif message_type == "ping":
-                await websocket.send_json({"type": "pong"})
+                await websocket.send_json(\{"type": "pong"\})
                 
     except Exception as e:
         manager.disconnect(websocket, room)
@@ -544,7 +544,7 @@ mutation = MutationType()
 @query.field("me")
 @requires("authenticated")
 async def resolve_me(obj, info):
-    user = info.context["request"].state.user
+    user = info.context\["request"\].state.user
     return user
 
 @query.field("user")
@@ -593,7 +593,7 @@ from ..database import database
 from ..models import User, Session
 from ..schemas import LoginResponse, TokenData
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=\["bcrypt"\], deprecated="auto")
 
 class AuthService:
     def __init__(self):
@@ -610,7 +610,7 @@ class AuthService:
     def create_access_token(self, data: dict) -> str:
         to_encode = data.copy()
         expire = datetime.utcnow() + timedelta(minutes=self.expiration_minutes)
-        to_encode.update({"exp": expire})
+        to_encode.update(\{"exp": expire\})
         return jwt.encode(to_encode, self.secret_key, algorithm=self.algorithm)
     
     async def authenticate_user(self, username: str, password: str) -> LoginResponse:
@@ -619,16 +619,16 @@ class AuthService:
             SELECT * FROM users 
             WHERE email = :username OR username = :username
         """
-        user = await database.fetch_one(query=query, values={"username": username})
+        user = await database.fetch_one(query=query, values=\{"username": username\})
         
-        if not user or not self.verify_password(password, user["hashed_password"]):
+        if not user or not self.verify_password(password, user\["hashed_password"\]):
             raise ValueError("Invalid credentials")
         
-        if not user["is_active"]:
+        if not user\["is_active"\]:
             raise ValueError("User account is inactive")
         
         # Create token
-        access_token = self.create_access_token(data={"sub": str(user["id"])})
+        access_token = self.create_access_token(data=\{"sub": str(user\["id"\])\})
         
         # Store session
         expires_at = datetime.utcnow() + timedelta(minutes=self.expiration_minutes)
@@ -638,11 +638,11 @@ class AuthService:
         """
         await database.execute(
             query=query,
-            values={
+            values=\{
                 "token": access_token,
-                "user_id": user["id"],
+                "user_id": user\["id"\],
                 "expires_at": expires_at
-            }
+            \}
         )
         
         return LoginResponse(
@@ -652,7 +652,7 @@ class AuthService:
     
     async def get_current_user(self, token: str) -> Optional[User]:
         try:
-            payload = jwt.decode(token, self.secret_key, algorithms=[self.algorithm])
+            payload = jwt.decode(token, self.secret_key, algorithms=\[self.algorithm\])
             user_id: str = payload.get("sub")
             if user_id is None:
                 return None
@@ -669,7 +669,7 @@ class AuthService:
         """
         user = await database.fetch_one(
             query=query,
-            values={"token": token, "now": datetime.utcnow()}
+            values=\{"token": token, "now": datetime.utcnow()\}
         )
         
         return user
@@ -680,7 +680,7 @@ class AuthService:
             SET is_active = false 
             WHERE token = :token
         """
-        await database.execute(query=query, values={"token": token})`,
+        await database.execute(query=query, values=\{"token": token\})`,
         'user.py': `from typing import List, Optional
 from sqlalchemy import select, update, delete
 
@@ -713,11 +713,11 @@ class UserService:
         """
         user = await database.fetch_one(
             query=query,
-            values={
+            values=\{
                 "email": user_data.email,
                 "username": user_data.username,
                 "hashed_password": hashed_password
-            }
+            \}
         )
         
         return user
@@ -731,7 +731,7 @@ class UserService:
         return await database.fetch_all(query)
     
     async def update_user(self, user_id: int, update_data: UserUpdate) -> User:
-        values = {}
+        values = \{\}
         
         if update_data.email:
             # Check if email is taken
@@ -740,7 +740,7 @@ class UserService:
             )
             if await database.fetch_one(query):
                 raise ValueError("Email already taken")
-            values["email"] = update_data.email
+            values\["email"\] = update_data.email
         
         if update_data.username:
             # Check if username is taken
@@ -749,10 +749,10 @@ class UserService:
             )
             if await database.fetch_one(query):
                 raise ValueError("Username already taken")
-            values["username"] = update_data.username
+            values\["username"\] = update_data.username
         
         if update_data.password:
-            values["hashed_password"] = self.auth_service.get_password_hash(
+            values\["hashed_password"\] = self.auth_service.get_password_hash(
                 update_data.password
             )
         
@@ -763,12 +763,12 @@ class UserService:
         # Update user
         query = f"""
             UPDATE users 
-            SET {', '.join(f'{k} = :{k}' for k in values.keys())}, 
+            SET \{', '.join(f'\{k\} = :\{k\}' for k in values.keys())\}, 
                 updated_at = CURRENT_TIMESTAMP
             WHERE id = :user_id
             RETURNING *
         """
-        values["user_id"] = user_id
+        values\["user_id"\] = user_id
         
         user = await database.fetch_one(query=query, values=values)
         if not user:
@@ -795,7 +795,7 @@ from ..services.auth import AuthService
 class AuthenticationMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
         # Skip auth for public routes
-        public_paths = ["/", "/health", "/api/auth/login", "/api/auth/refresh", "/static"]
+        public_paths = \["/", "/health", "/api/auth/login", "/api/auth/refresh", "/static"\]
         if any(request.url.path.startswith(path) for path in public_paths):
             return await call_next(request)
         
@@ -839,7 +839,7 @@ class RequestIdMiddleware(BaseHTTPMiddleware):
         response = await call_next(request)
         
         # Add to response headers
-        response.headers["X-Request-ID"] = request_id
+        response.headers\["X-Request-ID"\] = request_id
         
         return response`
       },
@@ -916,7 +916,7 @@ async def send_email_async(to: str, subject: str, body: str):
     """Send email in background"""
     # Implement email sending logic
     await asyncio.sleep(1)  # Simulate work
-    print(f"Email sent to {to}: {subject}")
+    print(f"Email sent to \{to\}: \{subject\}")
 
 async def cleanup_expired_sessions():
     """Clean up expired sessions periodically"""
@@ -931,7 +931,7 @@ async def cleanup_expired_sessions():
             await database.execute(query)
             await asyncio.sleep(3600)  # Run every hour
         except Exception as e:
-            print(f"Error cleaning sessions: {e}")
+            print(f"Error cleaning sessions: \{e\}")
             await asyncio.sleep(300)  # Retry in 5 minutes`
       },
       'templates.py': `from starlette.templating import Jinja2Templates
@@ -950,13 +950,13 @@ def datetime_format(value, format="%Y-%m-%d %H:%M:%S"):
 @templates.env.filter
 def currency(value):
     """Format currency values"""
-    return f"${value:,.2f}"
+    return f"$\{value:,.2f\}"
 
 # Add global template variables
-templates.env.globals.update({
+templates.env.globals.update(\{
     "app_name": "Starlette Backend",
     "current_year": 2024,
-})`
+\})`
     },
     'templates/': {
       'base.html': `<!DOCTYPE html>
@@ -964,14 +964,14 @@ templates.env.globals.update({
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{{ title|default(app_name) }}{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
-    {% block extra_css %}{% endblock %}
+    <title>\{% block title %\}\{\{ title|default(app_name) \}\}\{% endblock %\}</title>
+    <link rel="stylesheet" href="\{\{ url_for('static', path='/css/style.css') \}\}">
+    \{% block extra_css %\}\{% endblock %\}
 </head>
 <body>
     <nav class="navbar">
         <div class="container">
-            <a href="/" class="brand">{{ app_name }}</a>
+            <a href="/" class="brand">\{\{ app_name \}\}</a>
             <ul class="nav-links">
                 <li><a href="/">Home</a></li>
                 <li><a href="/api/docs">API Docs</a></li>
@@ -982,25 +982,25 @@ templates.env.globals.update({
     
     <main class="main-content">
         <div class="container">
-            {% block content %}{% endblock %}
+            \{% block content %\}\{% endblock %\}
         </div>
     </main>
     
     <footer class="footer">
         <div class="container">
-            <p>&copy; {{ current_year }} {{ app_name }}. All rights reserved.</p>
+            <p>&copy; \{\{ current_year \}\} \{\{ app_name \}\}. All rights reserved.</p>
         </div>
     </footer>
     
-    <script src="{{ url_for('static', path='/js/main.js') }}"></script>
-    {% block extra_js %}{% endblock %}
+    <script src="\{\{ url_for('static', path='/js/main.js') \}\}"></script>
+    \{% block extra_js %\}\{% endblock %\}
 </body>
 </html>`,
-      'index.html': `{% extends "base.html" %}
+      'index.html': `\{% extends "base.html" %\}
 
-{% block content %}
+\{% block content %\}
 <div class="hero">
-    <h1>Welcome to {{ app_name }}</h1>
+    <h1>Welcome to \{\{ app_name \}\}</h1>
     <p class="lead">A lightweight ASGI framework for high-performance asyncio services</p>
     
     <div class="features">
@@ -1067,7 +1067,7 @@ messageInput.onkeypress = (e) => {
     }
 };
 </script>
-{% endblock %}`
+\{% endblock %\}`
     },
     'static/': {
       'css/': {
@@ -1330,7 +1330,7 @@ def event_loop():
 async def setup_database():
     """Setup test database"""
     # Create test database
-    engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
+    engine = create_engine(TEST_DATABASE_URL, connect_args=\{"check_same_thread": False\})
     Base.metadata.create_all(bind=engine)
     
     # Override database URL
@@ -1357,27 +1357,27 @@ async def authenticated_client(client: AsyncClient) -> AsyncClient:
     # Create test user
     response = await client.post(
         "/api/users/",
-        json={
+        json=\{
             "email": "test@example.com",
             "username": "testuser",
             "password": "testpass123"
-        }
+        \}
     )
     assert response.status_code == 201
     
     # Login
     response = await client.post(
         "/api/auth/login",
-        json={
+        json=\{
             "username": "testuser",
             "password": "testpass123"
-        }
+        \}
     )
     assert response.status_code == 200
-    token = response.json()["access_token"]
+    token = response.json()\["access_token"\]
     
     # Add auth header
-    client.headers["Authorization"] = f"Bearer {token}"
+    client.headers\["Authorization"\] = f"Bearer \{token\}"
     
     return client`,
       'test_auth.py': `import pytest
@@ -1388,40 +1388,40 @@ async def test_login_success(client: AsyncClient):
     # Create user
     await client.post(
         "/api/users/",
-        json={
+        json=\{
             "email": "auth@example.com",
             "username": "authuser",
             "password": "password123"
-        }
+        \}
     )
     
     # Login
     response = await client.post(
         "/api/auth/login",
-        json={
+        json=\{
             "username": "authuser",
             "password": "password123"
-        }
+        \}
     )
     
     assert response.status_code == 200
     data = response.json()
     assert "access_token" in data
-    assert data["token_type"] == "bearer"
-    assert data["expires_in"] > 0
+    assert data\["token_type"\] == "bearer"
+    assert data\["expires_in"\] > 0
 
 @pytest.mark.asyncio
 async def test_login_invalid_credentials(client: AsyncClient):
     response = await client.post(
         "/api/auth/login",
-        json={
+        json=\{
             "username": "nonexistent",
             "password": "wrongpass"
-        }
+        \}
     )
     
     assert response.status_code == 401
-    assert "Invalid credentials" in response.json()["detail"]
+    assert "Invalid credentials" in response.json()\["detail"\]
 
 @pytest.mark.asyncio
 async def test_logout(authenticated_client: AsyncClient):
@@ -1438,17 +1438,17 @@ from httpx import AsyncClient
 async def test_create_user(client: AsyncClient):
     response = await client.post(
         "/api/users/",
-        json={
+        json=\{
             "email": "new@example.com",
             "username": "newuser",
             "password": "password123"
-        }
+        \}
     )
     
     assert response.status_code == 201
     data = response.json()
-    assert data["email"] == "new@example.com"
-    assert data["username"] == "newuser"
+    assert data\["email"\] == "new@example.com"
+    assert data\["username"\] == "newuser"
     assert "hashed_password" not in data
 
 @pytest.mark.asyncio
@@ -1456,25 +1456,25 @@ async def test_create_duplicate_user(client: AsyncClient):
     # Create first user
     await client.post(
         "/api/users/",
-        json={
+        json=\{
             "email": "dup@example.com",
             "username": "dupuser",
             "password": "password123"
-        }
+        \}
     )
     
     # Try to create duplicate
     response = await client.post(
         "/api/users/",
-        json={
+        json=\{
             "email": "dup@example.com",
             "username": "dupuser2",
             "password": "password123"
-        }
+        \}
     )
     
     assert response.status_code == 400
-    assert "already exists" in response.json()["detail"]
+    assert "already exists" in response.json()\["detail"\]
 
 @pytest.mark.asyncio
 async def test_get_current_user(authenticated_client: AsyncClient):
@@ -1482,19 +1482,19 @@ async def test_get_current_user(authenticated_client: AsyncClient):
     
     assert response.status_code == 200
     data = response.json()
-    assert data["email"] == "test@example.com"
-    assert data["username"] == "testuser"
+    assert data\["email"\] == "test@example.com"
+    assert data\["username"\] == "testuser"
 
 @pytest.mark.asyncio
 async def test_update_user(authenticated_client: AsyncClient):
     response = await authenticated_client.put(
         "/api/users/me",
-        json={"email": "updated@example.com"}
+        json=\{"email": "updated@example.com"\}
     )
     
     assert response.status_code == 200
     data = response.json()
-    assert data["email"] == "updated@example.com"
+    assert data\["email"\] == "updated@example.com"
 
 @pytest.mark.asyncio
 async def test_delete_user(authenticated_client: AsyncClient):
@@ -1514,41 +1514,41 @@ def test_websocket_connection():
     
     with client.websocket_connect("/ws/") as websocket:
         # Send message
-        websocket.send_json({
+        websocket.send_json(\{
             "type": "message",
             "data": "Hello, WebSocket!"
-        })
+        \})
         
         # Receive broadcast
         data = websocket.receive_json()
-        assert data["type"] == "message"
-        assert data["data"] == "Hello, WebSocket!"
+        assert data\["type"\] == "message"
+        assert data\["data"\] == "Hello, WebSocket!"
 
 def test_websocket_rooms():
     client = TestClient(app)
     
     with client.websocket_connect("/ws/?room=test-room") as websocket:
         # Join different room
-        websocket.send_json({
+        websocket.send_json(\{
             "type": "join",
             "room": "another-room"
-        })
+        \})
         
         # Receive confirmation
         data = websocket.receive_json()
-        assert data["type"] == "room_joined"
-        assert data["room"] == "another-room"
+        assert data\["type"\] == "room_joined"
+        assert data\["room"\] == "another-room"
 
 def test_websocket_ping_pong():
     client = TestClient(app)
     
     with client.websocket_connect("/ws/") as websocket:
         # Send ping
-        websocket.send_json({"type": "ping"})
+        websocket.send_json(\{"type": "ping"\})
         
         # Receive pong
         data = websocket.receive_json()
-        assert data["type"] == "pong"`
+        assert data\["type"\] == "pong"`
     },
     'alembic/': {
       'alembic.ini': `# Alembic Configuration
@@ -1631,7 +1631,7 @@ def run_migrations_offline() -> None:
         url=url,
         target_metadata=target_metadata,
         literal_binds=True,
-        dialect_opts={"paramstyle": "named"},
+        dialect_opts=\{"paramstyle": "named"\},
     )
 
     with context.begin_transaction():
@@ -1667,8 +1667,8 @@ LOG_LEVEL=INFO
 SECRET_KEY=your-secret-key-here
 
 # Server
-ALLOWED_HOSTS=["*"]
-CORS_ORIGINS=["http://localhost:3000"]
+ALLOWED_HOSTS=\["*"\]
+CORS_ORIGINS=\["http://localhost:3000"\]
 HTTPS_ONLY=false
 
 # Database
@@ -1852,7 +1852,7 @@ media/
 test.db`,
     'pyproject.toml': `[tool.black]
 line-length = 88
-target-version = ['py311']
+target-version = \['py311'\]
 include = '\\.pyi?$'
 
 [tool.isort]
@@ -1869,12 +1869,12 @@ ignore_missing_imports = true
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "-ra -q --strict-markers"
-testpaths = ["tests"]
-pythonpath = ["."]
+testpaths = \["tests"\]
+pythonpath = \["."\]
 
 [tool.coverage.run]
-source = ["src"]
-omit = ["*/tests/*", "*/migrations/*"]
+source = \["src"\]
+omit = \["*/tests/*", "*/migrations/*"\]
 
 [tool.coverage.report]
 precision = 2
@@ -1975,4 +1975,4 @@ src/
 
 MIT`
   }
-};`
+};

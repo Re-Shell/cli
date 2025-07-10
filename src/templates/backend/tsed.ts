@@ -3,9 +3,12 @@ import { BackendTemplate } from '../types';
 export const tsedTemplate: BackendTemplate = {
   id: 'tsed',
   name: 'Ts.ED',
+  displayName: 'Ts.ED',
   description: 'TypeScript framework built on Express/Koa with decorators, DI, and enterprise features',
   language: 'typescript',
   framework: 'tsed',
+  version: '7.0.0',
+  tags: ['typescript', 'decorators', 'di', 'express', 'openapi'],
   features: [
     'TypeScript decorators',
     'Dependency injection',
@@ -98,7 +101,7 @@ export const tsedTemplate: BackendTemplate = {
     'docker:build': 'docker build -t tsed-app .',
     'docker:run': 'docker run -p 3000:3000 tsed-app'
   },
-  structure: {
+  files: {
     'src/index.ts': `import { $log } from '@tsed/common';
 import { PlatformExpress } from '@tsed/platform-express';
 import { Server } from './Server';

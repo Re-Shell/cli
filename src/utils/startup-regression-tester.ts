@@ -58,7 +58,7 @@ export class StartupRegressionTester {
   async measureStartupTime(
     command: string,
     args: string[] = [],
-    iterations: number = 5
+    iterations = 5
   ): Promise<PerformanceBenchmark> {
     const measurements: number[] = [];
     let cpuUsage: NodeJS.CpuUsage | undefined;

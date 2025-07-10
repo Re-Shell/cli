@@ -155,7 +155,7 @@ export class PluginRegistry extends EventEmitter {
   private dependencyResolver: PluginDependencyResolver;
   private rootPath: string;
   private pluginPaths: string[];
-  private isInitialized: boolean = false;
+  private isInitialized = false;
 
   constructor(rootPath: string = process.cwd()) {
     super();
