@@ -208,7 +208,7 @@ export class DependencyConflictDetector extends EventEmitter {
     packageJson: any,
     options: ConflictDetectionOptions,
     parent?: DependencyTree,
-    depth: number = 0
+    depth = 0
   ): Promise<DependencyTree> {
     if (depth > (options.maxDepth || 10)) {
       return {
@@ -389,7 +389,7 @@ export class DependencyConflictDetector extends EventEmitter {
   private collectVersions(
     tree: DependencyTree,
     versionMap: Map<string, Array<{ version: string; requiredBy: string[] }>>,
-    parentPath: string = ''
+    parentPath = ''
   ): void {
     const currentPath = parentPath ? `${parentPath} > ${tree.name}` : tree.name;
 
@@ -597,7 +597,7 @@ export class DependencyConflictDetector extends EventEmitter {
   private async collectPeerDependencies(
     tree: DependencyTree,
     peerDeps: Map<string, Array<{ package: string; required: string; requiredBy: string }>>,
-    path: string = ''
+    path = ''
   ): Promise<void> {
     const currentPath = path ? `${path} > ${tree.name}` : tree.name;
     
@@ -765,7 +765,7 @@ export class DependencyConflictDetector extends EventEmitter {
   private collectPackageLocations(
     tree: DependencyTree,
     locations: Map<string, Array<{ version: string; path: string }>>,
-    path: string = ''
+    path = ''
   ): void {
     const currentPath = path ? `${path}/${tree.name}` : tree.name;
 
@@ -998,7 +998,7 @@ export class DependencyConflictDetector extends EventEmitter {
   private collectEngineRequirements(
     tree: DependencyTree,
     requirements: Array<{ package: string; engines: Record<string, string>; path: string }>,
-    path: string = ''
+    path = ''
   ): void {
     const currentPath = path ? `${path} > ${tree.name}` : tree.name;
     const packageInfo = this.packageCache.get(`${tree.name}@${tree.version}`);
@@ -1120,7 +1120,7 @@ export class DependencyConflictDetector extends EventEmitter {
   private collectLicenses(
     tree: DependencyTree,
     licenses: Map<string, Array<{ package: string; license: string; path: string }>>,
-    path: string = ''
+    path = ''
   ): void {
     const currentPath = path ? `${path} > ${tree.name}` : tree.name;
     const packageInfo = this.packageCache.get(`${tree.name}@${tree.version}`);

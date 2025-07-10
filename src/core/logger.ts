@@ -41,8 +41,8 @@ export class Logger {
   private color: boolean;
   private context: Record<string, any>;
   private fileStream?: fs.WriteStream;
-  private currentFileSize: number = 0;
-  private rotationIndex: number = 0;
+  private currentFileSize = 0;
+  private rotationIndex = 0;
 
   constructor(options: LoggerOptions = {}) {
     this.level = options.level ?? LogLevel.INFO;

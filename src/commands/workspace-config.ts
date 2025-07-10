@@ -229,7 +229,7 @@ async function setWorkspaceConfigValue(
 ): Promise<void> {
   if (spinner) spinner.setText(`Setting workspace configuration value: ${key} = ${value}`);
   
-  let workspaceConfig = await configManager.loadWorkspaceConfig(workspacePath);
+  const workspaceConfig = await configManager.loadWorkspaceConfig(workspacePath);
   if (!workspaceConfig) {
     throw new ValidationError(`No workspace configuration found. Run \`re-shell workspace-config init --workspace ${workspacePath}\` first.`);
   }
@@ -613,7 +613,7 @@ async function showInheritanceChain(workspacePath: string): Promise<void> {
 }
 
 // Utility functions
-function displayConfigSection(config: any, indent: number = 0): void {
+function displayConfigSection(config: any, indent = 0): void {
   const prefix = '  '.repeat(indent);
   
   for (const [key, value] of Object.entries(config)) {

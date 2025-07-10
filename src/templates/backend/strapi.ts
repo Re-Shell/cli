@@ -3,9 +3,23 @@ import { BackendTemplate } from '../types';
 export const strapiTemplate: BackendTemplate = {
   id: 'strapi',
   name: 'Strapi Headless CMS',
+  displayName: 'Strapi',
   description: 'Flexible, open-source headless CMS with admin panel, Content-Type Builder, and REST/GraphQL APIs',
   author: 'Re-Shell Team',
-  featured: true,
+  version: '4.15.0',
+  tags: ['cms', 'headless', 'api', 'content-management', 'graphql', 'rest'],
+  features: [
+    'Admin Panel with intuitive interface',
+    'Content-Type Builder for dynamic API creation',
+    'REST & GraphQL APIs',
+    'Role-Based Access Control',
+    'Media Library with optimization',
+    'Internationalization support',
+    'Plugin System',
+    'Webhooks for real-time events',
+    'Draft/Publish system',
+    'Database support (PostgreSQL, MySQL, SQLite)'
+  ],
   language: 'javascript',
   framework: 'strapi',
   featured_frameworks: ['strapi', 'koa', 'bookshelf', 'knex'],
@@ -53,10 +67,9 @@ export const strapiTemplate: BackendTemplate = {
     '@testing-library/jest-dom': '^6.1.5',
     'supertest': '^6.3.3'
   },
-  files: [
-    {
-      name: 'package.json',
-      content: `{
+  port: 1337,
+  files: {
+    'package.json': `{
   "name": "strapi-cms",
   "private": true,
   "version": "0.1.0",
@@ -109,11 +122,8 @@ export const strapiTemplate: BackendTemplate = {
     "npm": ">=6.0.0"
   },
   "license": "MIT"
-}`
-    },
-    {
-      name: 'config/server.ts',
-      content: `export default ({ env }) => ({
+}`,
+    'config/server.ts': `export default ({ env }) => ({
   host: env('HOST', '0.0.0.0'),
   port: env.int('PORT', 1337),
   app: {
@@ -170,11 +180,8 @@ export const strapiTemplate: BackendTemplate = {
       }
     }
   }
-});`
-    },
-    {
-      name: 'config/database.ts',
-      content: `export default ({ env }) => {
+});`,
+    'config/database.ts': `export default ({ env }) => {
   const client = env('DATABASE_CLIENT', 'sqlite');
 
   const connections = {
@@ -244,11 +251,8 @@ export const strapiTemplate: BackendTemplate = {
       acquireConnectionTimeout: env.int('DATABASE_CONNECTION_TIMEOUT', 60000),
     },
   };
-};`
-    },
-    {
-      name: 'config/admin.ts',
-      content: `export default ({ env }) => ({
+};`,
+    'config/admin.ts': `export default ({ env }) => ({
   auth: {
     secret: env('ADMIN_JWT_SECRET'),
   },
@@ -293,11 +297,8 @@ export const strapiTemplate: BackendTemplate = {
   tutorials: false,
   // Disable notifications about new Strapi releases
   notifications: { releases: false },
-});`
-    },
-    {
-      name: 'config/plugins.ts',
-      content: `export default ({ env }) => ({
+});`,
+    'config/plugins.ts': `export default ({ env }) => ({
   // GraphQL plugin
   graphql: {
     enabled: true,
@@ -410,11 +411,8 @@ export const strapiTemplate: BackendTemplate = {
       },
     },
   },
-});`
-    },
-    {
-      name: 'config/middlewares.ts',
-      content: `export default [
+});`,
+    'config/middlewares.ts': `export default [
   'strapi::errors',
   'strapi::security',
   'strapi::cors',
@@ -447,11 +445,8 @@ export const strapiTemplate: BackendTemplate = {
       origin: ['http://localhost:3000', 'http://localhost:5173', 'https://yourdomain.com'],
     },
   },
-];`
-    },
-    {
-      name: 'src/api/article/content-types/article/schema.json',
-      content: `{
+];`,
+    'src/api/article/content-types/article/schema.json': `{
   "kind": "collectionType",
   "collectionName": "articles",
   "info": {
@@ -540,11 +535,8 @@ export const strapiTemplate: BackendTemplate = {
       "min": 1
     }
   }
-}`
-    },
-    {
-      name: 'src/api/article/controllers/article.ts',
-      content: `import { factories } from '@strapi/strapi';
+}`,
+    'src/api/article/controllers/article.ts': `import { factories } from '@strapi/strapi';
 
 export default factories.createCoreController('api::article.article', ({ strapi }) => ({
   
@@ -624,11 +616,8 @@ export default factories.createCoreController('api::article.article', ({ strapi 
     
     return this.transformResponse(relatedArticles);
   }
-}));`
-    },
-    {
-      name: 'src/api/article/services/article.ts',
-      content: `import { factories } from '@strapi/strapi';
+}));`,
+    'src/api/article/services/article.ts': `import { factories } from '@strapi/strapi';
 
 export default factories.createCoreService('api::article.article', ({ strapi }) => ({
   
@@ -692,11 +681,8 @@ export default factories.createCoreService('api::article.article', ({ strapi }) 
       locale
     });
   }
-}));`
-    },
-    {
-      name: 'src/api/article/routes/article.ts',
-      content: `import { factories } from '@strapi/strapi';
+}));`,
+    'src/api/article/routes/article.ts': `import { factories } from '@strapi/strapi';
 
 export default factories.createCoreRouter('api::article.article', {
   config: {
@@ -707,11 +693,8 @@ export default factories.createCoreRouter('api::article.article', {
       middlewares: ['api::article.article-populate-middleware']
     }
   }
-});`
-    },
-    {
-      name: 'src/api/article/routes/custom-article.ts',
-      content: `export default {
+});`,
+    'src/api/article/routes/custom-article.ts': `export default {
   routes: [
     {
       method: 'GET',
@@ -732,11 +715,8 @@ export default factories.createCoreRouter('api::article.article', {
       },
     },
   ],
-};`
-    },
-    {
-      name: 'src/api/article/middlewares/article-populate-middleware.ts',
-      content: `export default (config, { strapi }) => {
+};`,
+    'src/api/article/middlewares/article-populate-middleware.ts': `export default (config, { strapi }) => {
   return async (ctx, next) => {
     // Add default population for articles
     ctx.query = {
@@ -761,11 +741,8 @@ export default factories.createCoreRouter('api::article.article', {
 
     await next();
   };
-};`
-    },
-    {
-      name: 'src/api/category/content-types/category/schema.json',
-      content: `{
+};`,
+    'src/api/category/content-types/category/schema.json': `{
   "kind": "collectionType",
   "collectionName": "categories",
   "info": {
@@ -823,11 +800,8 @@ export default factories.createCoreRouter('api::article.article', {
       "regex": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
     }
   }
-}`
-    },
-    {
-      name: 'src/api/subscriber/content-types/subscriber/schema.json',
-      content: `{
+}`,
+    'src/api/subscriber/content-types/subscriber/schema.json': `{
   "kind": "collectionType",
   "collectionName": "subscribers",
   "info": {
@@ -869,11 +843,8 @@ export default factories.createCoreRouter('api::article.article', {
       "private": true
     }
   }
-}`
-    },
-    {
-      name: 'src/api/subscriber/controllers/subscriber.ts',
-      content: `import { factories } from '@strapi/strapi';
+}`,
+    'src/api/subscriber/controllers/subscriber.ts': `import { factories } from '@strapi/strapi';
 import { v4 as uuidv4 } from 'uuid';
 
 export default factories.createCoreController('api::subscriber.subscriber', ({ strapi }) => ({
@@ -954,11 +925,8 @@ export default factories.createCoreController('api::subscriber.subscriber', ({ s
       }
     };
   }
-}));`
-    },
-    {
-      name: 'src/components/shared/seo.json',
-      content: `{
+}));`,
+    'src/components/shared/seo.json': `{
   "collectionName": "components_shared_seos",
   "info": {
     "displayName": "SEO",
@@ -1005,11 +973,8 @@ export default factories.createCoreController('api::subscriber.subscriber', ({ s
       "type": "string"
     }
   }
-}`
-    },
-    {
-      name: 'src/components/shared/meta-social.json',
-      content: `{
+}`,
+    'src/components/shared/meta-social.json': `{
   "collectionName": "components_shared_meta_socials",
   "info": {
     "displayName": "Meta Social",
@@ -1040,11 +1005,8 @@ export default factories.createCoreController('api::subscriber.subscriber', ({ s
       "allowedTypes": ["images"]
     }
   }
-}`
-    },
-    {
-      name: 'src/extensions/users-permissions/content-types/user/schema.json',
-      content: `{
+}`,
+    'src/extensions/users-permissions/content-types/user/schema.json': `{
   "kind": "collectionType",
   "collectionName": "up_users",
   "info": {
@@ -1136,11 +1098,8 @@ export default factories.createCoreController('api::subscriber.subscriber', ({ s
       }
     }
   }
-}`
-    },
-    {
-      name: 'src/policies/is-owner.ts',
-      content: `export default async (policyContext, config, { strapi }) => {
+}`,
+    'src/policies/is-owner.ts': `export default async (policyContext, config, { strapi }) => {
   const { user, auth } = policyContext.state;
   const { params } = policyContext;
 
@@ -1165,11 +1124,8 @@ export default factories.createCoreController('api::subscriber.subscriber', ({ s
   const ownerId = entity.author?.id || entity.user?.id || entity.owner?.id;
   
   return ownerId === user.id;
-};`
-    },
-    {
-      name: 'src/policies/rate-limit.ts',
-      content: `const rateLimit = new Map();
+};`,
+    'src/policies/rate-limit.ts': `const rateLimit = new Map();
 
 export default async (policyContext, config, { strapi }) => {
   const { user } = policyContext.state;
@@ -1208,11 +1164,8 @@ export default async (policyContext, config, { strapi }) => {
   }
   
   return true;
-};`
-    },
-    {
-      name: 'src/index.ts',
-      content: `import { Strapi } from '@strapi/strapi';
+};`,
+    'src/index.ts': `import { Strapi } from '@strapi/strapi';
 
 export default {
   /**
@@ -1309,11 +1262,8 @@ export default {
       },
     ]);
   },
-};`
-    },
-    {
-      name: 'docker-compose.yml',
-      content: `version: '3.8'
+};`,
+    'docker-compose.yml': `version: '3.8'
 
 services:
   strapi:
@@ -1394,11 +1344,8 @@ volumes:
 
 networks:
   strapi-network:
-    driver: bridge`
-    },
-    {
-      name: 'docker-compose.prod.yml',
-      content: `version: '3.8'
+    driver: bridge`,
+    'docker-compose.prod.yml': `version: '3.8'
 
 services:
   strapi:
@@ -1469,11 +1416,8 @@ volumes:
 
 networks:
   strapi-network:
-    driver: bridge`
-    },
-    {
-      name: 'Dockerfile.prod',
-      content: `FROM node:18-alpine as build
+    driver: bridge`,
+    'Dockerfile.prod': `FROM node:18-alpine as build
 
 # Install dependencies
 RUN apk update && apk add --no-cache build-base gcc autoconf automake zlib-dev libpng-dev vips-dev > /dev/null 2>&1
@@ -1518,11 +1462,8 @@ USER node
 EXPOSE 1337
 
 # Start application
-CMD ["npm", "start"]`
-    },
-    {
-      name: '.env.example',
-      content: `# Server
+CMD ["npm", "start"]`,
+    '.env.example': `# Server
 HOST=0.0.0.0
 PORT=1337
 APP_KEYS=toBeModified1,toBeModified2
@@ -1570,11 +1511,8 @@ GOOGLE_CLIENT_SECRET=your-google-client-secret
 FRONTEND_URL=http://localhost:3000
 
 # Admin URL
-ADMIN_URL=http://localhost:1337/admin`
-    },
-    {
-      name: 'nginx/nginx.conf',
-      content: `user nginx;
+ADMIN_URL=http://localhost:1337/admin`,
+    'nginx/nginx.conf': `user nginx;
 worker_processes auto;
 error_log /var/log/nginx/error.log warn;
 pid /var/run/nginx.pid;
@@ -1658,11 +1596,8 @@ http {
             add_header Cache-Control "public, immutable";
         }
     }
-}`
-    },
-    {
-      name: 'scripts/seed.js',
-      content: `const { createCoreService } = require('@strapi/strapi').factories;
+}`,
+    'scripts/seed.js': `const { createCoreService } = require('@strapi/strapi').factories;
 
 async function seedDatabase() {
   try {
@@ -1741,11 +1676,8 @@ if (require.main === module) {
   seedDatabase();
 }
 
-module.exports = seedDatabase;`
-    },
-    {
-      name: 'tsconfig.json',
-      content: `{
+module.exports = seedDatabase;`,
+    'tsconfig.json': `{
   "extends": "@strapi/typescript-utils/tsconfigs/server",
   "compilerOptions": {
     "outDir": "dist",
@@ -1769,11 +1701,8 @@ module.exports = seedDatabase;`
     "**/*.test.*",
     "src/plugins/**"
   ]
-}`
-    },
-    {
-      name: '.gitignore',
-      content: `############################
+}`,
+    '.gitignore': `############################
 # OS X
 ############################
 
@@ -1885,11 +1814,8 @@ build
 .strapi
 .tmp
 public/uploads
-!public/uploads/.gitkeep`
-    },
-    {
-      name: 'README.md',
-      content: `# Strapi Headless CMS
+!public/uploads/.gitkeep`,
+    'README.md': `# Strapi Headless CMS
 
 A flexible, open-source headless CMS built with Strapi v4, featuring an admin panel, Content-Type Builder, and REST/GraphQL APIs.
 
@@ -2054,6 +1980,5 @@ See \`.env.example\` for all configuration options.
 ## License
 
 MIT`
-    }
-  ]
-};`
+  }
+};

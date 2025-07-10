@@ -45,7 +45,7 @@ export interface CacheMetadata {
 export class WorkspaceStateManager {
   private statePath: string;
   private stateData: WorkspaceStateStorage;
-  private isDirty: boolean = false;
+  private isDirty = false;
 
   constructor(rootPath: string = process.cwd()) {
     this.statePath = path.join(rootPath, '.re-shell', 'state.json');
@@ -239,7 +239,7 @@ export class WorkspaceStateManager {
     const ignoreDirs = ['node_modules', '.git', 'dist', 'build', '.next'];
     
     try {
-      const scan = async (dir: string, basePath: string = '') => {
+      const scan = async (dir: string, basePath = '') => {
         const entries = await fs.readdir(dir, { withFileTypes: true });
         
         for (const entry of entries) {
@@ -287,8 +287,8 @@ export class WorkspaceCacheManager {
   private cacheDir: string;
   private metadata: CacheMetadata;
   private memoryCache: Map<string, CacheEntry> = new Map();
-  private hitCount: number = 0;
-  private missCount: number = 0;
+  private hitCount = 0;
+  private missCount = 0;
 
   constructor(rootPath: string = process.cwd()) {
     this.cacheDir = path.join(rootPath, '.re-shell', 'cache');

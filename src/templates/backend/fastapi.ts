@@ -1779,4 +1779,4 @@ poetry run bandit -r app/
 
 MIT`
   }
-};`
+};

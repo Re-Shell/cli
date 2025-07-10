@@ -88,7 +88,7 @@ export class ResourceBenchmarks {
   async benchmark<T>(
     name: string,
     operation: () => Promise<T>,
-    iterations: number = 1,
+    iterations = 1,
     metadata?: Record<string, any>
   ): Promise<BenchmarkResult> {
     const startTime = performance.now();
@@ -176,7 +176,7 @@ export class ResourceBenchmarks {
   async benchmarkStartup(
     cliPath: string,
     args: string[] = ['--version'],
-    iterations: number = 10
+    iterations = 10
   ): Promise<BenchmarkResult> {
     return this.benchmark(
       'CLI Startup',
@@ -214,7 +214,7 @@ export class ResourceBenchmarks {
    * Run memory stress test
    */
   async memoryStressTest(
-    allocations: number = 1000,
+    allocations = 1000,
     allocationSize: number = 1024 * 1024 // 1MB
   ): Promise<BenchmarkResult> {
     return this.benchmark(
@@ -251,8 +251,8 @@ export class ResourceBenchmarks {
    * Run CPU stress test
    */
   async cpuStressTest(
-    duration: number = 1000, // milliseconds
-    complexity: number = 1000000
+    duration = 1000, // milliseconds
+    complexity = 1000000
   ): Promise<BenchmarkResult> {
     return this.benchmark(
       'CPU Stress Test',
@@ -282,8 +282,8 @@ export class ResourceBenchmarks {
    * Run concurrent operations test
    */
   async concurrencyTest(
-    concurrency: number = 10,
-    operationDuration: number = 100 // milliseconds
+    concurrency = 10,
+    operationDuration = 100 // milliseconds
   ): Promise<BenchmarkResult> {
     return this.benchmark(
       'Concurrency Test',

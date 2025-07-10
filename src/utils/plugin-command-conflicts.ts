@@ -105,7 +105,7 @@ export class CommandConflictResolver extends EventEmitter {
   private priorityConfig: PriorityConfig;
   private resolutionPolicy: ConflictResolutionPolicy;
   private resolutionHistory: ConflictResolution[] = [];
-  private autoResolutionCount: number = 0;
+  private autoResolutionCount = 0;
 
   constructor(
     priorityConfig?: Partial<PriorityConfig>,

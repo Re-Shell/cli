@@ -5,12 +5,43 @@ export const thinkjsTemplate: BackendTemplate = {
   name: 'ThinkJS',
   description: 'Modern Node.js MVC framework with ES6/ES7 support and auto-loading',
   icon: '🚀',
+  framework: 'thinkjs',
+  displayName: 'ThinkJS MVC Framework',
+  language: 'javascript',
+  version: '3.2.14',
+  tags: ['mvc', 'es6', 'es7', 'auto-loading', 'orm', 'websocket', 'cron', 'typescript'],
+  dependencies: {
+    'think-cache': '^1.1.0',
+    'think-cache-file': '^1.1.0',
+    'think-cache-redis': '^1.1.0',
+    'think-cache-memcache': '^1.0.2',
+    'think-session': '^1.1.0',
+    'think-session-file': '^1.0.1',
+    'think-session-redis': '^1.0.0',
+    'think-view': '^1.1.0',
+    'think-view-nunjucks': '^1.0.7',
+    'think-view-ejs': '^1.0.0',
+    'think-model': '^1.5.0',
+    'think-model-mysql': '^1.1.0',
+    'think-model-postgresql': '^1.0.1',
+    'think-model-sqlite': '^1.0.0',
+    'think-websocket': '^1.0.3',
+    'think-websocket-socket.io': '^1.0.1',
+    'think-i18n': '^1.2.3',
+    'think-validator': '^1.5.0',
+    'thinkjs': '^3.2.14',
+    'think-typescript': '^1.1.0',
+    'ioredis': '^5.3.2',
+    'jsonwebtoken': '^9.0.0',
+    'bcryptjs': '^2.4.3',
+    'moment': '^2.29.4',
+    'axios': '^1.5.0',
+    'winston': '^3.10.0',
+    'winston-daily-rotate-file': '^4.7.1'
+  },
   
-  files: [
-    // Package.json
-    {
-      path: 'package.json',
-      content: `{
+  files: {
+    'package.json': `{
   "name": "thinkjs-microservice",
   "description": "ThinkJS microservice with modern JavaScript features",
   "version": "1.0.0",
@@ -82,13 +113,9 @@ export const thinkjsTemplate: BackendTemplate = {
       "babel": true
     }
   }
-}`
-    },
+}`,
     
-    // ThinkJS configuration
-    {
-      path: 'development.js',
-      content: `const Application = require('thinkjs');
+    'development.js': `const Application = require('thinkjs');
 const watcher = require('think-watcher');
 const babel = require('@babel/core');
 const path = require('path');
@@ -103,12 +130,9 @@ const instance = new Application({
   env: 'development'
 });
 
-instance.run();`
-    },
+instance.run();`,
     
-    {
-      path: 'production.js',
-      content: `const Application = require('thinkjs');
+    'production.js': `const Application = require('thinkjs');
 
 const instance = new Application({
   ROOT_PATH: __dirname,
@@ -116,13 +140,9 @@ const instance = new Application({
   env: 'production'
 });
 
-instance.run();`
-    },
+instance.run();`,
     
-    // Source directory structure
-    {
-      path: 'src/config/config.js',
-      content: `module.exports = {
+    'src/config/config.js': `module.exports = {
   // Service identification
   serviceName: 'thinkjs-microservice',
   serviceVersion: '1.0.0',
@@ -146,12 +166,9 @@ instance.run();`
   // Health check
   healthCheckPath: '/health',
   readinessPath: '/ready'
-};`
-    },
+};`,
     
-    {
-      path: 'src/config/adapter.js',
-      content: `const fileCache = require('think-cache-file');
+    'src/config/adapter.js': `const fileCache = require('think-cache-file');
 const redisCache = require('think-cache-redis');
 const memcacheCache = require('think-cache-memcache');
 const nunjucks = require('think-view-nunjucks');
@@ -293,12 +310,9 @@ exports.websocket = {
       chat: 'home/websocket/chat'
     }
   }
-};`
-    },
+};`,
     
-    {
-      path: 'src/config/middleware.js',
-      content: `const path = require('path');
+    'src/config/middleware.js': `const path = require('path');
 
 module.exports = [
   {
@@ -347,12 +361,9 @@ module.exports = [
   },
   'logic',
   'controller'
-];`
-    },
+];`,
     
-    {
-      path: 'src/config/router.js',
-      content: `module.exports = [
+    'src/config/router.js': `module.exports = [
   // RESTful API routes
   ['/api/v1/users', 'api/user', 'rest'],
   ['/api/v1/products', 'api/product', 'rest'],
@@ -382,12 +393,9 @@ module.exports = [
   // Search and filter
   ['/api/v1/search', 'api/search/query', 'get'],
   ['/api/v1/filter/:resource', 'api/filter/apply', 'post']
-];`
-    },
+];`,
     
-    {
-      path: 'src/config/crontab.js',
-      content: `module.exports = [
+    'src/config/crontab.js': `module.exports = [
   {
     cron: '0 0 * * *', // Daily at midnight
     handle: 'cron/daily/cleanup',
@@ -419,12 +427,9 @@ module.exports = [
     immediate: false,
     type: 'one'
   }
-];`
-    },
+];`,
     
-    {
-      path: 'src/config/locale/en.js',
-      content: `module.exports = {
+    'src/config/locale/en.js': `module.exports = {
   // Common messages
   WELCOME_MESSAGE: 'Welcome to ThinkJS Microservice',
   SUCCESS: 'Operation successful',
@@ -459,13 +464,9 @@ module.exports = [
   INVALID_REQUEST: 'Invalid request parameters',
   SERVER_ERROR: 'Internal server error',
   SERVICE_UNAVAILABLE: 'Service temporarily unavailable'
-};`
-    },
+};`,
     
-    // Base controller
-    {
-      path: 'src/controller/base.js',
-      content: `module.exports = class extends think.Controller {
+    'src/controller/base.js': `module.exports = class extends think.Controller {
   async __before() {
     // Global before hook for all controllers
     this.startTime = Date.now();
@@ -554,13 +555,9 @@ module.exports = [
     const accept = this.header('accept') || '';
     return accept.includes('application/json') || this.isAjax || this.isPost;
   }
-};`
-    },
+};`,
     
-    // RESTful API controller
-    {
-      path: 'src/controller/api/user.js',
-      content: `const Base = require('../base.js');
+    'src/controller/api/user.js': `const Base = require('../base.js');
 
 module.exports = class extends Base {
   /**
@@ -776,13 +773,9 @@ module.exports = class extends Base {
     
     return { valid: true };
   }
-};`
-    },
+};`,
     
-    // Model with ORM features
-    {
-      path: 'src/model/user.js',
-      content: `module.exports = class extends think.Model {
+    'src/model/user.js': `module.exports = class extends think.Model {
   // Define table schema
   get schema() {
     return {
@@ -958,13 +951,9 @@ module.exports = class extends Base {
       throw error;
     }
   }
-};`
-    },
+};`,
     
-    // WebSocket controller
-    {
-      path: 'src/controller/websocket/index.js',
-      content: `const Base = require('../base.js');
+    'src/controller/websocket/index.js': `const Base = require('../base.js');
 
 module.exports = class extends Base {
   constructor(...args) {
@@ -1182,13 +1171,9 @@ module.exports = class extends Base {
       }
     });
   }
-};`
-    },
+};`,
     
-    // Cron job example
-    {
-      path: 'src/controller/cron/daily/cleanup.js',
-      content: `module.exports = class extends think.Controller {
+    'src/controller/cron/daily/cleanup.js': `module.exports = class extends think.Controller {
   async __call() {
     const startTime = Date.now();
     think.logger.info('Starting daily cleanup job...');
@@ -1315,13 +1300,9 @@ module.exports = class extends Base {
     
     return totalCleaned;
   }
-};`
-    },
+};`,
     
-    // Service layer example
-    {
-      path: 'src/service/auth.js',
-      content: `const jwt = require('jsonwebtoken');
+    'src/service/auth.js': `const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
 module.exports = class extends think.Service {
@@ -1545,13 +1526,9 @@ module.exports = class extends think.Service {
     
     return 3600; // Default 1 hour
   }
-};`
-    },
+};`,
     
-    // TypeScript support
-    {
-      path: 'src/config/extend.ts',
-      content: `import { think } from 'thinkjs';
+    'src/config/extend.ts': `import { think } from 'thinkjs';
 
 // Extend think with custom methods
 export default {
@@ -1669,13 +1646,9 @@ export default {
       return true;
     }
   }
-};`
-    },
+};`,
     
-    // Docker configuration
-    {
-      path: 'Dockerfile',
-      content: `FROM node:18-alpine
+    'Dockerfile': `FROM node:18-alpine
 
 # Install build dependencies
 RUN apk add --no-cache python3 make g++
@@ -1712,12 +1685,9 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
   CMD node -e "require('http').get('http://localhost:8360/health', (res) => process.exit(res.statusCode === 200 ? 0 : 1))"
 
 # Start the application
-CMD ["node", "production.js"]`
-    },
+CMD ["node", "production.js"]`,
     
-    {
-      path: 'docker-compose.yml',
-      content: `version: '3.8'
+    'docker-compose.yml': `version: '3.8'
 
 services:
   app:
@@ -1794,13 +1764,9 @@ volumes:
 
 networks:
   thinkjs-network:
-    driver: bridge`
-    },
+    driver: bridge`,
     
-    // README
-    {
-      path: 'README.md',
-      content: `# ThinkJS Microservice
+    'README.md': `# ThinkJS Microservice
 
 A modern Node.js microservice built with ThinkJS framework, featuring ES6/ES7 syntax, auto-loading, and comprehensive tooling.
 
@@ -1984,6 +1950,5 @@ docker-compose up -d --scale app=3
 ## License
 
 MIT`
-    }
-  ]
-};`
+  }
+};

@@ -96,9 +96,9 @@ export function debounceAsync<T extends any[], R>(
 // Retry with exponential backoff
 export async function retryWithBackoff<T>(
   fn: () => Promise<T>,
-  maxRetries: number = 3,
-  initialDelay: number = 1000,
-  maxDelay: number = 10000
+  maxRetries = 3,
+  initialDelay = 1000,
+  maxDelay = 10000
 ): Promise<T> {
   let lastError: Error;
   

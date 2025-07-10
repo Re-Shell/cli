@@ -6,8 +6,8 @@ import { ProgressSpinner } from './spinner';
 export class ProgressTracker {
   private spinner: ProgressSpinner;
   private totalSteps: number;
-  private currentStep: number = 0;
-  private stepName: string = '';
+  private currentStep = 0;
+  private stepName = '';
 
   constructor(title: string, totalSteps: number) {
     this.totalSteps = totalSteps;
@@ -167,7 +167,7 @@ export class MultiStepProgress {
 // Simple progress bar for file operations
 export class ProgressBar {
   private total: number;
-  private current: number = 0;
+  private current = 0;
   private spinner: ProgressSpinner;
   private title: string;
 
@@ -182,7 +182,7 @@ export class ProgressBar {
     return this;
   }
 
-  increment(amount: number = 1): this {
+  increment(amount = 1): this {
     this.current = Math.min(this.current + amount, this.total);
     this.spinner.setText(this.formatText());
     return this;

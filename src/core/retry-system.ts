@@ -221,9 +221,9 @@ export class RetryExecutor extends EventEmitter {
 
 export class CircuitBreaker extends EventEmitter {
   private state: CircuitState = CircuitState.CLOSED;
-  private failureCount: number = 0;
-  private successCount: number = 0;
-  private totalCalls: number = 0;
+  private failureCount = 0;
+  private successCount = 0;
+  private totalCalls = 0;
   private lastFailureTime?: Date;
   private lastSuccessTime?: Date;
   private nextRetryTime?: Date;

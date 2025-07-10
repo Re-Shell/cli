@@ -184,7 +184,7 @@ async function setConfigValue(key: string, value: string, options: ConfigCommand
     await configManager.saveGlobalConfig(globalConfig);
   } else {
     // Set in project config
-    let projectConfig = await configManager.loadProjectConfig();
+    const projectConfig = await configManager.loadProjectConfig();
     if (!projectConfig) {
       throw new ValidationError('No project configuration found. Initialize a project first.');
     }
@@ -477,7 +477,7 @@ async function showConfiguration(options: ConfigCommandOptions, spinner?: Progre
   }
 }
 
-function displayConfig(config: any, indent: number = 0): void {
+function displayConfig(config: any, indent = 0): void {
   const prefix = '  '.repeat(indent);
   
   for (const [key, value] of Object.entries(config)) {

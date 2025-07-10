@@ -1,16 +1,20 @@
-import { ProjectTemplate } from '../../types';
+import { BackendTemplate } from '../types';
 
-export const moleculerTemplate: ProjectTemplate = {
+export const moleculerTemplate: BackendTemplate = {
   id: 'moleculer',
   name: 'Moleculer',
+  displayName: 'Moleculer',
   description: 'Fast & powerful microservices framework with built-in service discovery, load balancing, and fault tolerance',
-  category: 'backend',
   language: 'typescript',
+  framework: 'moleculer',
+  version: '0.14.0',
+  tags: ['microservices', 'distributed', 'fault-tolerant'],
+  port: 3000,
+  dependencies: {},
+  features: ['microservices', 'service-discovery', 'load-balancing', 'fault-tolerance'],
   
-  files: [
-    {
-      path: 'package.json',
-      content: `{
+  files: {
+    'package.json': `{
   "name": "moleculer-microservices",
   "version": "1.0.0",
   "description": "Moleculer-based microservices with TypeScript",
@@ -64,11 +68,8 @@ export const moleculerTemplate: ProjectTemplate = {
     "eslint": "^8.56.0",
     "concurrently": "^8.2.2"
   }
-}`
-    },
-    {
-      path: 'tsconfig.json',
-      content: `{
+}`,
+    'tsconfig.json': `{
   "compilerOptions": {
     "target": "ES2022",
     "module": "commonjs",
@@ -88,11 +89,8 @@ export const moleculerTemplate: ProjectTemplate = {
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]
-}`
-    },
-    {
-      path: '.env.example',
-      content: `# Node environment
+}`,
+    '.env.example': `# Node environment
 NODE_ENV=development
 
 # Service configuration
@@ -129,11 +127,8 @@ JAEGER_AGENT_PORT=6832
 
 # Metrics
 METRICS_ENABLED=true
-METRICS_PORT=3030`
-    },
-    {
-      path: 'moleculer.config.ts',
-      content: `import { BrokerOptions, Errors } from 'moleculer';
+METRICS_PORT=3030`,
+    'moleculer.config.ts': `import { BrokerOptions, Errors } from 'moleculer';
 import { config } from 'dotenv';
 
 config();
@@ -262,11 +257,8 @@ const brokerConfig: BrokerOptions = {
   }
 };
 
-export default brokerConfig;`
-    },
-    {
-      path: 'src/index.ts',
-      content: `import { ServiceBroker } from 'moleculer';
+export default brokerConfig;`,
+    'src/index.ts': `import { ServiceBroker } from 'moleculer';
 import brokerConfig from '../moleculer.config';
 import { resolve } from 'path';
 
@@ -288,11 +280,8 @@ async function startBroker() {
 startBroker().catch(err => {
   console.error('Failed to start broker:', err);
   process.exit(1);
-});`
-    },
-    {
-      path: 'src/services/api.service.ts',
-      content: `import { Service, ServiceBroker, Context } from 'moleculer';
+});`,
+    'src/services/api.service.ts': `import { Service, ServiceBroker, Context } from 'moleculer';
 import ApiGateway from 'moleculer-web';
 import { IncomingMessage, ServerResponse } from 'http';
 import jwt from 'jsonwebtoken';
@@ -477,11 +466,8 @@ export default class ApiService extends Service {
       }
     });
   }
-}`
-    },
-    {
-      path: 'src/services/greeter.service.ts',
-      content: `import { Service, ServiceBroker, Context } from 'moleculer';
+}`,
+    'src/services/greeter.service.ts': `import { Service, ServiceBroker, Context } from 'moleculer';
 
 interface HelloParams {
   name?: string;
@@ -607,11 +593,8 @@ export default class GreeterService extends Service {
       }
     });
   }
-}`
-    },
-    {
-      path: 'src/services/users.service.ts',
-      content: `import { Service, ServiceBroker } from 'moleculer';
+}`,
+    'src/services/users.service.ts': `import { Service, ServiceBroker } from 'moleculer';
 import DbService from 'moleculer-db';
 import MongoAdapter from 'moleculer-db-adapter-mongo';
 import { Context } from 'moleculer';
@@ -841,11 +824,8 @@ export default class UsersService extends Service {
       }
     });
   }
-}`
-    },
-    {
-      path: 'src/services/auth.service.ts',
-      content: `import { Service, ServiceBroker, Context, Errors } from 'moleculer';
+}`,
+    'src/services/auth.service.ts': `import { Service, ServiceBroker, Context, Errors } from 'moleculer';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
@@ -1085,11 +1065,8 @@ export default class AuthService extends Service {
       }
     });
   }
-}`
-    },
-    {
-      path: 'src/services/db.service.ts',
-      content: `import { Service, ServiceBroker } from 'moleculer';
+}`,
+    'src/services/db.service.ts': `import { Service, ServiceBroker } from 'moleculer';
 import DbService from 'moleculer-db';
 import SequelizeAdapter from 'moleculer-db-adapter-sequelize';
 import { Sequelize, DataTypes } from 'sequelize';
@@ -1314,11 +1291,8 @@ export default class DatabaseService extends Service {
       }
     });
   }
-}`
-    },
-    {
-      path: 'src/middlewares/metrics.middleware.ts',
-      content: `import { Middleware } from 'moleculer';
+}`,
+    'src/middlewares/metrics.middleware.ts': `import { Middleware } from 'moleculer';
 
 const MetricsMiddleware: Middleware = {
   name: 'MetricsMiddleware',
@@ -1388,11 +1362,8 @@ const MetricsMiddleware: Middleware = {
   }
 };
 
-export default MetricsMiddleware;`
-    },
-    {
-      path: 'docker-compose.yml',
-      content: `version: '3.8'
+export default MetricsMiddleware;`,
+    'docker-compose.yml': `version: '3.8'
 
 services:
   # API Gateway
@@ -1573,11 +1544,8 @@ volumes:
   mongo-data:
   postgres-data:
   prometheus-data:
-  grafana-data:`
-    },
-    {
-      path: 'Dockerfile',
-      content: `FROM node:20-alpine
+  grafana-data:`,
+    'Dockerfile': `FROM node:20-alpine
 
 # Install build dependencies
 RUN apk add --no-cache python3 make g++
@@ -1604,11 +1572,8 @@ RUN addgroup -g 1001 -S nodejs && \
 USER nodejs
 
 # Start the service
-CMD ["node", "dist/index.js"]`
-    },
-    {
-      path: 'prometheus.yml',
-      content: `global:
+CMD ["node", "dist/index.js"]`,
+    'prometheus.yml': `global:
   scrape_interval: 15s
   evaluation_interval: 15s
 
@@ -1621,11 +1586,8 @@ scrape_configs:
           - 'users:3030'
           - 'auth:3030'
           - 'products:3030'
-    metrics_path: '/metrics'`
-    },
-    {
-      path: 'jest.config.js',
-      content: `module.exports = {
+    metrics_path: '/metrics'`,
+    'jest.config.js': `module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   roots: ['<rootDir>/src', '<rootDir>/test'],
@@ -1643,11 +1605,8 @@ scrape_configs:
       statements: 80
     }
   }
-};`
-    },
-    {
-      path: 'test/unit/greeter.spec.ts',
-      content: `import { ServiceBroker } from 'moleculer';
+};`,
+    'test/unit/greeter.spec.ts': `import { ServiceBroker } from 'moleculer';
 import GreeterService from '../../src/services/greeter.service';
 
 describe('Test Greeter service', () => {
@@ -1682,11 +1641,8 @@ describe('Test Greeter service', () => {
       expect(result.message).toContain('Welcome, John!');
     });
   });
-});`
-    },
-    {
-      path: 'test/integration/api.spec.ts',
-      content: `import { ServiceBroker } from 'moleculer';
+});`,
+    'test/integration/api.spec.ts': `import { ServiceBroker } from 'moleculer';
 import ApiService from '../../src/services/api.service';
 import request from 'supertest';
 
@@ -1740,11 +1696,8 @@ describe('Test API Gateway', () => {
       expect(res.headers).toHaveProperty('access-control-allow-origin', '*');
     });
   });
-});`
-    },
-    {
-      path: '.eslintrc.js',
-      content: `module.exports = {
+});`,
+    '.eslintrc.js': `module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 2022,
@@ -1766,20 +1719,14 @@ describe('Test API Gateway', () => {
     '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     'no-console': ['warn', { allow: ['warn', 'error'] }]
   }
-};`
-    },
-    {
-      path: 'kubernetes/namespace.yaml',
-      content: `apiVersion: v1
+};`,
+    'kubernetes/namespace.yaml': `apiVersion: v1
 kind: Namespace
 metadata:
   name: moleculer-microservices
   labels:
-    name: moleculer-microservices`
-    },
-    {
-      path: 'kubernetes/api-deployment.yaml',
-      content: `apiVersion: apps/v1
+    name: moleculer-microservices`,
+    'kubernetes/api-deployment.yaml': `apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: api-gateway
@@ -1842,11 +1789,8 @@ spec:
   ports:
   - port: 3000
     targetPort: 3000
-  type: LoadBalancer`
-    },
-    {
-      path: 'README.md',
-      content: `# Moleculer Microservices
+  type: LoadBalancer`,
+    'README.md': `# Moleculer Microservices
 
 A production-ready microservices architecture built with Moleculer framework, featuring TypeScript support, service discovery, and comprehensive monitoring.
 
@@ -1983,6 +1927,5 @@ kubectl port-forward -n moleculer-microservices svc/api-gateway 3000:3000
 ## License
 
 MIT`
-    }
-  ]
-};`
+  }
+};

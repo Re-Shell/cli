@@ -1611,15 +1611,15 @@ Middleware loggingMiddleware() {
         final response = await innerHandler(request);
         
         logger.info(
-          '${request.method} ${request.url.path} '
-          '${response.statusCode} ${watch.elapsedMilliseconds}ms',
+          '\${request.method} \${request.url.path} '
+          '\${response.statusCode} \${watch.elapsedMilliseconds}ms',
         );
         
         return response;
       } catch (e) {
         logger.error(
-          '${request.method} ${request.url.path} '
-          'ERROR ${watch.elapsedMilliseconds}ms',
+          '\${request.method} \${request.url.path} '
+          'ERROR \${watch.elapsedMilliseconds}ms',
           error: e,
         );
         rethrow;

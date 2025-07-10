@@ -115,8 +115,8 @@ export class FileWatcher extends EventEmitter {
   private stats: WatcherStats;
   private workspaces: Record<string, WorkspaceEntry> = {};
   private rootPath: string;
-  private isActive: boolean = false;
-  private watcherFailures: number = 0;
+  private isActive = false;
+  private watcherFailures = 0;
 
   constructor(rootPath: string = process.cwd(), fallbackOptions?: Partial<WatcherFallbackOptions>) {
     super();
@@ -765,7 +765,7 @@ export async function startWorkspaceWatcher(
 // Create cross-platform file watcher with optimized settings
 export async function createCrossPlatformWatcher(
   rootPath?: string,
-  enableFallbacks: boolean = true
+  enableFallbacks = true
 ): Promise<FileWatcher> {
   const fallbackOptions: Partial<WatcherFallbackOptions> = {
     enableFallbackLogging: true,

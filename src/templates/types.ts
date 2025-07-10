@@ -23,9 +23,17 @@ export interface BaseTemplate {
 export interface BackendTemplate extends BaseTemplate {
   framework: string;
   displayName: string;
-  language: 'typescript' | 'javascript' | 'python' | 'rust' | 'go' | 'java' | 'csharp' | 'php' | 'ruby' | 'lua' | 'cpp';
+  language: 'typescript' | 'javascript' | 'python' | 'rust' | 'go' | 'java' | 'csharp' | 'php' | 'ruby' | 'lua' | 'cpp' | 'dart' | 'swift';
   port?: number;
   features?: BackendFeature[];
+  author?: string;
+  icon?: string;
+  packageJson?: any;
+  scripts?: any;
+  featured_frameworks?: string[];
+  type?: string;
+  complexity?: string;
+  keywords?: string[];
 }
 
 export interface FrontendTemplate extends BaseTemplate {
@@ -59,7 +67,7 @@ export interface PromptChoice {
   short?: string;
 }
 
-export type BackendFeature =
+export type BackendFeature = string | (
   | 'authentication'
   | 'authorization'
   | 'database'
@@ -75,8 +83,11 @@ export type BackendFeature =
   | 'compression'
   | 'session-management'
   | 'file-upload'
+  | 'file-uploads'
   | 'email'
+  | 'mail'
   | 'websockets'
+  | 'websocket'
   | 'graphql'
   | 'rest-api'
   | 'microservices'
@@ -84,7 +95,48 @@ export type BackendFeature =
   | 'ci-cd'
   | 'queue'
   | 'routing'
-  | 'middleware';
+  | 'middleware'
+  | 'mvc-architecture'
+  | 'mvc'
+  | 'lucid-orm'
+  | 'edge-template'
+  | 'events'
+  | 'orm'
+  | 'real-time'
+  | 'dependency-injection'
+  | 'hot-reload'
+  | 'oauth2'
+  | 'openapi'
+  | 'migration'
+  | 'plugin-system'
+  | 'multi-process'
+  | 'scheduler'
+  | 'i18n'
+  | 'error-handling'
+  | 'async'
+  | 'schema-validation'
+  | 'plugins'
+  | 'decorators'
+  | 'hooks'
+  | 'swagger'
+  | 'blueprints'
+  | 'policies'
+  | 'static-files'
+  | 'esm'
+  | 'typescript'
+  | 'mongodb'
+  | 'TypeScript decorators'
+  | 'Dependency injection'
+  | 'OpenAPI/Swagger'
+  | 'GraphQL support'
+  | 'WebSocket (Socket.io)'
+  | 'Passport.js auth'
+  | 'TypeORM integration'
+  | 'Exception filters'
+  | 'Interceptors (AOP)'
+  | 'Model validation'
+  | 'Testing framework'
+  | 'Docker support');
 
 export type FrontendFeature =
   | 'routing'
