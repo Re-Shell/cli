@@ -2,13 +2,14 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import chalk from 'chalk';
 import { findMonorepoRoot } from '../utils/monorepo';
+import BackendTemplateRegistry from '../templates/backend/backend-template-registry';
 
 interface GenerateOptions {
   spinner?: any;
   verbose?: boolean;
   type?: 'component' | 'hook' | 'service' | 'test' | 'config' | 'documentation' | 'backend';
-  framework?: 'react' | 'vue' | 'svelte' | 'angular' | 'express' | 'fastapi' | 'django' | 'flask' | 'tornado' | 'sanic' | 'laravel' | 'symfony' | 'slim' | 'codeigniter';
-  language?: 'typescript' | 'python' | 'php';
+  framework?: string; // Now accepts any framework registered in BackendTemplateRegistry
+  language?: string;
   features?: string[];
   workspace?: string;
   template?: string;
@@ -550,17 +551,64 @@ This project is licensed under the MIT License - see the [LICENSE](../LICENSE) f
 }
 
 async function generateBackend(monorepoRoot: string, name: string, options: GenerateOptions) {
-  const language = options.language || 'typescript';
-  const framework = options.framework || (language === 'python' ? 'fastapi' : language === 'php' ? 'laravel' : 'express');
   const workspace = options.workspace || `services/${name}`;
   const workspacePath = path.join(monorepoRoot, workspace);
-  const features = options.features || [];
 
   if (!await fs.pathExists(path.dirname(workspacePath))) {
     await fs.ensureDir(path.dirname(workspacePath));
   }
 
-  // Check if we have a template for this framework
+  // Use the new backend template registry
+  if (options.template) {
+    const template = BackendTemplateRegistry.get(options.template);
+    if (!template) {
+      throw new Error(`Backend template '${options.template}' not found. Use 're-shell list templates' to see available templates.`);
+    }
+
+    // Validate template has a generator
+    const isValid = await BackendTemplateRegistry.validateTemplate(options.template);
+    if (!isValid) {
+      throw new Error(`Backend template '${options.template}' is not yet implemented. Check back soon!`);
+    }
+
+    // Generate using the new template system
+    await BackendTemplateRegistry.generateTemplate(options.template, workspacePath, {
+      name,
+      port: options.port,
+      features: options.features || [],
+      verbose: options.verbose
+    });
+
+    if (options.verbose) {
+      console.log(chalk.green(`\n✅ Generated ${template.framework} (${template.language}) backend service`));
+      console.log(BackendTemplateRegistry.getTemplateInfo(options.template));
+    }
+
+    return;
+  }
+
+  // Legacy support for backward compatibility
+  const language = options.language || 'typescript';
+  const framework = options.framework || (language === 'python' ? 'fastapi' : language === 'php' ? 'laravel' : 'express');
+  const features = options.features || [];
+
+  // Try to find a matching template in the registry
+  const templates = BackendTemplateRegistry.searchTemplates(`${language}-${framework}`);
+  if (templates.length > 0) {
+    const template = templates[0];
+    console.log(chalk.yellow(`Using new template system: ${template.name}`));
+    
+    await BackendTemplateRegistry.generateTemplate(template.name, workspacePath, {
+      name,
+      port: options.port,
+      features,
+      verbose: options.verbose
+    });
+    
+    return;
+  }
+
+  // Fallback to old template system for backward compatibility
   if (framework === 'laravel' || framework === 'symfony' || framework === 'slim' || framework === 'codeigniter') {
     const { backendTemplates } = await import('../templates/backend');
     const template = backendTemplates[framework];
