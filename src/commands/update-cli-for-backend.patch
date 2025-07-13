@@ -1,0 +1,130 @@
+// This patch updates the CLI to support backend templates
+// Apply these changes to src/index.ts
+
+// 1. Replace the existing 'add' command (lines 412-434) with:
+
+// Add command with subcommands for microfrontend and backend
+const addCommand = program
+  .command('add')
+  .description('Add a new microfrontend or backend service to existing Re-Shell project');
+
+// Add microfrontend subcommand
+addCommand
+  .command('microfrontend <name>')
+  .alias('mf')
+  .description('Add a new microfrontend')
+  .option('-t, --team <team>', 'Team name')
+  .option('-o, --org <organization>', 'Organization name', 're-shell')
+  .option('-d, --description <description>', 'Microfrontend description')
+  .option('--template <template>', 'Template to use (react, react-ts)', 'react-ts')
+  .option('--route <route>', 'Route path for the microfrontend')
+  .option('--port <port>', 'Dev server port', '5173')
+  .action(
+    createAsyncCommand(async (name, options) => {
+      const spinner = createSpinner('Adding microfrontend...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+      await withTimeout(async () => {
+        await addMicrofrontend(name, { ...options, spinner });
+      }, 120000); // 2 minute timeout
+      spinner.succeed(chalk.green(`Microfrontend "${name}" added successfully!`));
+    })
+  );
+
+// Add backend subcommand
+addCommand
+  .command('backend [name]')
+  .alias('be')
+  .description('Add a new backend microservice')
+  .option('-t, --template <template>', 'Backend template to use (e.g., express, fastapi, nestjs)')
+  .option('-p, --port <port>', 'Service port')
+  .option('-d, --description <description>', 'Service description')
+  .option('--list', 'List all available backend templates')
+  .option('--use-case <useCase>', 'Describe your use case for template recommendations')
+  .action(
+    createAsyncCommand(async (name, options) => {
+      if (options.list) {
+        const { listBackendTemplates } = await import('./utils/backend-selector');
+        listBackendTemplates();
+        return;
+      }
+      
+      if (!name && !options.list) {
+        console.log(chalk.red('Error: Service name is required'));
+        console.log(chalk.gray('Usage: reshell add backend <service-name> [options]'));
+        console.log(chalk.gray('       reshell add backend --list'));
+        return;
+      }
+      
+      const spinner = options.list ? null : createSpinner('Adding backend service...').start();
+      if (spinner) processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+      
+      await withTimeout(async () => {
+        const { addBackend } = await import('./commands/add-backend');
+        await addBackend(name, { ...options, spinner });
+      }, 120000); // 2 minute timeout
+    })
+  );
+
+// Keep backward compatibility - 'add <name>' defaults to microfrontend
+addCommand
+  .argument('[name]', 'Name of the microfrontend (deprecated, use "add microfrontend")')
+  .action(
+    createAsyncCommand(async (name, options, command) => {
+      // If name is provided and it's not a subcommand, treat as microfrontend for backward compatibility
+      if (name && !['microfrontend', 'mf', 'backend', 'be'].includes(name)) {
+        console.log(chalk.yellow('⚠️  Direct "add <name>" is deprecated. Use "add microfrontend <name>" instead.'));
+        const spinner = createSpinner('Adding microfrontend...').start();
+        processManager.addCleanup(() => spinner.stop());
+        flushOutput();
+        await withTimeout(async () => {
+          await addMicrofrontend(name, { ...command.parent.opts(), spinner });
+        }, 120000);
+        spinner.succeed(chalk.green(`Microfrontend "${name}" added successfully!`));
+      } else if (!name) {
+        // Show help if no arguments
+        command.help();
+      }
+    })
+  );
+
+// 2. Also add a standalone 'backend' command for quick access:
+// Add this after the 'add' command section
+
+// Standalone backend command for convenience
+program
+  .command('backend [name]')
+  .description('Create a new backend microservice (alias for "add backend")')
+  .option('-t, --template <template>', 'Backend template to use')
+  .option('-p, --port <port>', 'Service port')
+  .option('-d, --description <description>', 'Service description')
+  .option('--list', 'List all available backend templates')
+  .option('--use-case <useCase>', 'Describe your use case for template recommendations')
+  .action(
+    createAsyncCommand(async (name, options) => {
+      // Delegate to add backend command
+      const { addBackend } = await import('./commands/add-backend');
+      
+      if (options.list) {
+        const { listBackendTemplates } = await import('./utils/backend-selector');
+        listBackendTemplates();
+        return;
+      }
+      
+      if (!name) {
+        console.log(chalk.red('Error: Service name is required'));
+        console.log(chalk.gray('Usage: reshell backend <service-name> [options]'));
+        console.log(chalk.gray('       reshell backend --list'));
+        return;
+      }
+      
+      const spinner = createSpinner('Adding backend service...').start();
+      processManager.addCleanup(() => spinner.stop());
+      flushOutput();
+      
+      await withTimeout(async () => {
+        await addBackend(name, { ...options, spinner });
+      }, 120000);
+    })
+  );

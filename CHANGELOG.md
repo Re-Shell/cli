@@ -5,6 +5,56 @@ All notable changes to the `@re-shell/cli` package will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.25.0] - 2025-07-13
+
+### 🌍 Multi-Language Backend Framework Templates - Global Development Platform
+
+This major release adds 19 new backend framework templates across 6 programming languages, establishing Re-Shell as a truly polyglot full-stack development platform. The update introduces support for Swift, Dart, Haskell, Deno, Bun, and Zig ecosystems with production-ready templates.
+
+### Added
+
+#### 🍎 Swift Framework Templates (1 implemented, 3 planned)
+- **Vapor**: Modern async/await framework with Fluent ORM, JWT auth, and WebSocket support
+
+#### 🎯 Dart Framework Templates (3 new templates)
+- **Shelf**: Composable middleware framework with hot reload and PostgreSQL integration
+- **Angel3**: Full-stack MVC framework with dependency injection and GraphQL support
+- **Conduit**: Modern ORM-integrated framework with OpenAPI generation and OAuth2
+
+#### λ Haskell Framework Templates (4 new templates)
+- **Servant**: Type-safe REST API framework with automatic client generation
+- **Yesod**: Full-featured framework with type-safe URLs and compile-time templates
+- **Scotty**: Lightweight Sinatra-inspired framework with WAI/Warp
+- **Spock**: Rapid development framework with session management and CSRF protection
+
+#### 🦕 Deno Framework Templates (3 new templates)
+- **Oak**: Express-like middleware framework for Deno's HTTP server
+- **Fresh**: Next-gen framework with islands architecture and zero runtime overhead
+- **Aleph.js**: React SSR/SSG framework with file-based routing and HMR
+
+#### 🥟 Bun Framework Templates (2 new templates)
+- **Elysia**: Fast framework with end-to-end type safety and auto-generated clients
+- **Hono**: Ultra-lightweight edge-ready framework with RPC mode
+
+#### ⚡ Zig Framework Templates (2 new templates)
+- **HTTP Server**: Native HTTP server using Zig's standard library with zero dependencies
+- **Zap**: Blazingly fast web framework with WebSocket support and middleware
+
+### Technical Highlights
+
+- **Language-Specific Base Generators**: Shared functionality for each language ecosystem
+- **Native Performance**: Compiled languages (Swift, Haskell, Zig) offer exceptional performance
+- **Modern Runtimes**: Support for Deno and Bun as alternatives to Node.js
+- **Type Safety**: Strong typing across all languages with compile-time guarantees
+- **Production Features**: All templates include Docker, testing, CI/CD, and deployment configs
+
+### Infrastructure Updates
+
+- Enhanced template registry with language categorization
+- Improved error handling for template literal escaping in TypeScript
+- Better cross-platform build script generation
+- Language-specific prerequisites and setup instructions
+
 ## [0.24.0] - 2025-07-10
 
 ### 🚀 Backend Framework Templates - Comprehensive Full-Stack Platform

@@ -1,6 +1,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as crypto from 'crypto';
+import { glob } from 'glob';
 import { ValidationError } from './error-handler';
 import { WorkspaceDefinition, loadWorkspaceDefinition } from './workspace-schema';
 import { createWorkspaceStateManager } from './workspace-state';
@@ -495,11 +496,12 @@ export class WorkspaceBackupManager {
 
   private async backupFiles(patterns: string[]): Promise<Record<string, string>> {
     const result: Record<string, string> = {};
-    const glob = await import('glob');
-    
     for (const pattern of patterns) {
       try {
-        const files = await glob.glob(pattern, { cwd: this.rootPath });
+        const files = glob.sync(pattern, { 
+          cwd: this.rootPath,
+          absolute: false
+        });
         
         for (const file of files) {
           const fullPath = path.join(this.rootPath, file);

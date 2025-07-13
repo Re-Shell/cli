@@ -12,9 +12,28 @@ import VaporGenerator from './swift/vapor-generator';
 // import HummingbirdGenerator from './swift/hummingbird-generator';
 
 // Dart templates
-// import ShelfGenerator from './dart/shelf-generator';
-// import Angel3Generator from './dart/angel3-generator';
-// import ConduitGenerator from './dart/conduit-generator';
+import { ShelfGenerator } from './dart/shelf-generator';
+import { Angel3Generator } from './dart/angel3-generator';
+import { ConduitGenerator } from './dart/conduit-generator';
+
+// Haskell templates
+import { ServantGenerator } from './haskell/servant-generator';
+import { YesodGenerator } from './haskell/yesod-generator';
+import { ScottyGenerator } from './haskell/scotty-generator';
+import { SpockGenerator } from './haskell/spock-generator';
+
+// Deno templates
+import { OakGenerator } from './deno/oak-generator';
+import { FreshGenerator } from './deno/fresh-generator';
+import { AlephGenerator } from './deno/aleph-generator';
+
+// Bun templates
+import { ElysiaGenerator } from './bun/elysia-generator';
+import { HonoGenerator } from './bun/hono-generator';
+
+// Zig templates
+import { HttpServerGenerator } from './zig/http-server-generator';
+import { ZapGenerator } from './zig/zap-generator';
 
 // Existing templates (to be imported)
 // import ExpressGenerator from './node/express-generator';
@@ -120,6 +139,291 @@ export class BackendTemplateRegistry {
       generator: HummingbirdGenerator
     });
     */
+
+    // Dart Templates
+    this.register({
+      name: 'dart-shelf',
+      language: 'Dart',
+      framework: 'Shelf',
+      description: 'Composable web server middleware framework with hot reload support',
+      features: [
+        'Middleware pipeline',
+        'Hot reload development',
+        'JWT authentication',
+        'PostgreSQL integration',
+        'Redis caching',
+        'Rate limiting',
+        'CORS support',
+        'Request validation',
+        'OpenAPI documentation'
+      ],
+      defaultPort: 8080,
+      generator: ShelfGenerator
+    });
+
+    this.register({
+      name: 'dart-angel3',
+      language: 'Dart',
+      framework: 'Angel3',
+      description: 'Full-stack server-side framework with batteries included',
+      features: [
+        'Full MVC framework',
+        'Angel3 ORM with migrations',
+        'WebSocket support',
+        'GraphQL integration',
+        'Template engines',
+        'Service container',
+        'Dependency injection',
+        'Plugin system',
+        'Production mode optimizations'
+      ],
+      defaultPort: 3000,
+      generator: Angel3Generator
+    });
+
+    this.register({
+      name: 'dart-conduit',
+      language: 'Dart',
+      framework: 'Conduit',
+      description: 'Modern HTTP framework with built-in ORM and OpenAPI support',
+      features: [
+        'Built-in ORM',
+        'Database migrations',
+        'OpenAPI generation',
+        'OAuth2 server',
+        'Multi-threading',
+        'CLI tooling',
+        'Test harness',
+        'Health checks',
+        'Type-safe routing'
+      ],
+      defaultPort: 8080,
+      generator: ConduitGenerator
+    });
+
+    // Haskell Templates
+    this.register({
+      name: 'haskell-servant',
+      language: 'Haskell',
+      framework: 'Servant',
+      description: 'Type-safe REST API framework with automatic client generation',
+      features: [
+        'Type-level API definition',
+        'Automatic client generation',
+        'OpenAPI/Swagger generation',
+        'JWT authentication',
+        'PostgreSQL integration',
+        'Type-safe SQL queries',
+        'Property-based testing',
+        'Automatic API documentation',
+        'Compile-time guarantees'
+      ],
+      defaultPort: 8080,
+      generator: ServantGenerator
+    });
+
+    this.register({
+      name: 'haskell-yesod',
+      language: 'Haskell',
+      framework: 'Yesod',
+      description: 'Type-safe, RESTful web framework with compile-time templates',
+      features: [
+        'Type-safe URLs',
+        'Compile-time templates',
+        'Persistent ORM',
+        'Authentication system',
+        'Form handling',
+        'Internationalization',
+        'Widget system',
+        'Type-safe SQL',
+        'Development server'
+      ],
+      defaultPort: 3000,
+      generator: YesodGenerator
+    });
+
+    this.register({
+      name: 'haskell-scotty',
+      language: 'Haskell',
+      framework: 'Scotty',
+      description: 'Haskell web framework inspired by Ruby\'s Sinatra',
+      features: [
+        'Sinatra-inspired DSL',
+        'Lightweight and fast',
+        'WAI/Warp based',
+        'Simple routing',
+        'Middleware support',
+        'JSON handling',
+        'PostgreSQL integration',
+        'JWT authentication',
+        'Async request handling'
+      ],
+      defaultPort: 3000,
+      generator: ScottyGenerator
+    });
+
+    this.register({
+      name: 'haskell-spock',
+      language: 'Haskell',
+      framework: 'Spock',
+      description: 'Lightweight Haskell web framework for rapid development',
+      features: [
+        'Type-safe routing',
+        'Session management',
+        'Database pooling',
+        'CSRF protection',
+        'Type-safe actions',
+        'Middleware system',
+        'WebSocket support',
+        'RESTful design',
+        'Hot code reload'
+      ],
+      defaultPort: 3000,
+      generator: SpockGenerator
+    });
+
+    // Deno Templates
+    this.register({
+      name: 'deno-oak',
+      language: 'Deno',
+      framework: 'Oak',
+      description: 'Middleware framework for Deno\'s native HTTP server',
+      features: [
+        'Express-like middleware',
+        'Router with params',
+        'TypeScript native',
+        'JWT authentication',
+        'CORS support',
+        'Rate limiting',
+        'Request validation',
+        'PostgreSQL integration',
+        'Redis caching'
+      ],
+      defaultPort: 8000,
+      generator: OakGenerator
+    });
+
+    this.register({
+      name: 'deno-fresh',
+      language: 'Deno',
+      framework: 'Fresh',
+      description: 'Next-gen web framework with islands architecture',
+      features: [
+        'Islands architecture',
+        'Server-side rendering',
+        'File-based routing',
+        'TypeScript by default',
+        'Zero runtime overhead',
+        'Preact components',
+        'Tailwind CSS support',
+        'Edge deployment ready',
+        'No build step'
+      ],
+      defaultPort: 8000,
+      generator: FreshGenerator
+    });
+
+    this.register({
+      name: 'deno-aleph',
+      language: 'Deno',
+      framework: 'Aleph.js',
+      description: 'React SSR/SSG framework for Deno',
+      features: [
+        'React SSR/SSG',
+        'File-based routing',
+        'Hot module replacement',
+        'TypeScript support',
+        'API routes',
+        'CSS-in-JS support',
+        'Import maps',
+        'Optimized builds',
+        'Deploy anywhere'
+      ],
+      defaultPort: 8000,
+      generator: AlephGenerator
+    });
+
+    // Bun Templates
+    this.register({
+      name: 'bun-elysia',
+      language: 'Bun',
+      framework: 'Elysia',
+      description: 'Fast and friendly Bun web framework with end-to-end type safety',
+      features: [
+        'End-to-end type safety',
+        'Auto-generated clients',
+        'Swagger documentation',
+        'Blazing fast performance',
+        'Schema validation',
+        'JWT authentication',
+        'WebSocket support',
+        'File uploads',
+        'Plugin system'
+      ],
+      defaultPort: 3000,
+      generator: ElysiaGenerator
+    });
+
+    this.register({
+      name: 'bun-hono',
+      language: 'Bun',
+      framework: 'Hono',
+      description: 'Small, simple, and ultrafast web framework for the Edge',
+      features: [
+        'Ultra-lightweight',
+        'Edge computing ready',
+        'Express-like syntax',
+        'TypeScript support',
+        'Middleware system',
+        'JWT authentication',
+        'OpenAPI support',
+        'Cross-runtime',
+        'RPC mode'
+      ],
+      defaultPort: 3000,
+      generator: HonoGenerator
+    });
+
+    // Zig Templates
+    this.register({
+      name: 'zig-http',
+      language: 'Zig',
+      framework: 'HTTP Server',
+      description: 'Native HTTP server using Zig\'s standard library',
+      features: [
+        'Zero dependencies',
+        'Manual memory management',
+        'Minimal footprint',
+        'JWT authentication',
+        'JSON parsing',
+        'SQLite support',
+        'Compile-time safety',
+        'Cross-compilation',
+        'Fast compilation'
+      ],
+      defaultPort: 8080,
+      generator: HttpServerGenerator
+    });
+
+    this.register({
+      name: 'zig-zap',
+      language: 'Zig',
+      framework: 'Zap',
+      description: 'Blazingly fast web framework for Zig',
+      features: [
+        'High performance',
+        'WebSocket support',
+        'Middleware system',
+        'Static file serving',
+        'JSON handling',
+        'Route parameters',
+        'Request validation',
+        'Built-in auth',
+        'Production ready'
+      ],
+      defaultPort: 8080,
+      generator: ZapGenerator
+    });
 
     // Add more templates as they are implemented...
   }
