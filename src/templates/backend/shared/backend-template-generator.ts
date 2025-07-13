@@ -5,7 +5,7 @@
 
 import { promises as fs } from 'fs';
 import * as path from 'path';
-import { TemplateEngine } from '../../../utils/template-engine';
+import { ConfigTemplateEngine } from '../../../utils/template-engine';
 
 export interface BackendTemplateConfig {
   language: string;
@@ -32,12 +32,12 @@ export interface DockerConfig {
 }
 
 export abstract class BackendTemplateGenerator {
-  protected templateEngine: TemplateEngine;
+  protected templateEngine: ConfigTemplateEngine;
   protected config: BackendTemplateConfig;
 
   constructor(config: BackendTemplateConfig) {
     this.config = config;
-    this.templateEngine = new TemplateEngine();
+    this.templateEngine = new ConfigTemplateEngine();
   }
 
   /**
