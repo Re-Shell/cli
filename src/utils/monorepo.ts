@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import YAML from 'yaml';
-import { globSync } from 'glob';
+import { glob } from 'glob';
 
 export interface MonorepoConfig {
   name: string;
@@ -207,7 +207,7 @@ export async function getWorkspaces(rootPath: string = process.cwd()): Promise<W
 
   // Find all workspace directories
   for (const pattern of workspacePatterns) {
-    const matches = globSync(pattern, { cwd: rootPath });
+    const matches = glob.sync(pattern, { cwd: rootPath });
 
     for (const match of matches) {
       const workspacePath = path.join(rootPath, match);
