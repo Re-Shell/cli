@@ -35,6 +35,16 @@ import { HonoGenerator } from './bun/hono-generator';
 import { HttpServerGenerator } from './zig/http-server-generator';
 import { ZapGenerator } from './zig/zap-generator';
 
+// Kotlin templates
+import KtorGenerator from './kotlin/ktor-generator';
+import SpringBootKotlinGenerator from './kotlin/spring-boot-generator';
+import MicronautGenerator from './kotlin/micronaut-generator';
+
+// Scala templates
+import AkkaHttpGenerator from './scala/akka-http-generator';
+import PlayGenerator from './scala/play-generator';
+import Http4sGenerator from './scala/http4s-generator';
+
 // Existing templates (to be imported)
 // import ExpressGenerator from './node/express-generator';
 // import NestJSGenerator from './node/nestjs-generator';
@@ -423,6 +433,128 @@ export class BackendTemplateRegistry {
       ],
       defaultPort: 8080,
       generator: ZapGenerator
+    });
+
+    // Kotlin Templates
+    this.register({
+      name: 'kotlin-ktor',
+      language: 'kotlin',
+      framework: 'Ktor',
+      description: 'Lightweight async framework with coroutines support',
+      features: [
+        'Kotlin coroutines',
+        'Async request handling',
+        'Lightweight and modular',
+        'JWT authentication',
+        'Exposed ORM integration',
+        'WebSocket support',
+        'Content negotiation',
+        'Rate limiting',
+        'Metrics with Micrometer'
+      ],
+      defaultPort: 8080,
+      generator: KtorGenerator
+    });
+
+    this.register({
+      name: 'kotlin-spring-boot',
+      language: 'kotlin',
+      framework: 'Spring Boot',
+      description: 'Enterprise Java framework with full Kotlin support',
+      features: [
+        'Spring ecosystem',
+        'Spring Data JPA',
+        'Spring Security',
+        'Actuator metrics',
+        'OpenAPI documentation',
+        'Flyway migrations',
+        'Redis caching',
+        'AOP support',
+        'Production-ready features'
+      ],
+      defaultPort: 8080,
+      generator: SpringBootKotlinGenerator
+    });
+
+    this.register({
+      name: 'kotlin-micronaut',
+      language: 'kotlin',
+      framework: 'Micronaut',
+      description: 'Modern JVM framework with GraalVM native support',
+      features: [
+        'GraalVM native images',
+        'Compile-time DI',
+        'Reactive programming',
+        'Micronaut Data',
+        'Cloud-native features',
+        'Fast startup time',
+        'Low memory footprint',
+        'Built-in security',
+        'Distributed tracing'
+      ],
+      defaultPort: 8080,
+      generator: MicronautGenerator
+    });
+
+    // Scala Templates
+    this.register({
+      name: 'scala-akka-http',
+      language: 'Scala',
+      framework: 'Akka HTTP',
+      description: 'High-performance toolkit for building REST/HTTP-based services',
+      features: [
+        'Actor model',
+        'Streaming HTTP',
+        'Async non-blocking',
+        'Type-safe routing',
+        'WebSocket support',
+        'JWT authentication',
+        'Swagger integration',
+        'Akka Streams',
+        'Clustering support'
+      ],
+      defaultPort: 8080,
+      generator: AkkaHttpGenerator
+    });
+
+    this.register({
+      name: 'scala-play',
+      language: 'Scala',
+      framework: 'Play Framework',
+      description: 'Reactive web framework for modern web applications',
+      features: [
+        'MVC architecture',
+        'Hot reload',
+        'Built-in testing',
+        'Async I/O',
+        'RESTful by default',
+        'WebSocket support',
+        'Slick ORM',
+        'Action composition',
+        'Production ready'
+      ],
+      defaultPort: 9000,
+      generator: PlayGenerator
+    });
+
+    this.register({
+      name: 'scala-http4s',
+      language: 'Scala',
+      framework: 'http4s',
+      description: 'Typeful, functional, streaming HTTP for Scala',
+      features: [
+        'Pure functional',
+        'Cats Effect',
+        'FS2 streaming',
+        'Type-safe routing',
+        'Doobie integration',
+        'JWT authentication',
+        'WebSocket support',
+        'Prometheus metrics',
+        'Tapir integration'
+      ],
+      defaultPort: 8080,
+      generator: Http4sGenerator
     });
 
     // Add more templates as they are implemented...

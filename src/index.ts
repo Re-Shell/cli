@@ -88,6 +88,7 @@ import { manageBackups } from './commands/backup';
 import { generateCode, generateTests, generateDocumentation } from './commands/generate';
 import { testPlatformCapabilities, runPlatformDiagnostics, quickPlatformCheck } from './commands/platform-test';
 import { manageDevMode } from './commands/dev-mode';
+import { createBackendCommand } from './commands/backend';
 import { manageWorkspaceDefinition } from './commands/workspace-definition';
 import { manageWorkspaceGraph } from './commands/workspace-graph';
 import { manageWorkspaceHealth } from './commands/workspace-health';
@@ -453,6 +454,9 @@ program
       spinner.succeed(chalk.green(`Microfrontend "${name}" removed successfully!`));
     })
   );
+
+// Backend command
+program.addCommand(createBackendCommand());
 
 // List microfrontends command
 program
