@@ -40,6 +40,13 @@ export class BackendTemplateSelector {
         description: 'High-performance Go frameworks',
         icon: '🐹',
         templates: []
+      },
+      {
+        name: 'Kotlin',
+        value: 'kotlin',
+        description: 'Kotlin JVM frameworks',
+        icon: '🏗️',
+        templates: []
       }
     ];
 
@@ -51,6 +58,8 @@ export class BackendTemplateSelector {
         categories[1].templates.push(template);
       } else if (template.language === 'go') {
         categories[2].templates.push(template);
+      } else if (template.language === 'kotlin') {
+        categories[3].templates.push(template);
       }
     });
 
