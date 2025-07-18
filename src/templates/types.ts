@@ -23,7 +23,7 @@ export interface BaseTemplate {
 export interface BackendTemplate extends BaseTemplate {
   framework: string;
   displayName: string;
-  language: 'typescript' | 'javascript' | 'python' | 'rust' | 'go' | 'java' | 'csharp' | 'php' | 'ruby' | 'lua' | 'cpp' | 'dart' | 'swift' | 'kotlin';
+  language: 'typescript' | 'javascript' | 'python' | 'rust' | 'go' | 'java' | 'csharp' | 'php' | 'ruby' | 'lua' | 'cpp' | 'dart' | 'swift' | 'kotlin' | 'haskell' | 'fsharp' | 'clojure' | 'perl' | 'deno' | 'bun' | 'scala' | 'crystal' | 'zig' | 'elixir' | 'nim' | 'vlang' | 'gleam' | 'rescript' | 'grain' | 'mojo' | 'julia' | 'ocaml';
   port?: number;
   features?: BackendFeature[];
   author?: string;
