@@ -1,4 +1,4 @@
-# Re-Shell CLI v0.24.0
+# Re-Shell CLI v0.26.0
 
 **Full-Stack Development Platform - Microservices & Microfrontends United**
 
@@ -17,15 +17,34 @@ Re-Shell CLI is a comprehensive full-stack development platform that revolutioni
 ### Key Capabilities
 
 - **🎯 Full-Stack Unity**: Seamless integration between frontend microfrontends and backend microservices
-- **🏗️ Microservices Excellence**: Production-ready templates for Node.js (Express, Fastify, NestJS, Koa, Feathers.js, AdonisJS, Moleculer, Strapi, Apollo Server, GraphQL Yoga, LoopBack, Sails.js, and more), Python (FastAPI, Django, Flask, Starlette), .NET (ASP.NET Core Web API, Minimal API), Java (Spring Boot, Quarkus, Micronaut, Vert.x), Rust (Actix-Web, Warp, Rocket, Axum), PHP (Symfony, Laravel, Slim, CodeIgniter), Go (Gin, Echo, Fiber, Chi, gRPC), and Ruby (Rails API, Sinatra, Grape)
+- **🏗️ Microservices Excellence**: Production-ready templates for Node.js (Express, Fastify, NestJS, Koa, Feathers.js, AdonisJS, Moleculer, Strapi, Apollo Server, GraphQL Yoga, LoopBack, Sails.js, and more), Python (FastAPI, Django, Flask, Starlette), .NET (ASP.NET Core Web API, Minimal API), Java (Spring Boot, Quarkus, Micronaut, Vert.x), Rust (Actix-Web, Warp, Rocket, Axum), PHP (Symfony, Laravel, Slim, CodeIgniter), Go (Gin, Echo, Fiber, Chi, gRPC), Ruby (Rails API, Sinatra, Grape), Clojure (Ring, Luminus, Reitit, Pedestal), and Perl (Mojolicious, Dancer2, Catalyst)
 - **🎨 Microfrontend Architecture**: Module Federation with React, Vue, Svelte, and Angular support
 - **🔄 Smart Code Generation**: API-first development with automatic type generation and SDK creation
 - **📊 Complete Observability**: Built-in monitoring, tracing, and logging across the entire stack
 - **🛡️ Enterprise Security**: JWT authentication, OAuth2, API gateways, and compliance features
 - **☁️ Production Ready**: Docker orchestration, Kubernetes manifests, and cloud provider configs
 
-### 🆕 What's New in v0.24.0
+### 🆕 What's New in v0.26.0
 
+- **🧠 Functional Programming**: Complete Clojure ecosystem with Ring/Compojure, Luminus, Reitit, and Pedestal
+- **🔧 Web Development**: Perl ecosystem with Mojolicious, Dancer2, and Catalyst frameworks
+- **⚡ High Performance**: Clojure's immutable data structures and Perl's efficient text processing
+- **🎯 Real-time Apps**: Clojure Pedestal with interceptors and Perl Mojolicious with WebSockets
+- **🏗️ Data-Driven**: Clojure Reitit with schema validation and Perl Catalyst with comprehensive MVC
+- **📊 Developer Experience**: REPL-driven development for Clojure and powerful templating for Perl
+- **🛡️ Enterprise Ready**: JWT auth, rate limiting, and comprehensive testing across all templates
+- **🐳 Production Ready**: Docker support, comprehensive documentation, and real-world examples
+
+### Previous Releases
+
+#### v0.25.0
+- **💎 Complete Haskell Ecosystem**: Servant, Yesod, Scotty, and Spock frameworks
+- **🔧 Type-Safe Development**: Haskell's strong type system with GHC optimization
+- **🛡️ Functional Security**: Type-safe authentication and validation patterns
+- **📊 Advanced Testing**: HSpec and QuickCheck property-based testing
+- **🐳 Haskell DevOps**: Stack and Cabal build systems with Docker integration
+
+#### v0.24.0
 - **🚀 Backend Framework Templates**: 26 new production-ready backend templates transforming Re-Shell into a full-stack platform
 - **⚡ Node.js Frameworks**: Express, Fastify, NestJS, Koa, Feathers.js, AdonisJS, Moleculer, Strapi, and more
 - **🐍 Python Frameworks**: FastAPI, Django, Flask, Starlette with async support and type hints

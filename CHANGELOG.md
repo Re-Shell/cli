@@ -5,6 +5,60 @@ All notable changes to the `@re-shell/cli` package will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.26.0] - 2025-07-18
+
+### 🧠 Functional Programming & Dynamic Web Development
+
+This release introduces comprehensive support for functional programming with Clojure and dynamic web development with Perl. Both ecosystems bring unique strengths to the Re-Shell platform: Clojure's immutable data structures and REPL-driven development, and Perl's powerful text processing and mature web frameworks.
+
+### Added
+
+#### 🧠 Clojure Framework Templates (4 new templates)
+- **Ring/Compojure**: Composable HTTP server abstraction with functional routing
+- **Luminus**: Full-stack web framework with hot reload and comprehensive tooling
+- **Reitit**: Data-driven router with schema validation and OpenAPI support
+- **Pedestal**: High-performance interceptor-based framework with async support
+
+#### 🔧 Perl Framework Templates (3 new templates)
+- **Mojolicious**: Real-time web framework with WebSocket and Server-Sent Events
+- **Dancer2**: Lightweight web framework with modern routing and middleware
+- **Catalyst**: Enterprise MVC framework with comprehensive plugin ecosystem
+
+### Features
+
+#### Clojure Framework Features
+- **REPL-Driven Development**: Interactive development with instant feedback
+- **Immutable Data Structures**: Thread-safe, persistent data structures
+- **Functional Programming**: Pure functions, higher-order functions, and composability
+- **Rich Ecosystem**: Comprehensive library ecosystem with Maven integration
+- **Hot Reload**: Live code reloading for rapid development cycles
+- **Schema Validation**: Comprehensive request/response validation
+- **JWT Authentication**: Secure token-based authentication
+- **Database Integration**: HikariCP connection pooling with multiple database support
+- **Real-time Communication**: WebSocket support for interactive applications
+- **OpenAPI Integration**: Automatic API documentation generation
+- **Testing Framework**: Comprehensive testing with test fixtures and mocking
+- **Docker Support**: Multi-stage Docker builds with optimized images
+
+#### Perl Framework Features
+- **Modern Web Development**: Contemporary web frameworks with active communities
+- **Template Systems**: Powerful templating with Template::Toolkit and embedded Perl
+- **Database Abstraction**: DBIx::Class ORM with migration support
+- **Authentication Systems**: JWT, OAuth2, and session-based authentication
+- **Real-time Features**: WebSocket and Server-Sent Events support
+- **Plugin Architecture**: Extensive plugin ecosystems for rapid development
+- **Testing Integration**: TAP-based testing with comprehensive test coverage
+- **Performance Optimization**: Efficient text processing and memory usage
+- **DevOps Integration**: Docker support with Perl-optimized configurations
+- **Documentation**: Comprehensive POD documentation and examples
+
+### Technical Improvements
+- **Type Safety**: Enhanced type checking and validation across all templates
+- **Performance**: Optimized runtime performance and memory usage
+- **Security**: Advanced security features including rate limiting and input validation
+- **Monitoring**: Built-in health checks and metrics collection
+- **Documentation**: Comprehensive README files with deployment guides
+
 ## [0.25.0] - 2025-07-13
 
 ### 🌍 Multi-Language Backend Framework Templates - Global Development Platform
