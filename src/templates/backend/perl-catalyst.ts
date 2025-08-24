@@ -9,8 +9,8 @@ export const perlCatalystTemplate: BackendTemplate = {
   language: 'perl',
   version: '5.90130',
   author: 'Re-Shell Team',
-  featured: true,
-  recommended: true,
+
+
   icon: '🏭',
   type: 'mvc-framework',
   complexity: 'advanced',

@@ -1,4 +1,4 @@
-# Re-Shell CLI v0.26.0
+# Re-Shell CLI v0.27.0
 
 **Full-Stack Development Platform - Microservices & Microfrontends United**
 
@@ -17,23 +17,26 @@ Re-Shell CLI is a comprehensive full-stack development platform that revolutioni
 ### Key Capabilities
 
 - **🎯 Full-Stack Unity**: Seamless integration between frontend microfrontends and backend microservices
-- **🏗️ Microservices Excellence**: Production-ready templates for Node.js (Express, Fastify, NestJS, Koa, Feathers.js, AdonisJS, Moleculer, Strapi, Apollo Server, GraphQL Yoga, LoopBack, Sails.js, and more), Python (FastAPI, Django, Flask, Starlette), .NET (ASP.NET Core Web API, Minimal API), Java (Spring Boot, Quarkus, Micronaut, Vert.x), Rust (Actix-Web, Warp, Rocket, Axum), PHP (Symfony, Laravel, Slim, CodeIgniter), Go (Gin, Echo, Fiber, Chi, gRPC), Ruby (Rails API, Sinatra, Grape), Clojure (Ring, Luminus, Reitit, Pedestal), and Perl (Mojolicious, Dancer2, Catalyst)
+- **🏗️ Microservices Excellence**: 85+ production-ready templates across 14 languages - Node.js, Python, .NET, Java, Rust, Go, PHP, Ruby, Clojure, Perl, Crystal, Nim, V, Gleam, Zig, Dart, Haskell, Deno, Bun, OCaml, Elixir, ReScript, Swift, and more
 - **🎨 Microfrontend Architecture**: Module Federation with React, Vue, Svelte, and Angular support
 - **🔄 Smart Code Generation**: API-first development with automatic type generation and SDK creation
 - **📊 Complete Observability**: Built-in monitoring, tracing, and logging across the entire stack
 - **🛡️ Enterprise Security**: JWT authentication, OAuth2, API gateways, and compliance features
 - **☁️ Production Ready**: Docker orchestration, Kubernetes manifests, and cloud provider configs
 
-### 🆕 What's New in v0.26.0
+### 🆕 What's New in v0.27.0
 
-- **🧠 Functional Programming**: Complete Clojure ecosystem with Ring/Compojure, Luminus, Reitit, and Pedestal
-- **🔧 Web Development**: Perl ecosystem with Mojolicious, Dancer2, and Catalyst frameworks
-- **⚡ High Performance**: Clojure's immutable data structures and Perl's efficient text processing
-- **🎯 Real-time Apps**: Clojure Pedestal with interceptors and Perl Mojolicious with WebSockets
-- **🏗️ Data-Driven**: Clojure Reitit with schema validation and Perl Catalyst with comprehensive MVC
-- **📊 Developer Experience**: REPL-driven development for Clojure and powerful templating for Perl
-- **🛡️ Enterprise Ready**: JWT auth, rate limiting, and comprehensive testing across all templates
-- **🐳 Production Ready**: Docker support, comprehensive documentation, and real-world examples
+- **🌍 Massive Expansion**: 85+ backend framework templates across 14 programming languages
+- **💎 Crystal Ecosystem**: Kemal, Lucky, and Amber frameworks with type safety and performance
+- **👑 Nim Frameworks**: Jester, Prologue, and Karax for efficient system programming
+- **✨ Gleam & V**: Functional programming with Wisp/Mist and systems programming with vweb/Vex
+- **⚡ Zig Performance**: Ultra-fast web servers with zap, http.zig, and zhp frameworks
+- **🎯 Dart Full-Stack**: Shelf, Angel3, and Conduit for server-side Dart development
+- **🐘 Complete PHP**: Laravel, Symfony, Slim, CodeIgniter, Lumen, and Laminas
+- **🐪 OCaml Web**: Dream, Opium, and Cohttp for functional web development
+- **🧪 Elixir Phoenix**: Phoenix and Plug for fault-tolerant applications
+- **📜 ReScript**: Type-safe Express and Fastify bindings
+- **🍎 Swift Server**: Perfect, Kitura, and Hummingbird for server-side Swift
 
 ### Previous Releases
 

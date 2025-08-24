@@ -9,8 +9,7 @@ export const clojurePedestalTemplate: BackendTemplate = {
   language: 'clojure',
   version: '0.6.0',
   author: 'Re-Shell Team',
-  featured: true,
-  recommended: true,
+
   icon: '🏛️',
   type: 'web-framework',
   complexity: 'advanced',

@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import { selectBackendTemplate, getBackendTemplate, listBackendTemplates } from '../utils/backend-selector';
 import { BackendTemplate } from '../templates/types';
 import { ProgressSpinner } from '../utils/spinner';
+import BackendTemplateRegistry from '../templates/backend/backend-template-registry';
 
 interface AddBackendOptions {
   template?: string;
@@ -48,6 +49,33 @@ export async function addBackend(
   let selectedTemplate: BackendTemplate | null = null;
 
   if (templateId) {
+    // First check if it's a BackendTemplateRegistry template
+    const registryTemplate = BackendTemplateRegistry.get(templateId);
+    if (registryTemplate) {
+      // Use the new BackendTemplateRegistry system
+      try {
+        await BackendTemplateRegistry.generateTemplate(templateId, path.resolve(process.cwd(), 'services', name.toLowerCase().replace(/\s+/g, '-')), {
+          name: name.toLowerCase().replace(/\s+/g, '-'),
+          port: port || registryTemplate.defaultPort,
+          features: [],
+          verbose: false
+        });
+        
+        if (spinner) {
+          spinner.succeed(chalk.green(`Backend service "${name}" created successfully using ${registryTemplate.framework}!`));
+        } else {
+          console.log(chalk.green(`✅ Backend service "${name}" created successfully using ${registryTemplate.framework}!`));
+        }
+        return;
+        
+      } catch (error) {
+        if (spinner) spinner.stop();
+        console.log(chalk.red(`Error generating service: ${error.message}`));
+        return;
+      }
+    }
+    
+    // Fall back to old system
     selectedTemplate = getBackendTemplate(templateId);
     if (!selectedTemplate) {
       console.log(chalk.red(`Error: Template "${templateId}" not found`));

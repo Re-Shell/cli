@@ -9,8 +9,7 @@ export const clojureLuminusTemplate: BackendTemplate = {
   language: 'clojure',
   version: '4.41',
   author: 'Re-Shell Team',
-  featured: true,
-  recommended: true,
+
   icon: '🏛️',
   type: 'full-stack',
   complexity: 'intermediate',

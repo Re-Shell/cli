@@ -9,8 +9,8 @@ export const clojureReititTemplate: BackendTemplate = {
   language: 'clojure',
   version: '0.6.0',
   author: 'Re-Shell Team',
-  featured: true,
-  recommended: true,
+
+
   icon: '🗺️',
   type: 'rest-api',
   complexity: 'intermediate',

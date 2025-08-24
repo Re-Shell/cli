@@ -9,8 +9,8 @@ export const clojureRingTemplate: BackendTemplate = {
   language: 'clojure',
   version: '1.11',
   author: 'Re-Shell Team',
-  featured: true,
-  recommended: true,
+
+
   icon: '💍',
   type: 'rest-api',
   complexity: 'intermediate',

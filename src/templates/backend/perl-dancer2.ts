@@ -9,8 +9,8 @@ export const perlDancer2Template: BackendTemplate = {
   language: 'perl',
   version: '1.0.0',
   author: 'Re-Shell Team',
-  featured: true,
-  recommended: true,
+
+
   icon: '💃',
   type: 'web-framework',
   complexity: 'beginner',

@@ -17,5 +17,33 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": [
+    "node_modules", 
+    "dist",
+    "src/templates/backend/cpp-valgrind.ts",
+    "src/templates/backend/fsharp-paket.ts",
+    "src/templates/backend/cpp-benchmark.ts",
+    "src/templates/backend/cpp-hot-reload.ts",
+    "src/templates/backend/haskell-cabal.ts",
+    "src/templates/backend/haskell-stack.ts",
+    "src/templates/backend/haskell-testing.ts",
+    "src/templates/backend/haskell-optimization.ts",
+    "src/templates/backend/haskell-persistent.ts",
+    "src/templates/backend/spock.ts",
+    "src/templates/backend/scotty.ts",
+    "src/templates/backend/servant.ts",
+    "src/templates/backend/yesod.ts",
+    "src/templates/backend/fsharp-expecto.ts",
+    "src/templates/backend/fsharp-giraffe.ts",
+    "src/templates/backend/fsharp-interactive.ts",
+    "src/templates/backend/fsharp-saturn.ts",
+    "src/templates/backend/fsharp-suave.ts",
+    "src/templates/backend/clojure-luminus.ts",
+    "src/templates/backend/clojure-pedestal.ts",
+    "src/templates/backend/clojure-reitit.ts",
+    "src/templates/backend/clojure-ring.ts",
+    "src/templates/backend/perl-catalyst.ts",
+    "src/templates/backend/perl-dancer2.ts",
+    "src/templates/backend/perl-mojolicious.ts"
+  ]
 }

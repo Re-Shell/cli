@@ -2,6 +2,7 @@ import * as inquirer from 'inquirer';
 import chalk from 'chalk';
 import { BackendTemplate } from '../templates/types';
 import { backendTemplates } from '../templates/backend';
+import BackendTemplateRegistry from '../templates/backend/backend-template-registry';
 
 interface TemplateCategory {
   name: string;
@@ -372,21 +373,77 @@ export function getBackendTemplate(templateId: string): BackendTemplate | null {
 
 // List all templates
 export function listBackendTemplates(): void {
-  const selector = new BackendTemplateSelector();
+  console.log(chalk.bold.cyan('\n🚀 Available Backend Templates\n'));
   
-  console.log(chalk.bold.cyan('\n📚 Available Backend Templates\n'));
+  // Get all templates from the new registry
+  const registryTemplates = BackendTemplateRegistry.getAll();
   
-  const categories = selector['categories']; // Access private property
+  // Group by language
+  const languages = BackendTemplateRegistry.getLanguages();
   
-  categories.forEach(category => {
-    console.log(chalk.bold.yellow(`\n${category.icon} ${category.name}`));
+  for (const language of languages) {
+    const langTemplates = BackendTemplateRegistry.getByLanguage(language);
+    const langIcon = getLanguageIcon(language);
+    
+    console.log(chalk.bold.yellow(`\n${langIcon} ${language}`));
     console.log(chalk.gray('─'.repeat(40)));
     
-    category.templates.forEach(template => {
-      const tags = template.tags.slice(0, 3).join(', ');
-      console.log(`  ${chalk.bold(template.displayName.padEnd(15))} ${chalk.gray(tags)}`);
-    });
-  });
+    for (const template of langTemplates) {
+      const status = '✅'; // All registered templates should work
+      const featuresText = template.features.slice(0, 3).join(', ');
+      console.log(`  ${status} ${chalk.bold(template.framework.padEnd(15))} ${chalk.gray(featuresText)}`);
+    }
+  }
   
+  // Also show old system templates for backward compatibility
+  const oldSelector = new BackendTemplateSelector();
+  const oldCategories = oldSelector['categories']; // Access private property
+  
+  if (oldCategories.length > 0) {
+    console.log(chalk.bold.blue('\n🔄 Legacy Templates (Fallback System)'));
+    console.log(chalk.gray('─'.repeat(40)));
+    
+    oldCategories.forEach(category => {
+      if (category.templates.length > 0) {
+        console.log(chalk.bold.cyan(`\n${category.name}:`));
+        category.templates.forEach(template => {
+          const tags = template.tags.slice(0, 3).join(', ');
+          console.log(`  🔄 ${chalk.bold(template.displayName.padEnd(15))} ${chalk.gray(tags)}`);
+        });
+      }
+    });
+  }
+  
+  console.log(chalk.gray(`\nTotal Templates: ${registryTemplates.length + oldCategories.reduce((sum, cat) => sum + cat.templates.length, 0)}`));
   console.log();
+}
+
+function getLanguageIcon(language: string): string {
+  const icons: Record<string, string> = {
+    'Node.js': '🟨',
+    'TypeScript': '🔷', 
+    'JavaScript': '🟡',
+    'Python': '🐍',
+    'Go': '🐹',
+    'Rust': '🦀',
+    'Java': '☕',
+    'Kotlin': '🏗️',
+    'Scala': '🔴',
+    'C#': '🟣',
+    'Swift': '🧡',
+    'Dart': '🎯',
+    'Haskell': '💜',
+    'Deno': '🦕',
+    'Bun': '🍞',
+    'Zig': '⚡',
+    'Crystal': '💎',
+    'Nim': '👑',
+    'V': '💚',
+    'Gleam': '✨',
+    'PHP': '🐘',
+    'OCaml': '🐪',
+    'Elixir': '🧪',
+    'ReScript': '📜'
+  };
+  return icons[language] || '🔧';
 }

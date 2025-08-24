@@ -9,8 +9,8 @@ export const perlMojoliciousTemplate: BackendTemplate = {
   language: 'perl',
   version: '9.34',
   author: 'Re-Shell Team',
-  featured: true,
-  recommended: true,
+
+
   icon: '🔥',
   type: 'web-framework',
   complexity: 'intermediate',

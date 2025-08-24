@@ -1,0 +1,1659 @@
+import { BackendTemplateGenerator, BackendTemplateConfig } from '../shared/backend-template-generator';
+import { promises as fs } from 'fs';
+import * as path from 'path';
+
+export abstract class JavaBackendGenerator extends BackendTemplateGenerator {
+  protected options: any;
+
+  constructor(framework: string) {
+    const config: BackendTemplateConfig = {
+      language: 'Java',
+      framework: framework,
+      packageManager: 'maven',
+      buildTool: 'maven',
+      testFramework: 'junit',
+      features: [
+        'JVM ecosystem',
+        'Strong typing',
+        'Enterprise-grade',
+        'Spring ecosystem',
+        'JPA/Hibernate ORM',
+        'Maven/Gradle build',
+        'JUnit testing',
+        'Extensive libraries',
+        'Production ready',
+        'Microservices support'
+      ],
+      dependencies: {
+        // Spring Boot dependencies will be added by individual generators
+        'org.springframework.boot:spring-boot-starter-web': '',
+        'org.springframework.boot:spring-boot-starter-data-jpa': '',
+        'org.springframework.boot:spring-boot-starter-security': '',
+        'org.springframework.boot:spring-boot-starter-validation': '',
+        'org.springframework.boot:spring-boot-starter-actuator': '',
+        'org.springframework.boot:spring-boot-starter-test': '',
+        'org.postgresql:postgresql': '',
+        'org.springframework.boot:spring-boot-starter-data-redis': '',
+        'io.jsonwebtoken:jjwt-api': '0.11.5',
+        'io.jsonwebtoken:jjwt-impl': '0.11.5',
+        'io.jsonwebtoken:jjwt-jackson': '0.11.5',
+        'org.springdoc:springdoc-openapi-starter-webmvc-ui': '2.2.0'
+      },
+      devDependencies: {
+        'org.springframework.boot:spring-boot-devtools': '',
+        'com.h2database:h2': '',
+        'org.testcontainers:junit-jupiter': '1.19.1',
+        'org.testcontainers:postgresql': '1.19.1'
+      },
+      scripts: {
+        'dev': './mvnw spring-boot:run',
+        'build': './mvnw clean package',
+        'test': './mvnw test',
+        'clean': './mvnw clean'
+      },
+      envVars: {
+        'DATABASE_URL': 'jdbc:postgresql://localhost:5432/backend_db',
+        'DATABASE_USER': 'postgres',
+        'DATABASE_PASSWORD': 'password',
+        'JWT_SECRET': 'your-secret-key',
+        'REDIS_URL': 'redis://localhost:6379'
+      }
+    };
+    super(config);
+  }
+
+  protected generateProjectStructure(): string[] {
+    const packagePath = this.getPackagePath();
+    
+    return [
+      'src/',
+      'src/main/',
+      'src/main/java/',
+      `src/main/java/${packagePath}/`,
+      `src/main/java/${packagePath}/controller/`,
+      `src/main/java/${packagePath}/service/`,
+      `src/main/java/${packagePath}/repository/`,
+      `src/main/java/${packagePath}/model/`,
+      `src/main/java/${packagePath}/dto/`,
+      `src/main/java/${packagePath}/config/`,
+      `src/main/java/${packagePath}/security/`,
+      `src/main/java/${packagePath}/exception/`,
+      `src/main/java/${packagePath}/util/`,
+      'src/main/resources/',
+      'src/main/resources/db/',
+      'src/main/resources/db/migration/',
+      'src/test/',
+      'src/test/java/',
+      `src/test/java/${packagePath}/`,
+      `src/test/java/${packagePath}/controller/`,
+      `src/test/java/${packagePath}/service/`,
+      `src/test/java/${packagePath}/integration/`,
+      'target/',
+      '.mvn/',
+      '.mvn/wrapper/'
+    ];
+  }
+
+  protected getPackagePath(): string {
+    const packageName = this.getPackageName();
+    return packageName.replace(/\./g, '/');
+  }
+
+  protected getPackageName(): string {
+    return `com.${this.sanitizeName(this.options?.name || 'example')}.api`;
+  }
+
+  protected sanitizeName(name: string): string {
+    return name.toLowerCase().replace(/[^a-z0-9]/g, '');
+  }
+
+  protected generatePackageJson(): string {
+    // Java doesn't use package.json, return empty
+    return '';
+  }
+
+  protected generatePomXml(): string {
+    const groupId = `com.${this.sanitizeName(this.options?.name || 'example')}`;
+    const artifactId = this.sanitizeName(this.options?.name || 'api');
+    const frameworkDeps = this.getFrameworkDependencies();
+    
+    return `<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.0</version>
+        <relativePath/>
+    </parent>
+    
+    <groupId>${groupId}</groupId>
+    <artifactId>${artifactId}</artifactId>
+    <version>1.0.0</version>
+    <name>${this.options?.name || 'Backend API'}</name>
+    <description>${this.config.framework} backend service generated by Re-Shell</description>
+    
+    <properties>
+        <java.version>17</java.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <testcontainers.version>1.19.1</testcontainers.version>
+    </properties>
+    
+    <dependencies>
+        <!-- Spring Boot Starters -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        
+        <!-- Database -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        
+        <!-- JWT -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.11.5</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.11.5</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.11.5</version>
+            <scope>runtime</scope>
+        </dependency>
+        
+        <!-- OpenAPI Documentation -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+        
+        <!-- Framework-specific dependencies -->
+        ${Object.entries(frameworkDeps).map(([groupArtifact, version]) => {
+          const [group, artifact] = groupArtifact.split(':');
+          return `        <dependency>
+            <groupId>${group}</groupId>
+            <artifactId>${artifact}</artifactId>${version ? `\n            <version>${version}</version>` : ''}
+        </dependency>`;
+        }).join('\n')}
+        
+        <!-- Development -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        
+        <!-- Test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>\${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>\${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.springframework.boot</groupId>
+                            <artifactId>spring-boot-devtools</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>9.8.1</version>
+                <configuration>
+                    <url>\${DB_URL}</url>
+                    <user>\${DB_USER}</user>
+                    <password>\${DB_PASSWORD}</password>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>`;
+  }
+
+  protected generateApplicationProperties(): string {
+    return `# Application Configuration
+spring.application.name=${this.options?.name || 'backend-api'}
+server.port=${this.options?.port || 8080}
+spring.profiles.active=development
+
+# Database Configuration
+spring.datasource.url=\${DATABASE_URL:jdbc:postgresql://localhost:5432/${this.sanitizeName(this.options?.name || 'backend')}_db}
+spring.datasource.username=\${DATABASE_USER:postgres}
+spring.datasource.password=\${DATABASE_PASSWORD:password}
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+# JPA Configuration
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.show-sql=false
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.properties.hibernate.format_sql=true
+
+# Flyway Configuration
+spring.flyway.enabled=true
+spring.flyway.locations=classpath:db/migration
+spring.flyway.baseline-on-migrate=true
+
+# Redis Configuration
+spring.data.redis.host=\${REDIS_HOST:localhost}
+spring.data.redis.port=\${REDIS_PORT:6379}
+spring.data.redis.password=\${REDIS_PASSWORD:}
+spring.data.redis.timeout=60000ms
+
+# JWT Configuration
+jwt.secret=\${JWT_SECRET:your-secret-key-here-change-in-production}
+jwt.expiration=86400000
+
+# Email Configuration
+spring.mail.host=\${SMTP_HOST:smtp.gmail.com}
+spring.mail.port=\${SMTP_PORT:587}
+spring.mail.username=\${SMTP_USER:}
+spring.mail.password=\${SMTP_PASS:}
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+
+# Actuator Configuration
+management.endpoints.web.exposure.include=health,info,metrics,prometheus
+management.endpoint.health.show-details=when-authorized
+management.metrics.export.prometheus.enabled=true
+
+# OpenAPI Configuration
+springdoc.api-docs.path=/api-docs
+springdoc.swagger-ui.path=/swagger-ui.html
+springdoc.swagger-ui.operationsSorter=method
+
+# Logging Configuration
+logging.level.root=INFO
+logging.level.org.springframework.security=DEBUG
+logging.level.org.hibernate.SQL=DEBUG
+logging.pattern.console=%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n`;
+  }
+
+  protected generateApplicationYml(): string {
+    return `spring:
+  application:
+    name: ${this.options?.name || 'backend-api'}
+  profiles:
+    active: development
+  
+  datasource:
+    url: \${DATABASE_URL:jdbc:postgresql://localhost:5432/${this.sanitizeName(this.options?.name || 'backend')}_db}
+    username: \${DATABASE_USER:postgres}
+    password: \${DATABASE_PASSWORD:password}
+    driver-class-name: org.postgresql.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+  
+  data:
+    redis:
+      host: \${REDIS_HOST:localhost}
+      port: \${REDIS_PORT:6379}
+      password: \${REDIS_PASSWORD:}
+      timeout: 60000ms
+  
+  mail:
+    host: \${SMTP_HOST:smtp.gmail.com}
+    port: \${SMTP_PORT:587}
+    username: \${SMTP_USER:}
+    password: \${SMTP_PASS:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+server:
+  port: \${PORT:${this.options?.port || 8080}}
+
+jwt:
+  secret: \${JWT_SECRET:your-secret-key-here-change-in-production}
+  expiration: 86400000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+
+logging:
+  level:
+    root: INFO
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"`;
+  }
+
+  protected abstract getFrameworkDependencies(): Record<string, string>;
+
+  protected generateModelFiles(): { path: string; content: string }[] {
+    const packageName = this.getPackageName();
+    const packagePath = this.getPackagePath();
+    
+    return [
+      {
+        path: `src/main/java/${packagePath}/model/User.java`,
+        content: `package ${packageName}.model;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
+
+@Entity
+@Table(name = "users")
+public class User implements UserDetails {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+    
+    @NotBlank
+    @Size(min = 2, max = 50)
+    @Column(nullable = false)
+    private String firstName;
+    
+    @NotBlank
+    @Size(min = 2, max = 50)
+    @Column(nullable = false)
+    private String lastName;
+    
+    @Email
+    @NotBlank
+    @Column(nullable = false, unique = true)
+    private String email;
+    
+    @NotBlank
+    @Size(min = 8)
+    @Column(nullable = false)
+    private String password;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole role = UserRole.USER;
+    
+    @Column(nullable = false)
+    private Boolean active = true;
+    
+    @Column(nullable = false)
+    private Boolean emailVerified = false;
+    
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+    
+    @UpdateTimestamp
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
+    
+    // Constructors
+    public User() {}
+    
+    public User(String firstName, String lastName, String email, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+    }
+    
+    // UserDetails implementation
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+    }
+    
+    @Override
+    public String getUsername() {
+        return email;
+    }
+    
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+    
+    @Override
+    public boolean isAccountNonLocked() {
+        return active;
+    }
+    
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+    
+    @Override
+    public boolean isEnabled() {
+        return active && emailVerified;
+    }
+    
+    // Getters and Setters
+    public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
+    
+    public String getFirstName() { return firstName; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+    
+    public String getLastName() { return lastName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
+    
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+    
+    public UserRole getRole() { return role; }
+    public void setRole(UserRole role) { this.role = role; }
+    
+    public Boolean getActive() { return active; }
+    public void setActive(Boolean active) { this.active = active; }
+    
+    public Boolean getEmailVerified() { return emailVerified; }
+    public void setEmailVerified(Boolean emailVerified) { this.emailVerified = emailVerified; }
+    
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+    
+    public enum UserRole {
+        USER, ADMIN, MODERATOR
+    }
+}`
+      },
+      {
+        path: `src/main/java/${packagePath}/model/RefreshToken.java`,
+        content: `package ${packageName}.model;
+
+import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Entity
+@Table(name = "refresh_tokens")
+public class RefreshToken {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+    
+    @Column(nullable = false, unique = true)
+    private String token;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+    
+    @Column(nullable = false)
+    private LocalDateTime expiryDate;
+    
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+    
+    // Constructors
+    public RefreshToken() {}
+    
+    public RefreshToken(String token, User user, LocalDateTime expiryDate) {
+        this.token = token;
+        this.user = user;
+        this.expiryDate = expiryDate;
+    }
+    
+    // Getters and Setters
+    public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
+    
+    public String getToken() { return token; }
+    public void setToken(String token) { this.token = token; }
+    
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
+    
+    public LocalDateTime getExpiryDate() { return expiryDate; }
+    public void setExpiryDate(LocalDateTime expiryDate) { this.expiryDate = expiryDate; }
+    
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    
+    public boolean isExpired() {
+        return LocalDateTime.now().isAfter(expiryDate);
+    }
+}`
+      }
+    ];
+  }
+
+  protected generateServiceFiles(): { path: string; content: string }[] {
+    const packageName = this.getPackageName();
+    const packagePath = this.getPackagePath();
+    
+    return [
+      {
+        path: `src/main/java/${packagePath}/service/UserService.java`,
+        content: `package ${packageName}.service;
+
+import ${packageName}.dto.UserRegistrationDto;
+import ${packageName}.dto.UserResponseDto;
+import ${packageName}.dto.UserUpdateDto;
+import ${packageName}.exception.ResourceNotFoundException;
+import ${packageName}.exception.UserAlreadyExistsException;
+import ${packageName}.model.User;
+import ${packageName}.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
+
+@Service
+@Transactional
+public class UserService {
+    
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    
+    @Autowired
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+    
+    public UserResponseDto createUser(UserRegistrationDto registrationDto) {
+        if (userRepository.existsByEmail(registrationDto.getEmail())) {
+            throw new UserAlreadyExistsException("User with email " + registrationDto.getEmail() + " already exists");
+        }
+        
+        User user = new User();
+        user.setFirstName(registrationDto.getFirstName());
+        user.setLastName(registrationDto.getLastName());
+        user.setEmail(registrationDto.getEmail());
+        user.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
+        user.setRole(User.UserRole.USER);
+        user.setActive(true);
+        user.setEmailVerified(false);
+        
+        User savedUser = userRepository.save(user);
+        return convertToDto(savedUser);
+    }
+    
+    @Transactional(readOnly = true)
+    public UserResponseDto getUserById(UUID id) {
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+        return convertToDto(user);
+    }
+    
+    @Transactional(readOnly = true)
+    public UserResponseDto getUserByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+        return convertToDto(user);
+    }
+    
+    @Transactional(readOnly = true)
+    public Page<UserResponseDto> getAllUsers(Pageable pageable) {
+        return userRepository.findAll(pageable).map(this::convertToDto);
+    }
+    
+    public UserResponseDto updateUser(UUID id, UserUpdateDto updateDto) {
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+        
+        if (updateDto.getFirstName() != null) {
+            user.setFirstName(updateDto.getFirstName());
+        }
+        if (updateDto.getLastName() != null) {
+            user.setLastName(updateDto.getLastName());
+        }
+        if (updateDto.getEmail() != null && !updateDto.getEmail().equals(user.getEmail())) {
+            if (userRepository.existsByEmail(updateDto.getEmail())) {
+                throw new UserAlreadyExistsException("User with email " + updateDto.getEmail() + " already exists");
+            }
+            user.setEmail(updateDto.getEmail());
+            user.setEmailVerified(false);
+        }
+        
+        User updatedUser = userRepository.save(user);
+        return convertToDto(updatedUser);
+    }
+    
+    public void deleteUser(UUID id) {
+        if (!userRepository.existsById(id)) {
+            throw new ResourceNotFoundException("User not found with id: " + id);
+        }
+        userRepository.deleteById(id);
+    }
+    
+    public void changePassword(UUID userId, String oldPassword, String newPassword) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+        
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new IllegalArgumentException("Old password is incorrect");
+        }
+        
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+    
+    private UserResponseDto convertToDto(User user) {
+        UserResponseDto dto = new UserResponseDto();
+        dto.setId(user.getId());
+        dto.setFirstName(user.getFirstName());
+        dto.setLastName(user.getLastName());
+        dto.setEmail(user.getEmail());
+        dto.setRole(user.getRole().name());
+        dto.setActive(user.getActive());
+        dto.setEmailVerified(user.getEmailVerified());
+        dto.setCreatedAt(user.getCreatedAt());
+        dto.setUpdatedAt(user.getUpdatedAt());
+        return dto;
+    }
+}`
+      },
+      {
+        path: `src/main/java/${packagePath}/service/AuthService.java`,
+        content: `package ${packageName}.service;
+
+import ${packageName}.dto.LoginRequestDto;
+import ${packageName}.dto.TokenResponseDto;
+import ${packageName}.dto.UserRegistrationDto;
+import ${packageName}.dto.UserResponseDto;
+import ${packageName}.exception.InvalidCredentialsException;
+import ${packageName}.exception.ResourceNotFoundException;
+import ${packageName}.model.RefreshToken;
+import ${packageName}.model.User;
+import ${packageName}.repository.RefreshTokenRepository;
+import ${packageName}.repository.UserRepository;
+import ${packageName}.security.JwtTokenProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Service
+@Transactional
+public class AuthService {
+    
+    private final UserService userService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final UserRepository userRepository;
+    
+    @Autowired
+    public AuthService(
+        UserService userService,
+        AuthenticationManager authenticationManager,
+        JwtTokenProvider jwtTokenProvider,
+        RefreshTokenRepository refreshTokenRepository,
+        UserRepository userRepository
+    ) {
+        this.userService = userService;
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.refreshTokenRepository = refreshTokenRepository;
+        this.userRepository = userRepository;
+    }
+    
+    public TokenResponseDto register(UserRegistrationDto registrationDto) {
+        UserResponseDto user = userService.createUser(registrationDto);
+        
+        String accessToken = jwtTokenProvider.generateAccessToken(user.getEmail());
+        String refreshToken = jwtTokenProvider.generateRefreshToken();
+        
+        saveRefreshToken(user.getId(), refreshToken);
+        
+        return TokenResponseDto.builder()
+            .accessToken(accessToken)
+            .refreshToken(refreshToken)
+            .tokenType("Bearer")
+            .user(user)
+            .build();
+    }
+    
+    public TokenResponseDto login(LoginRequestDto loginRequest) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                    loginRequest.getEmail(),
+                    loginRequest.getPassword()
+                )
+            );
+            
+            User user = (User) authentication.getPrincipal();
+            UserResponseDto userDto = userService.getUserById(user.getId());
+            
+            String accessToken = jwtTokenProvider.generateAccessToken(user.getEmail());
+            String refreshToken = jwtTokenProvider.generateRefreshToken();
+            
+            // Remove old refresh tokens
+            refreshTokenRepository.deleteByUserId(user.getId());
+            saveRefreshToken(user.getId(), refreshToken);
+            
+            return TokenResponseDto.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .tokenType("Bearer")
+                .user(userDto)
+                .build();
+                
+        } catch (AuthenticationException e) {
+            throw new InvalidCredentialsException("Invalid email or password");
+        }
+    }
+    
+    public TokenResponseDto refreshToken(String refreshToken) {
+        RefreshToken token = refreshTokenRepository.findByToken(refreshToken)
+            .orElseThrow(() -> new ResourceNotFoundException("Invalid refresh token"));
+        
+        if (token.isExpired()) {
+            refreshTokenRepository.delete(token);
+            throw new ResourceNotFoundException("Refresh token has expired");
+        }
+        
+        User user = token.getUser();
+        UserResponseDto userDto = userService.getUserById(user.getId());
+        
+        String newAccessToken = jwtTokenProvider.generateAccessToken(user.getEmail());
+        String newRefreshToken = jwtTokenProvider.generateRefreshToken();
+        
+        // Update refresh token
+        token.setToken(newRefreshToken);
+        token.setExpiryDate(LocalDateTime.now().plusDays(7));
+        refreshTokenRepository.save(token);
+        
+        return TokenResponseDto.builder()
+            .accessToken(newAccessToken)
+            .refreshToken(newRefreshToken)
+            .tokenType("Bearer")
+            .user(userDto)
+            .build();
+    }
+    
+    public void logout(String refreshToken) {
+        refreshTokenRepository.findByToken(refreshToken)
+            .ifPresent(refreshTokenRepository::delete);
+    }
+    
+    private void saveRefreshToken(UUID userId, String token) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        
+        RefreshToken refreshToken = new RefreshToken(
+            token,
+            user,
+            LocalDateTime.now().plusDays(7)
+        );
+        
+        refreshTokenRepository.save(refreshToken);
+    }
+}`
+      }
+    ];
+  }
+
+  protected generateDTOFiles(): { path: string; content: string }[] {
+    const packageName = this.getPackageName();
+    const packagePath = this.getPackagePath();
+    
+    return [
+      {
+        path: `src/main/java/${packagePath}/dto/UserRegistrationDto.java`,
+        content: `package ${packageName}.dto;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+public class UserRegistrationDto {
+    @NotBlank(message = "First name is required")
+    @Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
+    private String firstName;
+    
+    @NotBlank(message = "Last name is required")
+    @Size(min = 2, max = 50, message = "Last name must be between 2 and 50 characters")
+    private String lastName;
+    
+    @Email(message = "Email should be valid")
+    @NotBlank(message = "Email is required")
+    private String email;
+    
+    @NotBlank(message = "Password is required")
+    @Size(min = 8, message = "Password must be at least 8 characters long")
+    private String password;
+    
+    // Constructors
+    public UserRegistrationDto() {}
+    
+    public UserRegistrationDto(String firstName, String lastName, String email, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+    }
+    
+    // Getters and Setters
+    public String getFirstName() { return firstName; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+    
+    public String getLastName() { return lastName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
+    
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+}`
+      },
+      {
+        path: `src/main/java/${packagePath}/dto/LoginRequestDto.java`,
+        content: `package ${packageName}.dto;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
+public class LoginRequestDto {
+    @Email(message = "Email should be valid")
+    @NotBlank(message = "Email is required")
+    private String email;
+    
+    @NotBlank(message = "Password is required")
+    private String password;
+    
+    // Constructors
+    public LoginRequestDto() {}
+    
+    public LoginRequestDto(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
+    
+    // Getters and Setters
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+}`
+      },
+      {
+        path: `src/main/java/${packagePath}/dto/UserResponseDto.java`,
+        content: `package ${packageName}.dto;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+public class UserResponseDto {
+    private UUID id;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String role;
+    private Boolean active;
+    private Boolean emailVerified;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    
+    // Constructors
+    public UserResponseDto() {}
+    
+    // Getters and Setters
+    public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
+    
+    public String getFirstName() { return firstName; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+    
+    public String getLastName() { return lastName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
+    
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
+    
+    public Boolean getActive() { return active; }
+    public void setActive(Boolean active) { this.active = active; }
+    
+    public Boolean getEmailVerified() { return emailVerified; }
+    public void setEmailVerified(Boolean emailVerified) { this.emailVerified = emailVerified; }
+    
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+}`
+      },
+      {
+        path: `src/main/java/${packagePath}/dto/UserUpdateDto.java`,
+        content: `package ${packageName}.dto;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
+
+public class UserUpdateDto {
+    @Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
+    private String firstName;
+    
+    @Size(min = 2, max = 50, message = "Last name must be between 2 and 50 characters")
+    private String lastName;
+    
+    @Email(message = "Email should be valid")
+    private String email;
+    
+    // Constructors
+    public UserUpdateDto() {}
+    
+    // Getters and Setters
+    public String getFirstName() { return firstName; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+    
+    public String getLastName() { return lastName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
+    
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+}`
+      },
+      {
+        path: `src/main/java/${packagePath}/dto/TokenResponseDto.java`,
+        content: `package ${packageName}.dto;
+
+public class TokenResponseDto {
+    private String accessToken;
+    private String refreshToken;
+    private String tokenType;
+    private UserResponseDto user;
+    
+    // Constructors
+    public TokenResponseDto() {}
+    
+    private TokenResponseDto(Builder builder) {
+        this.accessToken = builder.accessToken;
+        this.refreshToken = builder.refreshToken;
+        this.tokenType = builder.tokenType;
+        this.user = builder.user;
+    }
+    
+    // Builder pattern
+    public static Builder builder() {
+        return new Builder();
+    }
+    
+    public static class Builder {
+        private String accessToken;
+        private String refreshToken;
+        private String tokenType;
+        private UserResponseDto user;
+        
+        public Builder accessToken(String accessToken) {
+            this.accessToken = accessToken;
+            return this;
+        }
+        
+        public Builder refreshToken(String refreshToken) {
+            this.refreshToken = refreshToken;
+            return this;
+        }
+        
+        public Builder tokenType(String tokenType) {
+            this.tokenType = tokenType;
+            return this;
+        }
+        
+        public Builder user(UserResponseDto user) {
+            this.user = user;
+            return this;
+        }
+        
+        public TokenResponseDto build() {
+            return new TokenResponseDto(this);
+        }
+    }
+    
+    // Getters and Setters
+    public String getAccessToken() { return accessToken; }
+    public void setAccessToken(String accessToken) { this.accessToken = accessToken; }
+    
+    public String getRefreshToken() { return refreshToken; }
+    public void setRefreshToken(String refreshToken) { this.refreshToken = refreshToken; }
+    
+    public String getTokenType() { return tokenType; }
+    public void setTokenType(String tokenType) { this.tokenType = tokenType; }
+    
+    public UserResponseDto getUser() { return user; }
+    public void setUser(UserResponseDto user) { this.user = user; }
+}`
+      },
+      {
+        path: `src/main/java/${packagePath}/dto/ChangePasswordRequestDto.java`,
+        content: `package ${packageName}.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+public class ChangePasswordRequestDto {
+    @NotBlank(message = "Old password is required")
+    private String oldPassword;
+    
+    @NotBlank(message = "New password is required")
+    @Size(min = 8, message = "New password must be at least 8 characters long")
+    private String newPassword;
+    
+    // Constructors
+    public ChangePasswordRequestDto() {}
+    
+    public ChangePasswordRequestDto(String oldPassword, String newPassword) {
+        this.oldPassword = oldPassword;
+        this.newPassword = newPassword;
+    }
+    
+    // Getters and Setters
+    public String getOldPassword() { return oldPassword; }
+    public void setOldPassword(String oldPassword) { this.oldPassword = oldPassword; }
+    
+    public String getNewPassword() { return newPassword; }
+    public void setNewPassword(String newPassword) { this.newPassword = newPassword; }
+}`
+      }
+    ];
+  }
+
+  protected generateUtilFiles(): { path: string; content: string }[] {
+    return [
+      {
+        path: '.env.example',
+        content: `# Database Configuration
+DATABASE_URL=jdbc:postgresql://localhost:5432/${this.sanitizeName(this.options?.name || 'backend')}_db
+DATABASE_USER=postgres
+DATABASE_PASSWORD=password
+
+# Redis Configuration
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD=
+
+# JWT Configuration
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production-make-it-long-and-complex
+
+# Email Configuration
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@gmail.com
+SMTP_PASS=your-app-password
+
+# Application Configuration
+PORT=${this.options?.port || 8080}
+ENVIRONMENT=development`
+      },
+      {
+        path: 'Dockerfile',
+        content: `# Multi-stage build for Java application
+FROM openjdk:17-jdk-slim as builder
+
+WORKDIR /app
+
+# Copy Maven wrapper and pom.xml
+COPY .mvn/ .mvn/
+COPY mvnw pom.xml ./
+
+# Download dependencies
+RUN ./mvnw dependency:go-offline -B
+
+# Copy source code
+COPY src ./src
+
+# Build application
+RUN ./mvnw clean package -DskipTests
+
+# Production stage
+FROM openjdk:17-jre-slim
+
+WORKDIR /app
+
+# Install curl for health checks
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
+# Copy built application
+COPY --from=builder /app/target/*.jar app.jar
+
+# Create non-root user
+RUN addgroup --system spring && adduser --system spring --ingroup spring
+USER spring:spring
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=60s --retries=3 \\
+  CMD curl -f http://localhost:${this.options?.port || 8080}/actuator/health || exit 1
+
+EXPOSE ${this.options?.port || 8080}
+
+ENTRYPOINT ["java", "-jar", "app.jar"]`
+      },
+      {
+        path: 'docker-compose.yml',
+        content: `version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "${this.options?.port || 8080}:${this.options?.port || 8080}"
+    environment:
+      - DATABASE_URL=jdbc:postgresql://postgres:5432/${this.sanitizeName(this.options?.name || 'backend')}_db
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=password
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - app-network
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: ${this.sanitizeName(this.options?.name || 'backend')}_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  app-network:
+    driver: bridge`
+      },
+      {
+        path: 'README.md',
+        content: `# ${this.options?.name || 'Backend API'} - ${this.config.framework}
+
+A modern Java backend service built with ${this.config.framework} and Spring Boot.
+
+## Features
+
+${this.config.features.map(feature => `- ${feature}`).join('\n')}
+
+## Prerequisites
+
+- Java 17 or higher
+- Maven 3.6+
+- PostgreSQL 13+
+- Redis 6+
+
+## Quick Start
+
+1. **Clone and setup**
+   \`\`\`bash
+   git clone <repository-url>
+   cd ${this.sanitizeName(this.options?.name || 'backend-api')}
+   \`\`\`
+
+2. **Configure environment**
+   \`\`\`bash
+   cp .env.example .env
+   # Edit .env with your configuration
+   \`\`\`
+
+3. **Start services with Docker**
+   \`\`\`bash
+   docker-compose up -d postgres redis
+   \`\`\`
+
+4. **Run application**
+   \`\`\`bash
+   ./mvnw spring-boot:run
+   \`\`\`
+
+## Development
+
+### Build
+\`\`\`bash
+./mvnw clean compile
+\`\`\`
+
+### Test
+\`\`\`bash
+./mvnw test
+\`\`\`
+
+### Package
+\`\`\`bash
+./mvnw clean package
+\`\`\`
+
+### Run with profile
+\`\`\`bash
+./mvnw spring-boot:run -Dspring.profiles.active=development
+\`\`\`
+
+## API Documentation
+
+- **Swagger UI**: http://localhost:${this.options?.port || 8080}/swagger-ui.html
+- **OpenAPI JSON**: http://localhost:${this.options?.port || 8080}/api-docs
+
+## Database
+
+### Run migrations
+\`\`\`bash
+./mvnw flyway:migrate
+\`\`\`
+
+### Rollback migration
+\`\`\`bash
+./mvnw flyway:undo
+\`\`\`
+
+## Endpoints
+
+### Authentication
+- \`POST /api/v1/auth/register\` - Register new user
+- \`POST /api/v1/auth/login\` - Login user
+- \`POST /api/v1/auth/refresh\` - Refresh access token
+- \`POST /api/v1/auth/logout\` - Logout user
+
+### Users
+- \`GET /api/v1/users/profile\` - Get user profile
+- \`PUT /api/v1/users/profile\` - Update user profile
+- \`DELETE /api/v1/users/profile\` - Delete user account
+- \`POST /api/v1/users/change-password\` - Change password
+
+### Admin
+- \`GET /api/v1/admin/users\` - List all users
+- \`GET /api/v1/admin/users/{id}\` - Get user by ID
+- \`PUT /api/v1/admin/users/{id}\` - Update user
+- \`DELETE /api/v1/admin/users/{id}\` - Delete user
+
+### Health
+- \`GET /api/v1/health\` - Health check
+- \`GET /actuator/health\` - Actuator health endpoint
+
+## Environment Variables
+
+\`\`\`bash
+DATABASE_URL=jdbc:postgresql://localhost:5432/db_name
+DATABASE_USER=postgres
+DATABASE_PASSWORD=password
+REDIS_HOST=localhost
+REDIS_PORT=6379
+JWT_SECRET=your-jwt-secret
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@gmail.com
+SMTP_PASS=your-password
+\`\`\`
+
+## Docker
+
+### Build image
+\`\`\`bash
+docker build -t ${this.sanitizeName(this.options?.name || 'backend-api')} .
+\`\`\`
+
+### Run with Docker Compose
+\`\`\`bash
+docker-compose up -d
+\`\`\`
+
+## Testing
+
+\`\`\`bash
+# Unit tests
+./mvnw test
+
+# Integration tests
+./mvnw test -Dtest=**/*IntegrationTest
+
+# Test with coverage
+./mvnw test jacoco:report
+\`\`\`
+
+## Production Deployment
+
+1. **Build production image**
+   \`\`\`bash
+   docker build --target production -t ${this.sanitizeName(this.options?.name || 'backend-api')}:latest .
+   \`\`\`
+
+2. **Set production environment variables**
+3. **Run database migrations**
+4. **Deploy with proper monitoring and logging**
+
+## Architecture
+
+- **Controllers**: REST API endpoints
+- **Services**: Business logic layer
+- **Repositories**: Data access layer
+- **DTOs**: Data transfer objects
+- **Models**: JPA entities
+- **Security**: JWT authentication & authorization
+- **Configuration**: Spring configuration classes
+
+## License
+
+MIT License - see LICENSE file for details.`
+      }
+    ];
+  }
+
+  // Override to generate Java-specific files
+  protected async generateLanguageFiles(projectPath: string, options: any): Promise<void> {
+    this.options = options;
+    
+    // Ensure Java directory structure exists
+    await this.createJavaDirectoryStructure(projectPath);
+    
+    // Generate Maven POM
+    await fs.writeFile(path.join(projectPath, 'pom.xml'), this.generatePomXml());
+    
+    // Generate application properties
+    await fs.writeFile(path.join(projectPath, 'src/main/resources/application.properties'), this.generateApplicationProperties());
+    await fs.writeFile(path.join(projectPath, 'src/main/resources/application.yml'), this.generateApplicationYml());
+  }
+
+  protected async createJavaDirectoryStructure(projectPath: string): Promise<void> {
+    const packagePath = this.getPackagePath();
+    
+    const directories = [
+      'src/main/java',
+      `src/main/java/${packagePath}`,
+      `src/main/java/${packagePath}/controller`,
+      `src/main/java/${packagePath}/service`,
+      `src/main/java/${packagePath}/repository`,
+      `src/main/java/${packagePath}/model`,
+      `src/main/java/${packagePath}/dto`,
+      `src/main/java/${packagePath}/config`,
+      `src/main/java/${packagePath}/security`,
+      `src/main/java/${packagePath}/exception`,
+      `src/main/java/${packagePath}/util`,
+      'src/main/resources',
+      'src/main/resources/db',
+      'src/main/resources/db/migration',
+      'src/test/java',
+      `src/test/java/${packagePath}`,
+      `src/test/java/${packagePath}/controller`,
+      `src/test/java/${packagePath}/service`,
+      `src/test/java/${packagePath}/integration`,
+      'src/test/resources',
+      '.mvn/wrapper'
+    ];
+
+    for (const dir of directories) {
+      await fs.mkdir(path.join(projectPath, dir), { recursive: true });
+    }
+  }
+
+  protected async generateFrameworkFiles(projectPath: string, options: any): Promise<void> {
+    this.options = options;
+    
+    // Generate models
+    const modelFiles = this.generateModelFiles();
+    for (const file of modelFiles) {
+      await fs.writeFile(path.join(projectPath, file.path), file.content);
+    }
+    
+    // Generate DTOs
+    const dtoFiles = this.generateDTOFiles();
+    for (const file of dtoFiles) {
+      await fs.writeFile(path.join(projectPath, file.path), file.content);
+    }
+    
+    // Generate services
+    const serviceFiles = this.generateServiceFiles();
+    for (const file of serviceFiles) {
+      await fs.writeFile(path.join(projectPath, file.path), file.content);
+    }
+    
+    // Generate framework-specific files (controllers, security, etc.)
+    await this.generateFrameworkSpecificFiles(projectPath, options);
+    
+    // Generate utility files
+    const utilFiles = this.generateUtilFiles();
+    for (const file of utilFiles) {
+      await fs.writeFile(path.join(projectPath, file.path), file.content);
+    }
+  }
+
+  protected async generateTestStructure(projectPath: string, options: any): Promise<void> {
+    // Create test directories
+    const testDirs = [
+      'src/test/java',
+      'src/test/resources'
+    ];
+    
+    for (const dir of testDirs) {
+      await fs.mkdir(path.join(projectPath, dir), { recursive: true });
+    }
+  }
+
+  protected async generateHealthCheck(projectPath: string): Promise<void> {
+    // Health check is generated as part of framework files
+  }
+
+  protected async generateAPIDocs(projectPath: string): Promise<void> {
+    // API docs are generated as part of framework files (OpenAPI/Swagger)
+  }
+
+  protected async generateDockerFiles(projectPath: string, options: any): Promise<void> {
+    // Docker files are generated as part of utility files
+  }
+
+  protected async generateDocumentation(projectPath: string, options: any): Promise<void> {
+    // Documentation is generated as part of utility files (README)
+  }
+
+  // Abstract methods from base class
+  protected getLanguageSpecificIgnorePatterns(): string[] {
+    return [
+      '# Java',
+      '*.class',
+      '*.jar',
+      '*.war',
+      '*.ear',
+      '*.nar',
+      'hs_err_pid*',
+      'replay_pid*',
+      '',
+      '# Maven',
+      'target/',
+      'pom.xml.tag',
+      'pom.xml.releaseBackup',
+      'pom.xml.versionsBackup',
+      'pom.xml.next',
+      'release.properties',
+      'dependency-reduced-pom.xml',
+      '',
+      '# Gradle',
+      '.gradle/',
+      'build/',
+      '!gradle/wrapper/gradle-wrapper.jar',
+      '!**/src/main/**/build/',
+      '!**/src/test/**/build/',
+      '',
+      '# Spring Boot',
+      '*.pid'
+    ];
+  }
+
+  protected getLanguagePrerequisites(): string {
+    return 'Java 17+ and Maven 3.6+';
+  }
+
+  protected getInstallCommand(): string {
+    return './mvnw dependency:go-offline';
+  }
+
+  protected getDevCommand(): string {
+    return './mvnw spring-boot:run';
+  }
+
+  protected getProdCommand(): string {
+    return 'java -jar target/*.jar';
+  }
+
+  protected getTestCommand(): string {
+    return './mvnw test';
+  }
+
+  protected getCoverageCommand(): string {
+    return './mvnw test jacoco:report';
+  }
+
+  protected getLintCommand(): string {
+    return './mvnw checkstyle:check';
+  }
+
+  protected getBuildCommand(): string {
+    return './mvnw clean package';
+  }
+
+  protected getSetupAction(): string {
+    return 'actions/setup-java@v3\\n      with:\\n        java-version: "17"\\n        distribution: "temurin"';
+  }
+
+  protected abstract generateFrameworkSpecificFiles(projectPath: string, options: any): Promise<void>;
+}
